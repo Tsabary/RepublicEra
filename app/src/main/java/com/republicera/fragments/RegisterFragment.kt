@@ -34,7 +34,6 @@ class RegisterFragment : androidx.fragment.app.Fragment() {
     private lateinit var userLastName: EditText
     private lateinit var userEmail: EditText
     lateinit var userPassword: EditText
-    lateinit var userConfirmPassword: EditText
     private lateinit var button: TextView
     private lateinit var loadingAnimation: ConstraintLayout
 
@@ -67,7 +66,6 @@ class RegisterFragment : androidx.fragment.app.Fragment() {
         userLastName = register_fragment_last_name
         userEmail = register_fragment_email
         userPassword = register_fragment_password
-        userConfirmPassword = register_fragment_confirm_password
         button = register_fragment_button
         loadingAnimation = register_fragment_spinner
 
@@ -78,27 +76,6 @@ class RegisterFragment : androidx.fragment.app.Fragment() {
         button.setOnClickListener {
             performRegister()
         }
-
-        userConfirmPassword.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-                if (userPassword.text.toString().replace(
-                        "\\s".toRegex(),
-                        ""
-                    ) == userConfirmPassword.text.toString().replace("\\s".toRegex(), "")
-                ) {
-                    register_fragment_password_check.visibility = View.VISIBLE
-                } else {
-                    register_fragment_password_check.visibility = View.GONE
-                }
-            }
-        })
     }
 
     private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
@@ -152,38 +129,31 @@ class RegisterFragment : androidx.fragment.app.Fragment() {
         textUserLastName = userLastName.text.toString().trimEnd()
         textUserEmail = userEmail.text.toString().replace("\\s".toRegex(), "")
         val textUserPassword = userPassword.text.toString().replace("\\s".toRegex(), "")
-        val textUserConfirmPassword = userConfirmPassword.text.toString().replace("\\s".toRegex(), "")
-
 
         if (textUserLastName.length > 1 && textUserFirstName.length > 1) {
             if (textUserEmail.contains("@") && textUserEmail.contains(".")) {
-                if (textUserConfirmPassword == textUserPassword) {
-                    if (textUserPassword.length > 7) {
-                        FirebaseAuth.getInstance().createUserWithEmailAndPassword(textUserEmail, textUserPassword)
-                            .addOnSuccessListener {
-                                addUserToFirebaseDatabase(textUserFirstName, textUserLastName, 0, it.user!!.uid)
-                            }
-                            .addOnFailureListener {
-                                registerFail()
-                                Toast.makeText(
-                                    this.context,
-                                    it.toString(),
-                                    Toast.LENGTH_LONG
-                                )
-                                    .show()
-                            }
-                    } else {
-                        registerFail()
-                        Toast.makeText(
-                            this.context,
-                            "Your password needs to be at least 6 characters long",
-                            Toast.LENGTH_LONG
-                        )
-                            .show()
-                    }
+                if (textUserPassword.length > 7) {
+                    FirebaseAuth.getInstance().createUserWithEmailAndPassword(textUserEmail, textUserPassword)
+                        .addOnSuccessListener {
+                            addUserToFirebaseDatabase(textUserFirstName, textUserLastName, 0, it.user!!.uid)
+                        }
+                        .addOnFailureListener {
+                            registerFail()
+                            Toast.makeText(
+                                this.context,
+                                it.toString(),
+                                Toast.LENGTH_LONG
+                            )
+                                .show()
+                        }
                 } else {
                     registerFail()
-                    Toast.makeText(this.context, "Your passwords don't match", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this.context,
+                        "Your password needs to be at least 6 characters long",
+                        Toast.LENGTH_LONG
+                    )
+                        .show()
                 }
             } else {
                 registerFail()

@@ -62,7 +62,6 @@ class LoginFragment : Fragment(), GeneralMethods {
         firebaseAuth = FirebaseAuth.getInstance()
         val googleLogin = register_fragment_google_login
 
-        register_fragment_confirm_password.visibility = View.GONE
         register_fragment_last_name.visibility = View.GONE
         register_fragment_button.text = getString(R.string.login)
 
