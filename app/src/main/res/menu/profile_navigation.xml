@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+    <item
+            android:id="@+id/profile_edit_profile"
+            android:title="@string/edit_profile"
+    />
+
+    <item
+            android:id="@+id/profile_edit_contact_details"
+            android:title="@string/edit_contact_details"
+    />
+
+    <item
+            android:id="@+id/profile_edit_interests"
+            android:title="@string/edit_interests"
+    />
+
+    <item
+            android:id="@+id/profile_edit_language_preferences"
+            android:title="@string/edit_language_preferences"
+    />
+
+    <!--<item-->
+            <!--android:id="@+id/profile_invite_a_friend"-->
+            <!--android:title="@string/invite_a_friend"-->
+    <!--/>-->
+
+    <item
+            android:id="@+id/profile_logout"
+            android:title="@string/logout"
+    />
+
+</menu>

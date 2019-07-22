@@ -1,0 +1,142 @@
+<resources>
+    <string name="app_name">Republic Era</string>
+    <string name="board">Board</string>
+    <string name="profile">Profile</string>
+    <string name="share">Share</string>
+    <string name="save">Save</string>
+    <string name="saved">Saved</string>
+    <string name="logout">Logout</string>
+    <string name="feed_notifications">Feed notifications</string>
+    <string name="invite_a_friend">Invite a friend</string>
+    <string name="default_notification_channel_id"
+            translatable="false">republic_era_default_channel
+    </string>
+    <string name="fcm_message">New activity on Reopublic Era</string>
+    <string name="edit_interests">Edit interests</string>
+    <string name="register">Register</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="name">Name</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="login">Login</string>
+    <string name="back_to_registration">Back to registration</string>
+    <string name="i_forgot_my_password">I forgot my password</string>
+
+    <string name="saved_questions_icon">saved questions icon</string>
+    <string name="notifications_icon">notifications icon</string>
+    <string name="search_by_tag">Filter by tag</string>
+    <string name="like_icon">like icon</string>
+    <string name="image">image</string>
+    <string name="public_text">public</string>
+    <string name="private_text">private</string>
+    <string name="logo">logo</string>
+    <string name="sign_up">Sign up</string>
+    <string name="add">Add</string>
+
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="add_a_comment">Add a comment..</string>
+    <string name="leave_a_review">Leave a review</string>
+    <string name="answer">Answer</string>
+    <string name="mark_all_as_read">Mark all as read</string>
+    <string name="remove">Remove</string>
+    <string name="comment">Comment</string>
+    <string name="save_question">Save question</string>
+    <string name="comment_like">comment like</string>
+    <string name="are_you_sure_you_want_to_delete_your_comment">Are you sure you want to delete your comment?</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="follow">Follow</string>
+    <string name="comment_removed">Comment removed</string>
+    <string name="are_you_sure_you_want_to_delete_this_answer">Are you sure you want to delete this answer?</string>
+    <string name="downvote_button">downvote button</string>
+    <string name="_0">0</string>
+    <string name="upvote_button">upvote button</string>
+    <string name="photo">photo</string>
+    <string name="add_an_answer">Add an answer..</string>
+    <string name="your_answer">Your answer</string>
+    <string name="add_image">add image</string>
+    <string name="block_layout_icon">block_layout_icon</string>
+    <string name="rows_layout_icon">rows layout icon</string>
+    <string name="check_icon">check icon</string>
+    <string name="are_you_sure_you_want_to_delete_this_post">Are you sure you want to delete this post?</string>
+    <string name="enter_tags">Enter tags</string>
+    <string name="add_tag">add tag</string>
+    <string name="use_a_dash_to_seperate_multi_word_tags_nmaximum_5_tags">Use a dash to separate multi-word tags.
+        Maximum 5 tags
+    </string>
+    <string name="menu_icon">menu icon</string>
+    <string name="search_interests_by_keyword">Search interests by keyword</string>
+    <string name="instagram_handle">Instagram handle</string>
+    <string name="tagline">Tagline</string>
+    <string name="date">date</string>
+    <string name="post">Post</string>
+    <string name="close_button">close button</string>
+    <string name="close">Close</string>
+
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+
+    <string name="tags">Tags</string>
+    <string name="maximum_5_tags">Maximum 5 tags</string>
+    <string name="post_question">Post Question</string>
+
+    <string name="finish">Finish</string>
+    <string name="reputation">Reputation</string>
+    <string name="followers">Followers</string>
+    <string name="profile_photo">profile photo</string>
+
+    <string name="google_login_button">google login button</string>
+    <string name="comment_icon">comment icon</string>
+
+    <string name="questions">Questions</string>
+    <string name="answers">Answers</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="email_address">Email address</string>
+    <string name="phone_number">Phone number</string>
+    <string name="start_with_quot_how_quot_quot_what_quot_quot_where_quot_or_quot_when_quot">Start with \"How\",\"What\", \"Where\" or \"When\" </string>
+    <string name="https">https://</string>
+    <string name="business_website">Business website</string>
+    <string name="linkedin_handle">LinkedIn handle</string>
+    <string name="linkedin_com_in">linkedin.com/in/</string>
+    <string name="facebook_handle">Facebook handle</string>
+    <string name="facebook_com">facebook.com/</string>
+    <string name="medium_handle">Medium handle</string>
+    <string name="medium_com">medium.com/@</string>
+    <string name="youtube_handle">Youtube handle</string>
+    <string name="youtube_com_user">youtube.com/user/</string>
+    <string name="snapchat_handle">Snapchat handle</string>
+    <string name="snapchat_com_add">snapchat.com/add/</string>
+    <string name="do_any_of_these_posts_solve_your_problem">Do any of these posts solve your problem?</string>
+    <string name="ask">Ask a new question</string>
+    <string name="what_would_you_like_to_know">What would you like to know?</string>
+    <string name="anything_you_want_to_say">Anything you want to say?</string>
+    <string name="shouts">Shouts</string>
+    <string name="shout">Shout</string>
+    <string name="edit_contact_details">Edit contact details</string>
+    <string name="language">Language</string>
+    <string name="package_name">com.republicera</string>
+    <string name="please_check_your_spoken_languages">Please check your spoken languages</string>
+    <string name="edit_language_preferences">Edit language preferences</string>
+    <string name="current_community">Current Community:</string>
+    <string name="name_your_new_community">Name your new republic</string>
+    <string name="change_layout_icon">change layout icon</string>
+    <string name="secret">Secret</string>
+    <string name="members">&#160;members</string>
+    <string name="report">Report</string>
+    <string name="describe_the_republic_briefly">Describe the republic briefly</string>
+
+    <string name="algolia_application_id">2SZX6FMBCT</string>
+    <string name="algolia_api_key">6a59bfb7a85933f72c42457e8d4f0eb3</string>
+    <string name="algolia_search_key">a989bfb76ce9c9de7bf125b09913d7c5</string>
+    <string name="details">Details</string>
+    <string name="question">Question</string>
+    <string name="can_you_add_information_that_would_help_others_answer_your_question">Can you add information that
+        would help others answer your question
+    </string>
+    <string name="or_connect_with">or connect with</string>
+    <string name="forgot_your_password">Forgot your password?</string>
+    <string name="last_name">Last name</string>
+    <string name="first_name">First name</string>
+
+</resources>

@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context=".fragments.BoardFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+        <include
+                layout="@layout/board_toolbar"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/includeBoardToolbar"/>
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/includeBoardToolbar"
+                android:id="@+id/constraintLayout3">
+
+            <ImageButton
+                    android:src="@drawable/rows_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:id="@+id/board_layout_icon"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1"
+                    android:scaleType="centerInside"
+                    android:background="@android:color/transparent"
+                    android:padding="16dp"
+                    android:contentDescription="@string/change_layout_icon"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:layout_marginEnd="16dp"/>
+            <TextView
+                    tools:text="Business and Startups"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/board_community_title"
+                    android:fontFamily="@font/roboto_bold"
+                    android:textColor="@color/gray800"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:clickable="false"/>
+
+            <com.jaredrummler.materialspinner.MaterialSpinner
+                    android:id="@+id/board_language_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:gravity="center"
+                    android:ems="7"
+                    android:fontFamily="@font/roboto_medium"
+                    android:textColor="@color/gray700"
+                    android:text="Eng"
+                    android:scrollHorizontally="true"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+                android:text="This is a fresh republic. Be a leader and start a debate."
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/board_fresh_message"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="32dp"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="32dp"
+                app:layout_constraintBottom_toTopOf="@+id/constraintLayout_botton_check"
+                android:elevation="2dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout3"
+                android:fontFamily="@font/roboto_bold"
+                android:textColor="@color/gray800"
+                android:visibility="gone"
+                android:gravity="center"/>
+        <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="0dp"
+                android:layout_height="160dp"
+                app:layout_constraintTop_toBottomOf="@+id/includeBoardToolbar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:id="@+id/board_search_recycler"
+                android:visibility="gone"
+                android:elevation="2dp"
+                android:background="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="24dp"
+                app:layout_constraintVertical_bias="0.0"/>
+
+
+
+        <!--<androidx.recyclerview.widget.RecyclerView-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="0dp"-->
+                <!--app:layout_constraintTop_toBottomOf="@id/constraintLayout3"-->
+                <!--app:layout_constraintEnd_toEndOf="parent"-->
+                <!--app:layout_constraintStart_toStartOf="parent"-->
+                <!--app:layout_constraintBottom_toTopOf="@+id/constraintLayout_botton_check"-->
+                <!--android:id="@+id/board_question_feed"-->
+                <!--app:stackFromEnd="true"-->
+                <!--app:reverseLayout="true"-->
+            <!--/>-->
+
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/board_questions_swipe_refresh"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toBottomOf="@id/constraintLayout3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/constraintLayout_botton_check"
+        >
+
+            <!--<androidx.core.widget.NestedScrollView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:id="@+id/board_questions_scroll_view"-->
+            <!--app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toTopOf="parent">-->
+            <!--</androidx.core.widget.NestedScrollView>-->
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+            >
+
+                <androidx.recyclerview.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:id="@+id/board_question_feed"
+                        app:stackFromEnd="true"
+                        app:reverseLayout="true"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                >
+                </androidx.recyclerview.widget.RecyclerView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/board_search_swipe_refresh"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toBottomOf="@id/constraintLayout3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/constraintLayout_botton_check">
+
+            <!--<androidx.core.widget.NestedScrollView-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="0dp"-->
+                    <!--android:id="@+id/board_search_scroll_view"-->
+                    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+                    <!--app:layout_constraintEnd_toEndOf="parent"-->
+                    <!--app:layout_constraintStart_toStartOf="parent"-->
+                    <!--app:layout_constraintTop_toTopOf="parent">-->
+            <!--</androidx.core.widget.NestedScrollView>-->
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/board_search_question_feed"
+                        app:stackFromEnd="true"
+                        app:reverseLayout="true"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/board_reported_swipe_refresh"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toBottomOf="@id/constraintLayout3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/constraintLayout_botton_check">
+
+            <!--<androidx.core.widget.NestedScrollView-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="0dp"-->
+                    <!--android:id="@+id/board_quorum_scroll_view"-->
+                    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+                    <!--app:layout_constraintEnd_toEndOf="parent"-->
+                    <!--app:layout_constraintStart_toStartOf="parent"-->
+                    <!--app:layout_constraintTop_toTopOf="parent">-->
+            <!--</androidx.core.widget.NestedScrollView>-->
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/board_reported_posts_feed"
+                        app:stackFromEnd="true"
+                        app:reverseLayout="true"
+                        android:paddingBottom="88dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!--<com.google.android.material.floatingactionbutton.FloatingActionButton-->
+        <!--android:src="@drawable/plus"-->
+        <!--android:layout_width="56dp"-->
+        <!--android:layout_height="56dp"-->
+        <!--android:clickable="true"-->
+        <!--app:tint="@color/gray500"-->
+        <!--android:elevation="2dp"-->
+        <!--android:id="@+id/board_fab"-->
+        <!--android:layout_marginEnd="16dp"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--android:layout_marginBottom="80dp"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:backgroundTint="@color/white"-->
+        <!--android:background="@drawable/button_with_gray_stroke"-->
+        <!--android:focusable="true"/>-->
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/constraintLayout_botton_check"
+                android:padding="24dp">
+
+            <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:id="@+id/shouts_bottom_sheet_input"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:background="@drawable/gray_form_field"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:textColor="@color/gray700"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/roboto"
+                    android:hint="@string/what_would_you_like_to_know"
+                    android:maxLines="4"
+                    android:maxLength="2000"
+                    android:scrollHorizontally="false"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!--<include layout="@layout/question_bottom_sheet"-->
+                 <!--app:layout_constraintBottom_toBottomOf="parent"-->
+                 <!--app:layout_constraintEnd_toEndOf="parent"-->
+                 <!--app:layout_constraintStart_toStartOf="parent"-->
+                 <!--android:layout_width="0dp"-->
+                 <!--android:layout_height="wrap_content"/>-->
+
+        <!--<fragment-->
+        <!--android:name="androidx.navigation.fragment.NavHostFragment"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="70dp"-->
+        <!--app:navGraph="@navigation/nav_graph"-->
+        <!--app:defaultNavHost="true"-->
+        <!--android:answer_ID="@+answer_ID/bottom_nav_fragment"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--/>-->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".fragments.CommunitiesHome">
+
+
+    <TextView
+            android:text="Your republics"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/communities_home_your_communities"
+            android:textSize="14sp"
+            android:textColor="@color/gray500"
+            android:fontFamily="@font/montserrat"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/communities_home_header_container"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="24dp"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/communities_home_header_container"
+            android:padding="24dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/communities_home_header_buttons_container"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/communities_home_name"
+                app:layout_constraintHorizontal_bias="1.0"
+        >
+
+            <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/settings_line"
+                    app:layout_constraintDimensionRatio="h,1:1"
+                    android:id="@+id/communities_home_settings"
+                    app:layout_constraintStart_toEndOf="@+id/communities_home_search"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:padding="16dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+            <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/search"
+                    android:id="@+id/communities_home_search"
+                    app:layout_constraintDimensionRatio="h,1:1"
+                    app:layout_constraintStart_toEndOf="@+id/communities_home_add"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintEnd_toStartOf="@+id/communities_home_settings"
+                    app:layout_constraintTop_toTopOf="@+id/communities_home_settings"
+                    app:layout_constraintBottom_toBottomOf="@+id/communities_home_settings"
+                    android:padding="16dp"/>
+            <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/plus_basic"
+                    android:id="@+id/communities_home_add"
+                    app:layout_constraintDimensionRatio="h,1:1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintEnd_toStartOf="@+id/communities_home_search"
+                    app:layout_constraintTop_toTopOf="@+id/communities_home_search"
+                    app:layout_constraintBottom_toBottomOf="@+id/communities_home_search"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    android:padding="16dp"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+                android:text="Hello, "
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/communities_home_hi"
+                app:layout_constraintStart_toStartOf="parent"
+                android:textSize="18sp"
+                android:textColor="@color/gray700"
+                android:fontFamily="@font/montserrat"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="16dp"/>
+        <TextView
+                tools:text="Friend."
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/communities_home_name"
+                android:textSize="30sp"
+                android:textColor="@color/gray800"
+                android:fontFamily="@font/montserrat_bold"
+                app:layout_constraintStart_toStartOf="@+id/communities_home_hi"
+                app:layout_constraintTop_toBottomOf="@+id/communities_home_hi"
+                app:layout_constraintEnd_toStartOf="@+id/communities_home_header_buttons_container"
+        />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="visible"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/communities_home_your_communities"
+            android:id="@+id/communities_home_recycler"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintVertical_bias="0.0"/>
+    <TextView
+            android:text="You are currently not a member of any republic.\nExplore and join some of our republics."
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/communities_home_empty_message"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="32dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/communities_home_your_communities"
+            android:fontFamily="@font/roboto_medium"
+            android:gravity="center"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

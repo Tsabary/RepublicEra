@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#9D9D9D</color>
+
+    <color name="gray100">#F5F5F5</color>
+    <color name="gray300">#E0E0E0</color>
+    <color name="gray500">#9E9E9E</color>
+    <color name="gray700">#616161</color>
+    <color name="gray800">#424242</color>
+    <color name="gray900">#212121</color>
+    <color name="green50">#f2fff9</color>
+    <color name="green100">#B1FEE0</color>
+    <color name="green200">#82FECE</color>
+    <color name="green300">#50FEBA</color>
+    <color name="green400">#2AFEAC</color>
+    <color name="green500">#05FE9D</color>
+    <color name="green600">#05E78F</color>
+    <color name="green700">#04CE7F</color>
+    <color name="green800">#04B46F</color>
+    <color name="green900">#038452</color>
+
+    <color name="cancel_red">#FF6666</color>
+
+    <color name="star_yellow">#ED8A19</color>
+    <color name="privacy_background">#BFffffff</color>
+
+    <color name="main_green">#12FF9C</color>
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
+    <color name="red700">#B71C1C</color>
+
+    <color name="grayBlue">#F0F0F5</color>
+
+    <color name="pink500">#ffe91e63</color>
+
+
+    <color name="ucrop_color_widget_background" tools:override="true">#000000</color>
+
+
+</resources>

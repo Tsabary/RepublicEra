@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:algolia="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".fragments.ExploreCommunitiesFragment"
+        android:background="@color/white">
+
+
+    <com.algolia.instantsearch.ui.views.SearchBox
+            android:id="@+id/explore_communities_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/gray_form_field_gradient"
+            android:textColor="@color/gray700"
+            android:textSize="15sp"
+            android:fontFamily="@font/roboto"
+            android:iconifiedByDefault="false"
+            algolia:queryHint="Find your next republic"
+            algolia:defaultQueryHint="Find new communities to join"
+            algolia:autofocus="false"
+            algolia:submitButtonEnabled="false"
+            algolia:theme="@style/AlgoliaSearchView"
+            algolia:searchHintIcon="@drawable/search"
+            algolia:searchIcon="@drawable/search"
+            android:elevation="1dp"
+            android:layout_marginTop="24dp"
+            algolia:layout_constraintTop_toTopOf="parent"
+            algolia:layout_constraintEnd_toEndOf="parent"
+            algolia:layout_constraintStart_toStartOf="parent"
+    />
+
+    <com.algolia.instantsearch.ui.views.Hits
+            android:id="@+id/explore_communities_recycler"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            algolia:layout_constraintStart_toStartOf="parent"
+            algolia:layout_constraintEnd_toEndOf="parent"
+            algolia:layout_constraintTop_toBottomOf="@+id/explore_communities_input"
+            android:layout_marginTop="24dp"
+            algolia:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="24dp"
+            algolia:itemLayout="@layout/community_option_layout"
+            algolia:infiniteScroll="true"
+            algolia:autoHideKeyboard="false"
+    />
+
+
+    <!--<androidx.constraintlayout.widget.ConstraintLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:background="#80424242"-->
+    <!--android:clickable="true"-->
+    <!--android:focusable="true">-->
+
+    <!--<androidx.cardview.widget.CardView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="60dp"-->
+    <!--algolia:layout_constraintTop_toTopOf="parent"-->
+    <!--algolia:layout_constraintBottom_toBottomOf="parent"-->
+    <!--algolia:layout_constraintStart_toStartOf="parent"-->
+    <!--android:layout_marginStart="32dp"-->
+    <!--algolia:layout_constraintEnd_toEndOf="parent"-->
+    <!--android:layout_marginEnd="32dp"-->
+    <!--algolia:cardCornerRadius="16dp"/>-->
+    <!--</androidx.constraintlayout.widget.ConstraintLayout>-->
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "915003762499",
+    "firebase_url": "https://republic-era.firebaseio.com",
+    "project_id": "republic-era",
+    "storage_bucket": "republic-era.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:915003762499:android:aa10bcff65c357b8",
+        "android_client_info": {
+          "package_name": "com.republicera"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "915003762499-5dgk38rv3rr1f1t3a8bbr5cuc4son69a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.republicera",
+            "certificate_hash": "eb1ce07c3153c9370d20fb97f92b1d7b6527c08c"
+          }
+        },
+        {
+          "client_id": "915003762499-6mkii08hqaor2e7ej1a118r3k45lsu7v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5eSTK9gtdnr4q8f3GiOeMVCP-nrZowHQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "915003762499-6mkii08hqaor2e7ej1a118r3k45lsu7v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

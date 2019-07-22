@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/contact_channel_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".fragments.EditContactDetailsFragment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:padding="16dp"
+        android:background="@color/white">
+
+    <TextView
+            tools:text="contact_channel_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/contact_channel_title"
+            android:fontFamily="@font/roboto_bold"
+            app:layout_constraintStart_toStartOf="parent"
+            android:textColor="@color/gray900"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="8dp"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/contact_channel_title"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/gray_form_field"
+            android:padding="8dp"
+            android:id="@+id/constraintLayout">
+
+
+        <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:id="@+id/contact_channel_input_email"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:background="@android:color/transparent"
+                app:layout_constraintStart_toEndOf="@+id/contact_channel_prefix"
+                android:fontFamily="@font/roboto_medium"
+                android:textColor="@color/gray900"
+                android:textSize="15sp"
+                android:visibility="visible"
+                app:layout_constraintTop_toTopOf="parent"
+        />
+
+        <EditText
+                android:id="@+id/contact_channel_input_web_address"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:background="@android:color/transparent"
+                app:layout_constraintStart_toEndOf="@+id/contact_channel_prefix"
+                android:fontFamily="@font/roboto_medium"
+                android:textColor="@color/gray900"
+                android:textSize="15sp"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+        />
+
+        <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:id="@+id/contact_channel_input_numbers"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:background="@android:color/transparent"
+                app:layout_constraintStart_toEndOf="@+id/contact_channel_prefix"
+                android:fontFamily="@font/roboto_medium"
+                android:textColor="@color/gray900"
+                android:textSize="15sp"
+                android:visibility="gone"
+                android:digits="1234567890"
+                app:layout_constraintTop_toTopOf="parent"
+        />
+
+
+        <TextView
+                tools:text="prefix"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/contact_channel_prefix"
+                app:layout_constraintTop_toTopOf="parent"
+                android:textColor="@color/gray500"
+                android:fontFamily="@font/roboto_medium"
+                app:layout_constraintStart_toStartOf="parent"
+                android:textSize="15sp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageButton
+            android:src="@drawable/x_gray"
+            android:layout_width="24dp"
+            android:layout_height="0dp"
+            android:id="@+id/contact_channel_remove"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+            app:layout_constraintVertical_bias="0.0"
+            android:layout_marginEnd="8dp"
+            android:padding="8dp"
+            app:layout_constraintDimensionRatio="h,1:1"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
