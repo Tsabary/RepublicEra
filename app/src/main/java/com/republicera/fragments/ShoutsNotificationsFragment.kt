@@ -120,9 +120,9 @@ class ShoutsNotificationsFragment : Fragment() {
 
         notificationsRecyclerAdapter.setOnItemClickListener { item, _ ->
 
-            val notification = item as Notification
+            val notification = item as SingleNotification
 
-            db.collection("shouts").document(notification.main_post_ID).get().addOnSuccessListener {
+            db.collection("shouts").document(notification.notification.main_post_ID).get().addOnSuccessListener {
 
                 val shout = it.toObject(Shout::class.java)
 
@@ -136,7 +136,7 @@ class ShoutsNotificationsFragment : Fragment() {
                             if (user != null) {
                                 sharedViewModelRandomUser.randomUserObject.postValue(user)
                                 db.collection("notifications").document(currentUser.uid).collection("shouts")
-                                    .document(notification.id).set(mapOf("seen" to 1), SetOptions.merge())
+                                    .document(notification.notification.id).set(mapOf("seen" to 1), SetOptions.merge())
                                     .addOnSuccessListener {
                                         activity.shoutsNotificationsFragment.listenToNotifications(
                                             currentUser

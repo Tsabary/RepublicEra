@@ -17,11 +17,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/contact_channel_title"
-            android:fontFamily="@font/roboto_bold"
+            android:fontFamily="@font/roboto_medium"
             app:layout_constraintStart_toStartOf="parent"
-            android:textColor="@color/gray900"
+            android:textColor="@color/gray800"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginStart="8dp"/>
+            android:layout_marginStart="8dp"
+            android:textSize="14sp"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
@@ -30,9 +31,12 @@
             android:layout_marginTop="16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:background="@drawable/gray_form_field"
-            android:padding="8dp"
-            android:id="@+id/constraintLayout">
+            android:background="@drawable/button_curve_8_gray"
+            android:id="@+id/constraintLayout"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
 
 
         <EditText
@@ -43,7 +47,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:background="@android:color/transparent"
                 app:layout_constraintStart_toEndOf="@+id/contact_channel_prefix"
-                android:fontFamily="@font/roboto_medium"
+                android:fontFamily="@font/roboto"
                 android:textColor="@color/gray900"
                 android:textSize="15sp"
                 android:visibility="visible"
@@ -89,7 +93,7 @@
                 android:id="@+id/contact_channel_prefix"
                 app:layout_constraintTop_toTopOf="parent"
                 android:textColor="@color/gray500"
-                android:fontFamily="@font/roboto_medium"
+                android:fontFamily="@font/roboto"
                 app:layout_constraintStart_toStartOf="parent"
                 android:textSize="15sp"/>
 

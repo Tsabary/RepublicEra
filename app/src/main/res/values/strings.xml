@@ -94,7 +94,9 @@
     <string name="edit_profile">Edit profile</string>
     <string name="email_address">Email address</string>
     <string name="phone_number">Phone number</string>
-    <string name="start_with_quot_how_quot_quot_what_quot_quot_where_quot_or_quot_when_quot">Start with \"How\",\"What\", \"Where\" or \"When\" </string>
+    <string name="start_with_quot_how_quot_quot_what_quot_quot_where_quot_or_quot_when_quot">Start with
+        \"How\",\"What\", \"Where\" or \"When\"
+    </string>
     <string name="https">https://</string>
     <string name="business_website">Business website</string>
     <string name="linkedin_handle">LinkedIn handle</string>
@@ -138,5 +140,9 @@
     <string name="forgot_your_password">Forgot your password?</string>
     <string name="last_name">Last name</string>
     <string name="first_name">First name</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="edit_basic_information">Edit basic information</string>
 
 </resources>

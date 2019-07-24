@@ -13,7 +13,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/contact_channel_option_text"
             android:textColor="@color/gray500"
-            android:background="@drawable/button_with_gray_stroke"
+            android:background="@drawable/button_curve_32_gray_stroke"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:paddingStart="16dp"

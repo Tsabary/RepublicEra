@@ -26,7 +26,7 @@
                 algolia:layout_constraintTop_toTopOf="parent"
                 algolia:layout_constraintEnd_toEndOf="parent"
                 algolia:layout_constraintStart_toStartOf="parent"
-                android:background="@drawable/gray_form_field_gradient"
+                android:background="@drawable/button_curve_8_gray_blue"
                 android:textColor="@color/gray700"
                 android:textSize="15sp"
                 android:fontFamily="@font/roboto"

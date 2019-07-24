@@ -136,7 +136,6 @@ class QuorumFragment : Fragment(), BoardMethods {
 
         layoutIcon = board_layout_icon
         val spinner = board_language_spinner
-
         freshMessage = board_fresh_message
 
         sharedPref = activity.getSharedPreferences(activity.getString(R.string.package_name), Context.MODE_PRIVATE)

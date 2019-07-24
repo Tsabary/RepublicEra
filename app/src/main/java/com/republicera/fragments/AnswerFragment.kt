@@ -54,6 +54,11 @@ class AnswerFragment : Fragment(), BoardMethods {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val questionTitle = answer_question_title
+        val addImage = answer_add_photos_button
+        val answerButton = answer_btn
+        answerButton.text = getString(R.string.answer)
+
         val activity = activity as MainActivity
 
         activity.let {
@@ -74,6 +79,7 @@ class AnswerFragment : Fragment(), BoardMethods {
                 this, Observer { observedQuestion ->
                     observedQuestion?.let { questionObject ->
                         question = questionObject
+                        questionTitle.text = question.title
                         sharedViewModelAnswerImages.imageList.postValue(mutableListOf())
                         answerContent.text.clear()
                     }
@@ -81,9 +87,7 @@ class AnswerFragment : Fragment(), BoardMethods {
         }
 
 
-        val addImage = answer_add_photos_button
-        val answerButton = answer_btn
-        answerButton.text = getString(R.string.answer)
+
 
         val imagesRecycler = answer_photos_recycler
         imagesRecycler.adapter = imagesRecyclerAdapter

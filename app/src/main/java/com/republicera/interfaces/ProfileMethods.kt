@@ -14,7 +14,7 @@ import com.xwray.groupie.ViewHolder
 interface ProfileMethods : GeneralMethods {
 
     fun notFollowedButton(followButton: TextView, activity: Activity) {
-        followButton.setBackgroundResource(R.drawable.follow_button)
+        followButton.setBackgroundResource(R.drawable.button_curve_32_500)
         followButton.setTextColor(ContextCompat.getColor(activity, R.color.white))
         followButton.text = activity.getString(R.string.follow)
     }

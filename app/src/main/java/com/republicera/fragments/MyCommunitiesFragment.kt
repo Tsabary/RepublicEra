@@ -2,7 +2,6 @@ package com.republicera.fragments
 
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,13 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.algolia.search.saas.Client
-import com.github.nisrulz.sensey.Sensey
 import com.google.firebase.firestore.FirebaseFirestore
 import com.republicera.MainActivity
 import com.republicera.R
@@ -30,7 +26,6 @@ import com.republicera.viewModels.CurrentCommunityViewModel
 import com.republicera.viewModels.CurrentUserViewModel
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.fragment_choose_community.*
 import kotlinx.android.synthetic.main.fragment_my_communities.*
 import org.json.JSONObject
 
@@ -166,7 +161,7 @@ class MyCommunitiesFragment : Fragment(), GeneralMethods {
 
                         communityViewModel.currentCommunity.postValue(newCommunity)
                         communitiesRecyclerAdapter.add(SingleCommunityOption(newCommunity))
-                        activity.chooseCommunityFrame.visibility = View.GONE
+                        activity.userHomeFrame.visibility = View.GONE
                     }
                 } else {
                     Toast.makeText(this.context, "Community name is too short", Toast.LENGTH_SHORT).show()
@@ -193,9 +188,9 @@ class MyCommunitiesFragment : Fragment(), GeneralMethods {
                 editor.putString("last_community", community.community.id)
                 editor.apply()
 
-                activity.chooseCommunityFrame.visibility = View.GONE
+                activity.userHomeFrame.visibility = View.GONE
             } else {
-                activity.chooseCommunityFrame.visibility = View.GONE
+                activity.userHomeFrame.visibility = View.GONE
             }
         }
     }

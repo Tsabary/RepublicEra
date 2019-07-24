@@ -6,14 +6,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".fragments.ExploreCommunitiesFragment"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:clickable="true">
 
 
     <com.algolia.instantsearch.ui.views.SearchBox
             android:id="@+id/explore_communities_input"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/gray_form_field_gradient"
+            android:background="@drawable/button_curve_8_gray_blue"
             android:textColor="@color/gray700"
             android:textSize="15sp"
             android:fontFamily="@font/roboto"

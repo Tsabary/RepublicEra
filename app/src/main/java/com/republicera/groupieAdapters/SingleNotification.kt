@@ -6,13 +6,11 @@ import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import com.republicera.MainActivity
 import com.republicera.R
 import com.republicera.models.Community
 import com.republicera.models.CommunityProfile
 import com.republicera.models.Notification
-import com.republicera.models.Question
 import com.republicera.viewModels.CurrentCommunityViewModel
 import com.republicera.viewModels.QuestionViewModel
 import com.republicera.viewModels.RandomUserViewModel
@@ -153,7 +151,7 @@ class SingleNotification(
 
 
         if (notification.seen == 0) {
-            notificationBox.setBackgroundColor(ContextCompat.getColor(viewHolder.root.context, R.color.green50))
+            notificationBox.setBackgroundColor(ContextCompat.getColor(viewHolder.root.context, R.color.mainColor50))
         } else {
             notificationBox.setBackgroundColor(ContextCompat.getColor(viewHolder.root.context, R.color.white))
         }

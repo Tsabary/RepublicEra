@@ -57,21 +57,21 @@ class RegisterFragment : androidx.fragment.app.Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         firebaseAuth = FirebaseAuth.getInstance()
-        val googleLogin = register_fragment_google_login
+//        val googleLogin = register_fragment_google_login
+//
+//        register_fragment_forgot_password.visibility = View.GONE
+//        register_fragment_button.text = getString(R.string.sign_up)
+//
+//        userFirstName = register_fragment_first_name
+//        userLastName = register_fragment_last_name
+//        userEmail = register_fragment_email
+//        userPassword = register_fragment_password
+//        button = register_fragment_button
+//        loadingAnimation = register_fragment_spinner
 
-        register_fragment_forgot_password.visibility = View.GONE
-        register_fragment_button.text = getString(R.string.sign_up)
-
-        userFirstName = register_fragment_first_name
-        userLastName = register_fragment_last_name
-        userEmail = register_fragment_email
-        userPassword = register_fragment_password
-        button = register_fragment_button
-        loadingAnimation = register_fragment_spinner
-
-        googleLogin.setOnClickListener {
-            configureGoogleSignIn()
-        }
+//        googleLogin.setOnClickListener {
+//            configureGoogleSignIn()
+//        }
 
         button.setOnClickListener {
             performRegister()
@@ -177,40 +177,45 @@ class RegisterFragment : androidx.fragment.app.Fragment() {
         case: Int,
         uid: String
     ) {
-        val db = FirebaseFirestore.getInstance()
-        val timestamp = System.currentTimeMillis()
 
-        val newUser =
-            User(
-                uid,
-                userFirstNameForDatabase,
-                userLastNameForDatabase,
-                mutableListOf(),
-                listOf("en"),
-                0,
-                timestamp,
-                timestamp
-            )
 
-        db.collection("users").document(uid).set(newUser).addOnSuccessListener {
-
-            if (case == 0) {
-                val user = FirebaseAuth.getInstance().currentUser
-                user?.sendEmailVerification()?.addOnSuccessListener {
-                    Toast.makeText(
-                        this.context,
-                        "Please check your email and click the link in our message",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            } else {
-                val intent = Intent(this.context, MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
+        if (case == 0) {
+            val user = FirebaseAuth.getInstance().currentUser
+            user?.sendEmailVerification()?.addOnSuccessListener {
+                Toast.makeText(
+                    this.context,
+                    "Please check your email and click the link in our message",
+                    Toast.LENGTH_LONG
+                ).show()
             }
-
-
+        } else {
+            val intent = Intent(this.context, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
         }
+
+
+//        val db = FirebaseFirestore.getInstance()
+//        val timestamp = System.currentTimeMillis()
+//
+//        val newUser =
+//            User(
+//                uid,
+//                userFirstNameForDatabase,
+//                userLastNameForDatabase,
+//                mutableListOf(),
+//                listOf("en"),
+//                0,
+//                timestamp,
+//                timestamp
+//            )
+//
+//        db.collection("users").document(uid).set(newUser).addOnSuccessListener {
+//
+//
+//
+//
+//        }
     }
 
     override fun onStart() {

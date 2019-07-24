@@ -6,8 +6,8 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 class User(
     val uid: String,
-    val firstName: String,
-    val lastName: String,
+    val first_name: String,
+    val last_name: String,
     val communities_list: MutableList<String>,
     val lang_list: List<String>,
     val reputation: Long,

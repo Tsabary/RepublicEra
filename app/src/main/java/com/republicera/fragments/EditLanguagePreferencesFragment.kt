@@ -73,8 +73,8 @@ class EditLanguagePreferencesFragment : Fragment(), ProfileMethods {
             db.set(mapOf("lang_list" to chosenLanguages), SetOptions.merge()).addOnSuccessListener {
                     val newUser = User(
                         currentTopLevelUser.uid,
-                        currentTopLevelUser.firstName,
-                        currentTopLevelUser.lastName,
+                        currentTopLevelUser.first_name,
+                        currentTopLevelUser.last_name,
                         currentTopLevelUser.communities_list,
                         chosenLanguages,
                         currentTopLevelUser.reputation,
@@ -83,11 +83,10 @@ class EditLanguagePreferencesFragment : Fragment(), ProfileMethods {
                     )
 
                     currentTopLevelUserViewModel.currentUserObject.postValue(newUser)
-                    activity.subFm.popBackStack(
+                    activity.userFm.popBackStack(
                         "editLanguagePreferencesFragment",
                         FragmentManager.POP_BACK_STACK_INCLUSIVE
                     )
-                    activity.switchVisibility(0)
                 }
         }
 

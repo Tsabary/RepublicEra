@@ -79,7 +79,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginTop="32dp"
                     app:layout_constraintTop_toBottomOf="@+id/profile_ru_staks_recycler"
-                    android:background="@drawable/follow_button"
+                    android:background="@drawable/button_curve_32_500"
                     android:paddingStart="24dp"
                     android:paddingEnd="24dp"
                     android:textColor="@color/white"

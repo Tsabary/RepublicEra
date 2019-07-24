@@ -10,14 +10,14 @@
             android:id="@+id/destination_board"
             android:icon="@drawable/home_line"
             android:title="@string/board"
-            app:cnb_iconColor="@color/green600"/>
+            app:cnb_iconColor="@color/mainColor600"/>
 
     <item
             app:showAsAction="ifRoom"
             android:id="@+id/destination_shouts"
             android:icon="@drawable/shout_line"
             android:title="@string/shouts"
-            app:cnb_iconColor="@color/green600"/>
+            app:cnb_iconColor="@color/mainColor600"/>
 
 
     <item
@@ -25,7 +25,7 @@
             android:id="@+id/destination_quorum"
             android:icon="@drawable/quorum"
             android:title="quorum"
-            app:cnb_iconColor="@color/green600"/>
+            app:cnb_iconColor="@color/mainColor600"/>
 
 
     <item
@@ -33,6 +33,6 @@
             android:id="@+id/destination_profile_logged_in_user"
             android:icon="@drawable/profile_line"
             android:title="@string/profile"
-            app:cnb_iconColor="@color/green600"/>
+            app:cnb_iconColor="@color/mainColor600"/>
 
 </menu>

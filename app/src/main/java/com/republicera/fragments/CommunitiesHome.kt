@@ -2,19 +2,26 @@ package com.republicera.fragments
 
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.republicera.MainActivity
 
 import com.republicera.R
+import com.republicera.RegisterLoginActivity
 import com.republicera.groupieAdapters.SingleCommunityOption
 import com.republicera.models.Community
 import com.republicera.models.User
@@ -51,23 +58,47 @@ class CommunitiesHome : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        emptyMessage = communities_home_empty_message
+        yourRepublics = communities_home_your_communities
+
         val activity = activity as MainActivity
 
         val userName = communities_home_name
 
+        val communitiesRecycler = communities_home_recycler
+        communitiesRecycler.adapter = communitiesRecyclerAdapter
+        communitiesRecycler.layoutManager = LinearLayoutManager(this.context)
+
+
+        val exploreButton = communities_home_search
+        val addButton = communities_home_add
+        val settingsButton = communities_home_settings
+        val popup = PopupMenu(this.context, settingsButton)
+        popup.inflate(R.menu.user_options)
+
         activity.let {
             ViewModelProviders.of(activity).get(CurrentUserViewModel::class.java).currentUserObject.observe(
-                activity, Observer {
-                    topLevelUser = it
+                activity, Observer { user ->
+                    topLevelUser = user
                     if (topLevelUser != null) {
-                        userName.text = it.firstName + "."
+                        userName.text = if (user.first_name.isNotEmpty()) {
+                            user.first_name + "."
+                        } else {
+                            "Friend."
+                        }
                         populateCommunities()
+
+
+                        settingsButton.setOnClickListener {
+                            popup.show()
+                        }
                     } else {
                         userName.text = "Friend."
                     }
                 })
 
-            communityViewModel =ViewModelProviders.of(it).get(CurrentCommunityViewModel::class.java)
+            communityViewModel = ViewModelProviders.of(it).get(CurrentCommunityViewModel::class.java)
             communityViewModel.currentCommunity.observe(
                 activity,
                 Observer { communityName ->
@@ -77,19 +108,89 @@ class CommunitiesHome : Fragment() {
 
 
 
-        val communitiesRecycler = communities_home_recycler
-        communitiesRecycler.adapter = communitiesRecyclerAdapter
-        communitiesRecycler.layoutManager = LinearLayoutManager(this.context)
 
-        emptyMessage = communities_home_empty_message
-        yourRepublics = communities_home_your_communities
 
-        val exploreButton = communities_home_search
-        val addButton = communities_home_add
-        val settingsButton = communities_home_settings
+
+
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+
+                R.id.user_edit_contact_details -> {
+                    activity.userFm.beginTransaction().add(
+                        R.id.user_home_frame_container,
+                        activity.editContactDetailsFragment,
+                        "editContactDetailsFragment"
+                    ).addToBackStack("editContactDetailsFragment")
+                        .commit()
+                    activity.userActive = activity.editContactDetailsFragment
+                    true
+                }
+
+                R.id.user_edit_language_preferences -> {
+                    activity.userFm.beginTransaction().add(
+                        R.id.user_home_frame_container,
+                        activity.editLanguagePreferencesFragment,
+                        "editLanguagePreferencesFragment"
+                    ).addToBackStack("editLanguagePreferencesFragment")
+                        .commit()
+                    activity.userActive = activity.editLanguagePreferencesFragment
+                    true
+                }
+
+                R.id.user_edit_basic_info -> {
+                    activity.userFm.beginTransaction().add(
+                        R.id.user_home_frame_container,
+                        activity.editBasicInfoFragment,
+                        "editBasicInfoFragment"
+                    ).addToBackStack("editBasicInfoFragment")
+                        .commit()
+                    activity.userActive = activity.editBasicInfoFragment
+                    true
+                }
+
+                R.id.user_logout -> {
+
+                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken(getString(R.string.default_web_client_id))
+                        .requestEmail()
+                        .build();
+
+                    val uid = FirebaseAuth.getInstance().uid
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic(uid).addOnSuccessListener {
+                        FirebaseAuth.getInstance().signOut()
+                        GoogleSignIn.getClient(activity, gso).signOut().addOnSuccessListener {
+
+                            val sharedPref =
+                                activity.getSharedPreferences(
+                                    activity.getString(R.string.package_name),
+                                    Context.MODE_PRIVATE
+                                )
+
+
+                            val editor = sharedPref.edit()
+                            editor.putString("last_community", "default")
+                            editor.putString("last_language", "en")
+                            editor.putInt("last_layout", 0)
+                            editor.putString("last_feed", "board")
+                            editor.apply()
+
+                            val intent = Intent(this.context, RegisterLoginActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            startActivity(intent)
+                        }
+                    }
+                    true
+                }
+
+                else -> {
+                    true
+                }
+            }
+        }
+
 
         if (topLevelUser != null) {
-            userName.text = topLevelUser!!.firstName + "."
+            userName.text = topLevelUser!!.first_name + "."
         } else {
             userName.text = "Friend."
             emptyMessage.visibility = View.VISIBLE
@@ -98,14 +199,16 @@ class CommunitiesHome : Fragment() {
 
         addButton.setOnClickListener {
             if (topLevelUser != null) {
-                activity.CommunitiesFm.beginTransaction()
+                activity.userFm.beginTransaction()
                     .add(
-                        R.id.feed_choose_community_frame_container,
+                        R.id.user_home_frame_container,
                         activity.newCommunityFragment,
                         "newCommunityFragment"
                     )
                     .addToBackStack("newCommunityFragment")
                     .commit()
+
+                activity.userActive = activity.newCommunityFragment
             } else {
                 activity.takeToRegister()
             }
@@ -113,14 +216,17 @@ class CommunitiesHome : Fragment() {
         }
 
         exploreButton.setOnClickListener {
-            activity.CommunitiesFm.beginTransaction()
+            activity.userFm.beginTransaction()
                 .add(
-                    R.id.feed_choose_community_frame_container,
+                    R.id.user_home_frame_container,
                     activity.exploreCommunitiesFragment,
                     "exploreCommunitiesFragment"
                 )
                 .addToBackStack("exploreCommunitiesFragment")
                 .commit()
+
+            activity.userActive = activity.exploreCommunitiesFragment
+
         }
 
 
@@ -139,9 +245,9 @@ class CommunitiesHome : Fragment() {
                 editor.putString("last_community", community.community.id)
                 editor.apply()
 
-                activity.chooseCommunityFrame.visibility = View.GONE
+                activity.userHomeFrame.visibility = View.GONE
             } else {
-                activity.chooseCommunityFrame.visibility = View.GONE
+                activity.userHomeFrame.visibility = View.GONE
             }
         }
 

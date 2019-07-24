@@ -9,15 +9,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.algolia.instantsearch.core.helpers.Searcher
 import com.algolia.instantsearch.ui.helpers.InstantSearch
-import com.github.nisrulz.sensey.Sensey
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.republicera.MainActivity
 import com.republicera.R
@@ -26,7 +22,6 @@ import com.republicera.models.User
 import com.republicera.viewModels.CurrentCommunityViewModel
 import com.republicera.viewModels.CurrentUserViewModel
 import kotlinx.android.synthetic.main.fragment_explore_communities.*
-import kotlinx.android.synthetic.main.fragment_search.*
 
 
 class ExploreCommunitiesFragment : Fragment() {
@@ -101,7 +96,7 @@ class ExploreCommunitiesFragment : Fragment() {
                                     editor.putString("last_community", communityObject.id)
                                     editor.apply()
 
-                                    activity.chooseCommunityFrame.visibility = View.GONE
+                                    activity.userHomeFrame.visibility = View.GONE
                                     Log.d("checkk", "01101111010")
 
                                 } else {

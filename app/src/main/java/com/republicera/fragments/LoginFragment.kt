@@ -59,39 +59,39 @@ class LoginFragment : Fragment(), GeneralMethods {
 
         val activity = activity as RegisterLoginActivity
 
-        firebaseAuth = FirebaseAuth.getInstance()
-        val googleLogin = register_fragment_google_login
-
-        register_fragment_last_name.visibility = View.GONE
-        register_fragment_button.text = getString(R.string.login)
-
-        val forgotPassword = register_fragment_forgot_password
-
-        userEmail = register_fragment_email
-        userPassword = register_fragment_password
-        button = register_fragment_button
-
-        loadingAnimation = register_fragment_spinner
+//        firebaseAuth = FirebaseAuth.getInstance()
+//        val googleLogin = register_fragment_google_login
+//
+//        register_fragment_last_name.visibility = View.GONE
+//        register_fragment_button.text = getString(R.string.login)
+//
+//        val forgotPassword = register_fragment_forgot_password
+//
+//        userEmail = register_fragment_email
+//        userPassword = register_fragment_password
+//        button = register_fragment_button
+//
+//        loadingAnimation = register_fragment_spinner
 
         button.setOnClickListener {
             performLogin()
         }
-
-        googleLogin.setOnClickListener {
-            configureGoogleSignIn()
-        }
-
-        forgotPassword.setOnClickListener {
-            val userEmailInput = userEmail.text.toString().trimEnd().replace("\\s".toRegex(), "")
-            if (userEmailInput.contains("@") && userEmailInput.contains(".")) {
-                FirebaseAuth.getInstance().sendPasswordResetEmail(userEmailInput)
-                    .addOnSuccessListener {
-                        Toast.makeText(this.context, "A reset link has been sent to your email", Toast.LENGTH_SHORT).show()
-                    }
-            } else {
-                Toast.makeText(this.context, "Please enter your email", Toast.LENGTH_SHORT).show()
-            }
-        }
+//
+//        googleLogin.setOnClickListener {
+//            configureGoogleSignIn()
+//        }
+//
+//        forgotPassword.setOnClickListener {
+//            val userEmailInput = userEmail.text.toString().trimEnd().replace("\\s".toRegex(), "")
+//            if (userEmailInput.contains("@") && userEmailInput.contains(".")) {
+//                FirebaseAuth.getInstance().sendPasswordResetEmail(userEmailInput)
+//                    .addOnSuccessListener {
+//                        Toast.makeText(this.context, "A reset link has been sent to your email", Toast.LENGTH_SHORT).show()
+//                    }
+//            } else {
+//                Toast.makeText(this.context, "Please enter your email", Toast.LENGTH_SHORT).show()
+//            }
+//        }
 
     }
 

@@ -9,16 +9,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.algolia.search.saas.Client
-import com.github.nisrulz.sensey.ChopDetector
 import com.github.nisrulz.sensey.Sensey
-import com.github.nisrulz.sensey.ShakeDetector
-import com.github.nisrulz.sensey.WristTwistDetector
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseApp
@@ -34,7 +30,7 @@ import com.republicera.models.*
 import com.republicera.viewModels.*
 import io.branch.indexing.BranchUniversalObject
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.choose_forum_main.*
+import kotlinx.android.synthetic.main.user_home_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.subcontents_main.*
 import org.json.JSONArray
@@ -46,6 +42,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
     lateinit var db: DocumentReference
     lateinit var firebaseAnalytics: FirebaseAnalytics
     var uid: String? = null
+    var topLevelUser: User? = null
 
     lateinit var sharedPref: SharedPreferences
 
@@ -58,14 +55,15 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
     lateinit var mainFrame: FrameLayout
     lateinit var subFrame: FrameLayout
-    lateinit var chooseCommunityFrame: FrameLayout
+    lateinit var userHomeFrame: FrameLayout
 
     val fm = supportFragmentManager
     val subFm = supportFragmentManager
-    val CommunitiesFm = supportFragmentManager
+    val userFm = supportFragmentManager
 
     var active: Fragment? = null
     var subActive: Fragment? = null
+    var userActive: Fragment? = null
 
     lateinit var currentTopLevelUserViewModel: CurrentUserViewModel
     private lateinit var currentProfile: CommunityProfile
@@ -97,17 +95,21 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
     lateinit var editQuestionFragment: EditQuestionFragment
     lateinit var editAnswerFragment: EditAnswerFragment
     lateinit var editInterestsFragment: EditInterestsFragment
-    lateinit var editContactDetailsFragment: EditContactDetailsFragment
     lateinit var shoutExpendedFragment: ShoutExpendedFragment
     lateinit var searchFragment: SearchFragment
-    lateinit var editLanguagePreferencesFragment: EditLanguagePreferencesFragment
     lateinit var adminsNewQuestionFragment: AdminsNewQuestionFragment
     lateinit var adminsSearchFragment: AdminsSearchFragment
     lateinit var savedShoutsFragment: SavedShoutsFragment
     lateinit var shoutsNotificationsFragment: ShoutsNotificationsFragment
+
     lateinit var communitiesHomeFragment: CommunitiesHome
     lateinit var exploreCommunitiesFragment: ExploreCommunitiesFragment
     lateinit var newCommunityFragment: NewCommunityFragment
+    lateinit var editLanguagePreferencesFragment: EditLanguagePreferencesFragment
+    lateinit var editContactDetailsFragment: EditContactDetailsFragment
+    lateinit var editBasicInfoFragment: EditBasicInfoFragment
+
+
 
 
     var boardNotificationsCount = MutableLiveData<Int>()
@@ -131,12 +133,16 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
         subFrame = feed_subcontents_frame_container
         mainFrame = feed_frame_container
-        chooseCommunityFrame = feed_choose_community_frame_container
+        userHomeFrame = user_home_frame_container
+
         bottomNavigation = main_activity_bottom_nav
 
         communitiesHomeFragment = CommunitiesHome()
         exploreCommunitiesFragment = ExploreCommunitiesFragment()
         newCommunityFragment = NewCommunityFragment()
+        editLanguagePreferencesFragment = EditLanguagePreferencesFragment()
+        editContactDetailsFragment = EditContactDetailsFragment()
+        editBasicInfoFragment = EditBasicInfoFragment()
 
 
         val sharedPref = getSharedPreferences(getString(R.string.package_name), Context.MODE_PRIVATE)
@@ -150,71 +156,23 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         randomUserViewModel = ViewModelProviders.of(this).get(RandomUserViewModel::class.java)
         interestsViewModel = ViewModelProviders.of(this).get(InterestsViewModel::class.java)
         followedAccountsViewModel = ViewModelProviders.of(this).get(FollowedAccountsViewModel::class.java)
-        followersViewModel= ViewModelProviders.of(this).get(FollowersViewModel::class.java)
+        followersViewModel = ViewModelProviders.of(this).get(FollowersViewModel::class.java)
         currentCommunityViewModel = ViewModelProviders.of(this).get(CurrentCommunityViewModel::class.java)
 
         currentCommunityViewModel.currentCommunity.observe(this, Observer { community ->
             currentCommunity = community
-            CommunitiesFm.popBackStack("chooseCommunityFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            userFm.popBackStack("chooseCommunityFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
             changeCommunity()
         })
 
         FirebaseApp.initializeApp(this)
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
-        Sensey.getInstance().init(this)
-
-        val wristTwistListener = WristTwistDetector.WristTwistListener {
-
-            if (chooseCommunityFrame.visibility != View.VISIBLE) {
-                if (subActive == searchFragment) {
-                    subFm.popBackStack("searchFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
-                }
-
-                CommunitiesFm.beginTransaction()
-                    .add(
-                        R.id.feed_choose_community_frame_container,
-                        communitiesHomeFragment,
-                        "chooseCommunityFragment"
-                    ).addToBackStack("chooseCommunityFragment")
-                    .commit()
-                chooseCommunityFrame.visibility = View.VISIBLE
-
-            }
-        }
-
-        Sensey.getInstance().startWristTwistDetection(1f, 1, wristTwistListener)
-
-
-//        shakeListener = object : ShakeDetector.ShakeListener {
-//            override fun onShakeDetected() {
-//            }
-//
-//            override fun onShakeStopped() {
-//                if (chooseCommunityFrame.visibility != View.VISIBLE) {
-//                    if (subActive == searchFragment) {
-//                        subFm.popBackStack("searchFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
-//                    }
-//
-//                    CommunitiesFm.beginTransaction()
-//                        .add(
-//                            R.id.feed_choose_community_frame_container,
-//                            chooseCommunityFragment,
-//                            "chooseCommunityFragment"
-//                        ).addToBackStack("chooseCommunityFragment")
-//                        .commit()
-//                    chooseCommunityFrame.visibility = View.VISIBLE
-//
-//                }
-//
-//
-//            }
-//        }
     }
 
     override fun onPause() {
         super.onPause()
-        CommunitiesFm.popBackStack("communitiesHomeFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        userFm.popBackStack("communitiesHomeFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
     override fun onResume() {
@@ -222,11 +180,12 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         if (uid == null) {
 
             if (!checkIfLoggedIn()) {
-                CommunitiesFm.beginTransaction()
-                    .add(R.id.feed_choose_community_frame_container, communitiesHomeFragment, "communitiesHomeFragment")
+                userFm.beginTransaction()
+                    .add(R.id.user_home_frame_container, communitiesHomeFragment, "communitiesHomeFragment")
                     .addToBackStack("communitiesHomeFragment")
                     .commit()
-                chooseCommunityFrame.visibility = View.VISIBLE
+                userActive = communitiesHomeFragment
+                userHomeFrame.visibility = View.VISIBLE
             } else {
                 if (lastCommunity != "default") {
                     topLevelDB.collection("communities").document(lastCommunity).get().addOnSuccessListener {
@@ -236,15 +195,16 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                         }
                     }
                 } else {
-                    CommunitiesFm.beginTransaction()
+                    userFm.beginTransaction()
                         .add(
-                            R.id.feed_choose_community_frame_container,
+                            R.id.user_home_frame_container,
                             communitiesHomeFragment,
                             "chooseCommunityFragment"
                         )
                         .addToBackStack("chooseCommunityFragment")
                         .commit()
-                    chooseCommunityFrame.visibility = View.VISIBLE
+                    userActive = communitiesHomeFragment
+                    userHomeFrame.visibility = View.VISIBLE
                 }
 
             }
@@ -252,7 +212,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
     }
 
 
-    fun checkIfLoggedIn(): Boolean {
+    private fun checkIfLoggedIn(): Boolean {
 
         uid = FirebaseAuth.getInstance().uid
         return if (uid == null) {
@@ -266,9 +226,9 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
     private fun fetchCurrentUser(uid: String) {
         topLevelDB.collection("users").document(uid).get().addOnSuccessListener {
-            val user = it.toObject(User::class.java)
-            if (user != null) {
-                currentTopLevelUserViewModel.currentUserObject.postValue(user)
+            topLevelUser = it.toObject(User::class.java)
+            if (topLevelUser != null) {
+                currentTopLevelUserViewModel.currentUserObject.postValue(topLevelUser)
                 userHasBeenInitialized = true
             }
         }
@@ -282,7 +242,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
     }
 
 
-    fun changeCommunity() {
+    private fun changeCommunity() {
 
         db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity!!.id)
         main_activity_changing_community_splash_screen.visibility = View.VISIBLE
@@ -290,25 +250,38 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         fetchCurrentProfile(uid!!)
     }
 
-    fun fetchCurrentProfile(uid: String) {
+    private fun fetchCurrentProfile(uid: String) {
         db.collection("profiles").document(uid).get().addOnSuccessListener {
             val profile = it.toObject(CommunityProfile::class.java)
             if (profile != null) {
 
                 currentProfile = profile
                 currentProfileViewModel.currentCommunityProfileObject = currentProfile
+                Log.d("checkkkkkk", "profile exists")
+
                 setupBottomNav()
             } else {
-
                 topLevelDB.collection("users").document(uid).get().addOnSuccessListener { documentSnapshot ->
                     val topLevelUser = documentSnapshot.toObject(User::class.java)
                     if (topLevelUser != null) {
+                        Log.d("checkkkkkk", "trying to create profile")
+
+                        val batch = topLevelDB.batch()
 
                         val currentTime = System.currentTimeMillis()
                         val newCommunityProfile =
-                            CommunityProfile(uid, topLevelUser.firstName + " " + topLevelUser.lastName, "", listOf(), "", 0, 0, currentTime, currentTime)
+                            CommunityProfile(
+                                uid,
+                                topLevelUser.first_name + " " + topLevelUser.last_name,
+                                "",
+                                listOf(),
+                                "",
+                                0,
+                                0,
+                                currentTime,
+                                currentTime
+                            )
 
-                        val batch = topLevelDB.batch()
 
                         val profileRef = db.collection("profiles").document(uid)
                         batch.set(profileRef, newCommunityProfile)
@@ -320,7 +293,11 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                         batch.update(communityMembersRef, "members", FieldValue.increment(1))
 
                         val updateUerCommunitiesRef = topLevelDB.collection("users").document(uid)
-                        batch.update(updateUerCommunitiesRef, "communities_list", FieldValue.arrayUnion(currentCommunity!!.id))
+                        batch.update(
+                            updateUerCommunitiesRef,
+                            "communities_list",
+                            FieldValue.arrayUnion(currentCommunity!!.id)
+                        )
 
                         val savedQuestionsRef = db.collection("saved_questions").document(uid)
                         batch.set(savedQuestionsRef, mapOf("saved_questions" to listOf<String>()))
@@ -334,12 +311,52 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                         val accountsFollowingRef = db.collection("accounts_following").document(uid)
                         batch.set(accountsFollowingRef, mapOf("accounts_list" to listOf<String>()))
 
-//                        if (currentCommunity!!.admins.size < 1) {
-//                            val communityAdmins = topLevelDB.collection("communities").document(currentCommunity!!.id)
-//                            batch.update(communityAdmins, "admins", FieldValue.arrayUnion(uid))
-//                        }
+                        if (currentCommunity!!.founder == topLevelUser.uid) {
+                            Log.d("checkkkkkk", "need to create super profile")
+
+                            val communityProfileUid = "communityAdminProfile"
+                            val communityProfileImage = ""
+
+                            val communityAdminProfile =
+                                CommunityProfile(
+                                    communityProfileUid,
+                                    "Community profile",
+                                    communityProfileImage,
+                                    listOf(),
+                                    "",
+                                    0,
+                                    0,
+                                    currentTime,
+                                    currentTime
+                                )
+
+
+                            val communityAdminProfileRef = db.collection("profiles").document(communityProfileUid)
+                            batch.set(communityAdminProfileRef, communityAdminProfile)
+
+
+                            val firstQuestionRef = db.collection("questions").document()
+
+                            val firstQuestion = Question(
+                                firstQuestionRef.id,
+                                "Welcome to ${currentCommunity!!.title} community",
+                                "Hi there, and welcome to the community!\nTo begin interacting with other members of the community, head over to your profile, make it your own and edit your interests so our system would know what content to show you.\n\nOh! One last thing - how did you get here?",
+                                "en",
+                                mutableListOf("welcome-to-the-community"),
+                                currentTime,
+                                communityProfileUid,
+                                "Community profile",
+                                communityProfileImage,
+                                0,
+                                currentTime,
+                                mapOf()
+                            )
+
+                            batch.set(firstQuestionRef, firstQuestion)
+                        }
 
                         batch.commit().addOnSuccessListener {
+
                             createCounter(
                                 db.collection("reputation_counter").document(uid),
                                 20
@@ -353,6 +370,9 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                                 currentTopLevelUserViewModel.currentUserObject.postValue(topLevelUser)
                                 increaseAlgoliaMemberCount()
                             }
+                        }.addOnFailureListener {
+                            Log.d("checkkkkkk", "batch failed because $it")
+
                         }
                     }
                 }
@@ -501,10 +521,8 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         editQuestionFragment = EditQuestionFragment()
         editAnswerFragment = EditAnswerFragment()
         editInterestsFragment = EditInterestsFragment()
-        editContactDetailsFragment = EditContactDetailsFragment()
         shoutExpendedFragment = ShoutExpendedFragment()
         searchFragment = SearchFragment()
-        editLanguagePreferencesFragment = EditLanguagePreferencesFragment()
         adminsNewQuestionFragment = AdminsNewQuestionFragment()
         adminsSearchFragment = AdminsSearchFragment()
         savedShoutsFragment = SavedShoutsFragment()
@@ -533,7 +551,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         bottomNavigation.isClickable = true
         sharedPref = getSharedPreferences(getString(R.string.package_name), Context.MODE_PRIVATE)
         val lastFeed = sharedPref.getString("last_feed", "board")!!
-        if(lastFeed =="board"){
+        if (lastFeed == "board") {
             navigateToBoard()
         } else {
             navigateToShouts()
@@ -565,25 +583,69 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
     }
 
     fun switchVisibility(case: Int) {
-        if (case == 0) {
-            mainFrame.visibility = View.VISIBLE
-            subFrame.visibility = View.GONE
-        } else {
-            mainFrame.visibility = View.GONE
-            subFrame.visibility = View.VISIBLE
+        when (case) {
+            0 -> {
+                mainFrame.visibility = View.VISIBLE
+                subFrame.visibility = View.GONE
+                userHomeFrame.visibility = View.GONE
+            }
+
+            1 -> {
+                mainFrame.visibility = View.GONE
+                subFrame.visibility = View.VISIBLE
+                userHomeFrame.visibility = View.GONE
+            }
+
+            else -> {
+                mainFrame.visibility = View.GONE
+                subFrame.visibility = View.GONE
+                userHomeFrame.visibility = View.VISIBLE
+            }
         }
     }
 
 
     override fun onBackPressed() {
 
-        if (chooseCommunityFrame.visibility == View.VISIBLE) {
-            CommunitiesFm.popBackStack("chooseCommunityFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
-            chooseCommunityFrame.visibility = View.GONE
-        } else {
+        when {
+            userHomeFrame.visibility == View.VISIBLE -> {
 
-            when {
-                mainFrame.visibility == View.GONE -> when (subActive) {
+                when (userActive) {
+
+                    editLanguagePreferencesFragment -> {
+                        userFm.popBackStack("editLanguagePreferencesFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        userActive = communitiesHomeFragment
+                    }
+
+                    editContactDetailsFragment -> {
+                        userFm.popBackStack("editContactDetailsFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        userActive = communitiesHomeFragment
+                    }
+
+                    newCommunityFragment -> {
+                        userFm.popBackStack("newCommunityFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        userActive = communitiesHomeFragment
+                    }
+
+                    exploreCommunitiesFragment -> {
+                        userFm.popBackStack("exploreCommunitiesFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        userActive = communitiesHomeFragment
+                    }
+
+                    communitiesHomeFragment -> {
+
+                        if (topLevelUser != null && currentCommunity != null) {
+                            switchVisibility(0)
+                        } else {
+                            super.onBackPressed()
+                        }
+                    }
+                }
+            }
+
+            subFrame.visibility == View.VISIBLE -> {
+
+                when (subActive) {
 
                     profileRandomUserFragment -> {
                         subFm.popBackStack("profileRandomUserFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
@@ -684,7 +746,10 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                     }
                 }
 
-                else -> when (active) { // main frame is active
+            }
+
+            mainFrame.visibility == View.VISIBLE -> {
+                when (active) { // main frame is active
 
                     profileCurrentUserFragment -> {
                         navigateToBoard()
@@ -703,6 +768,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                     }
                 }
             }
+
         }
     }
 
@@ -750,7 +816,6 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         return ref.set(Counter(numShards))
             .continueWithTask { task ->
                 if (!task.isSuccessful) {
-                    Log.d("checkk", "createprofilesuuccess" +task.exception!!)
 
                     throw task.exception!!
                 }

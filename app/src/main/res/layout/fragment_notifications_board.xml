@@ -26,7 +26,7 @@
             android:layout_marginTop="16dp"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="16dp"
-            android:textColor="@color/green700"
+            android:textColor="@color/mainColor700"
             android:textSize="15sp"
             android:fontFamily="@font/roboto_medium"/>
 

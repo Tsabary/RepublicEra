@@ -12,7 +12,7 @@
             android:id="@+id/search_input"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/gray_form_field_gradient"
+            android:background="@drawable/button_curve_8_gray_blue"
             android:textColor="@color/gray700"
             android:textSize="15sp"
             android:fontFamily="@font/roboto"

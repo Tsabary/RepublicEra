@@ -10,16 +10,29 @@
     <color name="gray700">#616161</color>
     <color name="gray800">#424242</color>
     <color name="gray900">#212121</color>
-    <color name="green50">#f2fff9</color>
-    <color name="green100">#B1FEE0</color>
-    <color name="green200">#82FECE</color>
-    <color name="green300">#50FEBA</color>
-    <color name="green400">#2AFEAC</color>
-    <color name="green500">#05FE9D</color>
-    <color name="green600">#05E78F</color>
-    <color name="green700">#04CE7F</color>
-    <color name="green800">#04B46F</color>
-    <color name="green900">#038452</color>
+
+    <!--<color name="mainColor50">#f2fff9</color>-->
+    <!--<color name="mainColor100">#B1FEE0</color>-->
+    <!--<color name="mainColor200">#82FECE</color>-->
+    <!--<color name="mainColor300">#50FEBA</color>-->
+    <!--<color name="mainColor400">#2AFEAC</color>-->
+    <!--<color name="mainColor500">#05FE9D</color>-->
+    <!--<color name="mainColor600">#05E78F</color>-->
+    <!--<color name="mainColor700">#04CE7F</color>-->
+    <!--<color name="mainColor800">#04B46F</color>-->
+    <!--<color name="mainColor900">#038452</color>-->
+
+
+    <color name="mainColor50">#f3e5f5</color>
+    <color name="mainColor100">#e1bee7</color>
+    <color name="mainColor200">#ce93d8</color>
+    <color name="mainColor300">#ba68c8</color>
+    <color name="mainColor400">#ab47bc</color>
+    <color name="mainColor500">#9c27b0</color>
+    <color name="mainColor600">#8e24aa</color>
+    <color name="mainColor700">#7b1fa2</color>
+    <color name="mainColor800">#6a1b9a</color>
+    <color name="mainColor900">#4a148c</color>
 
     <color name="cancel_red">#FF6666</color>
 

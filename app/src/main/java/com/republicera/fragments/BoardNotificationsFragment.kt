@@ -124,9 +124,9 @@ class BoardNotificationsFragment : Fragment() {
 
         notificationsRecyclerAdapter.setOnItemClickListener { item, _ ->
 
-            val notification = item as Notification
+            val notification = item as SingleNotification
 
-            db.collection("questions").document(notification.main_post_ID).get().addOnSuccessListener {
+            db.collection("questions").document(notification.notification.main_post_ID).get().addOnSuccessListener {
 
                 val question = it.toObject(Question::class.java)
 
@@ -141,7 +141,7 @@ class BoardNotificationsFragment : Fragment() {
                             if (user != null) {
                                 sharedViewModelRandomUser.randomUserObject.postValue(user)
                                 db.collection("notifications").document(currentUser.uid).collection("board")
-                                    .document(notification.id).set(mapOf("seen" to 1), SetOptions.merge())
+                                    .document(notification.notification.id).set(mapOf("seen" to 1), SetOptions.merge())
                                     .addOnSuccessListener {
                                         activity.boardNotificationsFragment.listenToNotifications(
                                             currentUser

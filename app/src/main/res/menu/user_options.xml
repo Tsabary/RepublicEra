@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+            android:id="@+id/user_edit_contact_details"
+            android:title="@string/edit_contact_details"
+    />
+
+
+    <item
+            android:id="@+id/user_edit_language_preferences"
+            android:title="@string/edit_language_preferences"
+    />
+
+
+    <item
+            android:id="@+id/user_edit_basic_info"
+            android:title="@string/edit_basic_information"
+    />
+
+
+    <item
+            android:id="@+id/user_logout"
+            android:title="@string/logout"
+    />
+
+</menu>

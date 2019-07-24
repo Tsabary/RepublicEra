@@ -208,17 +208,6 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
                     return@setOnMenuItemClickListener true
                 }
 
-                R.id.profile_edit_contact_details -> {
-                    activity.subFm.beginTransaction().add(
-                        R.id.feed_subcontents_frame_container,
-                        activity.editContactDetailsFragment,
-                        "editContactDetailsFragment"
-                    ).addToBackStack("editContactDetailsFragment")
-                        .commit()
-                    activity.subActive = activity.editContactDetailsFragment
-                    activity.switchVisibility(1)
-                    return@setOnMenuItemClickListener true
-                }
 
                 R.id.profile_edit_interests -> {
                     activity.subFm.beginTransaction().add(
@@ -232,17 +221,7 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
                     return@setOnMenuItemClickListener true
                 }
 
-                R.id.profile_edit_language_preferences -> {
-                    activity.subFm.beginTransaction().add(
-                        R.id.feed_subcontents_frame_container,
-                        activity.editLanguagePreferencesFragment,
-                        "editLanguagePreferencesFragment"
-                    ).addToBackStack("editLanguagePreferencesFragment")
-                        .commit()
-                    activity.subActive = activity.editLanguagePreferencesFragment
-                    activity.switchVisibility(1)
-                    return@setOnMenuItemClickListener true
-                }
+
 /*
                 R.id.profile_invite_a_friend -> {
 
@@ -278,39 +257,6 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
                     return@setOnMenuItemClickListener true
                 }
 */
-                R.id.profile_logout -> {
-
-                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(getString(R.string.default_web_client_id))
-                        .requestEmail()
-                        .build();
-
-                    val uid = FirebaseAuth.getInstance().uid
-                    FirebaseMessaging.getInstance().unsubscribeFromTopic(uid).addOnSuccessListener {
-                        FirebaseAuth.getInstance().signOut()
-                        GoogleSignIn.getClient(activity, gso).signOut().addOnSuccessListener {
-
-                            val sharedPref =
-                                activity.getSharedPreferences(
-                                    activity.getString(R.string.package_name),
-                                    Context.MODE_PRIVATE
-                                )
-
-
-                            val editor = sharedPref.edit()
-                            editor.putString("last_community", "default")
-                            editor.putString("last_language", "en")
-                            editor.putInt("last_layout", 0)
-                            editor.apply()
-
-                            val intent = Intent(this.context, RegisterLoginActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            startActivity(intent)
-                        }
-                    }
-                    return@setOnMenuItemClickListener true
-                }
-
 
                 else -> return@setOnMenuItemClickListener false
             }

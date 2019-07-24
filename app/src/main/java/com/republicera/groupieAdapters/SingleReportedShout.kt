@@ -77,7 +77,7 @@ class SingleReportedShout(val reportedShout: ReportedShout, val currentUser: Use
         }
 
         if (reportedShout.keeps.contains(currentUser.uid)) {
-            keep.setTextColor(activity.resources.getColor(R.color.green700))
+            keep.setTextColor(activity.resources.getColor(R.color.mainColor700))
         } else {
             keep.setTextColor(activity.resources.getColor(R.color.gray500))
         }
@@ -103,7 +103,7 @@ class SingleReportedShout(val reportedShout: ReportedShout, val currentUser: Use
                 }
 
                 reportedShout.keeps.add(currentUser.uid)
-                keep.setTextColor(activity.resources.getColor(R.color.green700))
+                keep.setTextColor(activity.resources.getColor(R.color.mainColor700))
                 db.collection("reported_shouts").document(reportedShout.id)
                     .update("keeps", FieldValue.arrayUnion(currentUser.uid))
             }

@@ -14,12 +14,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.republicera.MainActivity
 
 import com.republicera.R
-import com.republicera.groupieAdapters.SingleCommunityOption
 import com.republicera.models.Community
 import com.republicera.models.User
 import com.republicera.viewModels.CurrentCommunityViewModel
 import com.republicera.viewModels.CurrentUserViewModel
-import kotlinx.android.synthetic.main.fragment_my_communities.*
 import kotlinx.android.synthetic.main.fragment_new_community.*
 import org.json.JSONObject
 
@@ -90,17 +88,21 @@ class NewCommunityFragment : Fragment() {
                             mutableListOf(topLevelUser!!.uid)
                         )
                     communityDoc.set(newCommunity).addOnSuccessListener {
+                        Toast.makeText(this.context, "Community started", Toast.LENGTH_SHORT).show()
 
-                        val newCommunityJson = JSONObject()
-                            .put("objectID", communityDoc.id)
-                            .put("title", title)
-                            .put("description", description)
-                            .put("members", 0)
+//                        val newCommunityJson = JSONObject()
+//                            .put("objectID", communityDoc.id)
+//                            .put("title", title)
+//                            .put("description", description)
+//                            .put("members", 0)
+//
+//                        index.addObjectAsync(newCommunityJson, null)
+//
+//                        communityViewModel.currentCommunity.postValue(newCommunity)
+//                        activity.userHomeFrame.visibility = View.GONE
+                    }.addOnFailureListener {
+                        Toast.makeText(this.context, "Community failed", Toast.LENGTH_SHORT).show()
 
-                        index.addObjectAsync(newCommunityJson, null)
-
-                        communityViewModel.currentCommunity.postValue(newCommunity)
-                        activity.chooseCommunityFrame.visibility = View.GONE
                     }
                 } else {
                     Toast.makeText(this.context, "Community name is too short", Toast.LENGTH_SHORT).show()

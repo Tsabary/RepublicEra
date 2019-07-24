@@ -14,7 +14,6 @@ import android.widget.AbsListView
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -122,7 +121,6 @@ class BoardFragment : Fragment(), BoardMethods {
 
         layoutIcon = board_layout_icon
         val spinner = board_language_spinner
-
         freshMessage = board_fresh_message
 
         sharedPref = activity.getSharedPreferences(activity.getString(R.string.package_name), Context.MODE_PRIVATE)
@@ -181,19 +179,20 @@ class BoardFragment : Fragment(), BoardMethods {
         }
 
         title.setOnClickListener {
-            if (activity.chooseCommunityFrame.visibility != View.VISIBLE) {
+            if (activity.userHomeFrame.visibility != View.VISIBLE) {
                 if (activity.subActive == activity.searchFragment) {
                     activity.subFm.popBackStack("searchFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 }
 
-                activity.CommunitiesFm.beginTransaction()
+                activity.userFm.beginTransaction()
                     .add(
-                        R.id.feed_choose_community_frame_container,
+                        R.id.user_home_frame_container,
                         activity.communitiesHomeFragment,
                         "communitiesHomeFragment"
                     ).addToBackStack("communitiesHomeFragment")
                     .commit()
-                activity.chooseCommunityFrame.visibility = View.VISIBLE
+                activity.userActive = activity.communitiesHomeFragment
+                activity.switchVisibility(2)
 
             }
         }
@@ -273,7 +272,7 @@ class BoardFragment : Fragment(), BoardMethods {
 
         constraintButton.setOnClickListener {
 
-            //            activity.CommunitiesFm.popBackStack("chooseCommunityFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            //            activity.userFm.popBackStack("chooseCommunityFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
             activity.subFm.beginTransaction()
                 .add(R.id.feed_subcontents_frame_container, activity.searchFragment, "searchFragment")
@@ -357,7 +356,7 @@ class BoardFragment : Fragment(), BoardMethods {
         val editor = sharedPref.edit()
 
         if (case == 0) {
-            layoutIcon.setImageResource(R.drawable.rows_layout)
+            layoutIcon.setImageResource(R.drawable.blocks_layout)
             layoutIcon.tag = "row_layout"
             firebaseAnalytics.logEvent("board_row_layout", null)
             val position = questionRecyclerLayoutManager.findFirstCompletelyVisibleItemPosition()
@@ -365,7 +364,7 @@ class BoardFragment : Fragment(), BoardMethods {
 
             editor.putInt("last_layout", 0)
         } else {
-            layoutIcon.setImageResource(R.drawable.blocks_layout)
+            layoutIcon.setImageResource(R.drawable.rows_layout)
             layoutIcon.tag = "block_layout"
             firebaseAnalytics.logEvent("board_block_layout", null)
             val position = questionRecyclerLayoutManager.findFirstCompletelyVisibleItemPosition()

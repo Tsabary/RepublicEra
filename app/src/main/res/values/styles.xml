@@ -16,10 +16,10 @@
     <style name="uCropStyle"
            parent="@style/Theme.AppCompat.Light.NoActionBar">
 
-        <item name="android:colorPrimary">@color/green700</item>
-        <item name="android:colorAccent">@color/green700</item>
-        <item name="android:colorBackground">@color/green700</item>
-        <item name="android:colorPrimaryDark">@color/green700</item>
+        <item name="android:colorPrimary">@color/mainColor700</item>
+        <item name="android:colorAccent">@color/mainColor700</item>
+        <item name="android:colorBackground">@color/mainColor700</item>
+        <item name="android:colorPrimaryDark">@color/mainColor700</item>
 
     </style>
 

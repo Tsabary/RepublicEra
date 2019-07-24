@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
@@ -18,11 +19,11 @@ import com.republicera.R
 import com.republicera.groupieAdapters.SingleContactChannel
 import com.republicera.groupieAdapters.SingleContactChannelOption
 import com.republicera.interfaces.ProfileMethods
-import com.republicera.models.CommunityProfile
 import com.republicera.models.ContactChannel
 import com.republicera.models.ContactInfo
+import com.republicera.models.User
 import com.republicera.viewModels.ContactDetailsViewModel
-import com.republicera.viewModels.CurrentCommunityProfileViewModel
+import com.republicera.viewModels.CurrentUserViewModel
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_edit_contact_details.*
@@ -33,7 +34,10 @@ class EditContactDetailsFragment : Fragment(), ProfileMethods {
 
     val db = FirebaseFirestore.getInstance()
 
-    lateinit var currentUser: CommunityProfile
+
+    private lateinit var currentUser: User
+    private lateinit var currentUserViewModel: CurrentUserViewModel
+
     lateinit var contactDetailsViewModel: ContactDetailsViewModel
 //    var contactDetailsList = mutableListOf<ContactInfo>()
 
@@ -52,8 +56,12 @@ class EditContactDetailsFragment : Fragment(), ProfileMethods {
         super.onViewCreated(view, savedInstanceState)
         val activity = activity as MainActivity
         activity.let {
-            currentUser = ViewModelProviders.of(it).get(CurrentCommunityProfileViewModel::class.java).currentCommunityProfileObject
             contactDetailsViewModel = ViewModelProviders.of(it).get(ContactDetailsViewModel::class.java)
+            currentUserViewModel = ViewModelProviders.of(it).get(CurrentUserViewModel::class.java)
+            currentUserViewModel.currentUserObject.observe(activity, Observer{ user ->
+                currentUser = user
+            })
+
 //            contactDetailsViewModel.contactMap.observe(activity, Observer { list ->
 //                contactDetailsList = list
 //            })
@@ -61,7 +69,7 @@ class EditContactDetailsFragment : Fragment(), ProfileMethods {
 
         searchInput = edit_contact_details_search
 
-        val contactChannelOptionsRecycler = edit_contact_channels_options_recycler
+        val contactChannelOptionsRecycler = edit_contact_details_options_recycler
         contactChannelOptionsRecycler.adapter = contactChannelsOptionsAdapter
         contactChannelOptionsRecycler.layoutManager =
             LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
@@ -135,11 +143,7 @@ class EditContactDetailsFragment : Fragment(), ProfileMethods {
 
         db.collection("contact_details").document(currentUser.uid).set(list).addOnSuccessListener {
             val activity = activity as MainActivity
-            activity.fm.beginTransaction().detach(activity.profileCurrentUserFragment)
-                .attach(activity.profileCurrentUserFragment).commit()
-
-            activity.subFm.popBackStack("editContactDetailsFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
-            activity.switchVisibility(0)
+            activity.userFm.popBackStack("editContactDetailsFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
         }
     }
 
