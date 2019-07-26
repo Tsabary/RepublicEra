@@ -155,7 +155,8 @@ class AnswerFragment : Fragment(), BoardMethods {
                 currentUser.name,
                 currentUser.image,
                 imageListFinal,
-                mapOf()
+                mapOf(),
+                0
             )
 
         answerDoc.set(newAnswer).addOnSuccessListener {

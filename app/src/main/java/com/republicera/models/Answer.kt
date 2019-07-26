@@ -13,7 +13,8 @@ class Answer(
     val author_name: String,
     val author_image: String,
     val photos: MutableList<String>,
-    val score_items: Map<String, Int>
+    val score_items: Map<String, Int>,
+    val total_score: Int
 ) : Parcelable {
-    constructor() : this("", "", "", 0, "", "", "", mutableListOf<String>(), mapOf())
+    constructor() : this("", "", "", 0, "", "", "", mutableListOf<String>(), mapOf(),0)
 }

@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -61,7 +60,8 @@ class ShoutsFragment : Fragment(), GeneralMethods {
     lateinit var currentUser: CommunityProfile
     private lateinit var currentCommunity: Community
 
-    private lateinit var freshMessage: TextView
+    private lateinit var freshMessageAll: TextView
+    private lateinit var freshMessageFollowing: TextView
     lateinit var feedStateTitle: TextView
 
     lateinit var allSwipeRefresh: SwipeRefreshLayout
@@ -136,7 +136,8 @@ class ShoutsFragment : Fragment(), GeneralMethods {
                 })
         }
 
-        freshMessage = shouts_fresh_message
+        freshMessageAll = shouts_fresh_message
+        freshMessageFollowing = shouts_fresh_following_message
         feedStateTitle = shouts_feed_title
         feedStateTitle.tag = "following"
         feedStateTitle.setOnClickListener {
@@ -360,9 +361,9 @@ class ShoutsFragment : Fragment(), GeneralMethods {
             .limit(25)
             .get().addOnSuccessListener {
                 if (it.size() == 0) {
-                    freshMessage.visibility = View.VISIBLE
+                    freshMessageAll.visibility = View.VISIBLE
                 } else {
-                    freshMessage.visibility = View.GONE
+                    freshMessageAll.visibility = View.GONE
 
 
                     for (oneShout in it) {
@@ -441,9 +442,9 @@ class ShoutsFragment : Fragment(), GeneralMethods {
             .orderBy("last_interaction", Query.Direction.DESCENDING).limit(25)
             .get().addOnSuccessListener {
                 if (it.size() == 0) {
-                    freshMessage.visibility = View.VISIBLE
+                    freshMessageFollowing.visibility = View.VISIBLE
                 } else {
-                    freshMessage.visibility = View.GONE
+                    freshMessageFollowing.visibility = View.GONE
 
 
                     for (oneShout in it) {

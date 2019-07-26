@@ -82,13 +82,9 @@ class CommunitiesHome : Fragment() {
                 activity, Observer { user ->
                     topLevelUser = user
                     if (topLevelUser != null) {
-                        userName.text = if (user.first_name.isNotEmpty()) {
-                            user.first_name
-                        } else {
-                            "Visitor"
-                        }
-                        populateCommunities()
+                        userName.text = user.first_name
 
+                        populateCommunities()
 
                         settingsButton.setOnClickListener {
                             popup.show()
@@ -192,7 +188,7 @@ class CommunitiesHome : Fragment() {
         if (topLevelUser != null) {
             userName.text = topLevelUser!!.first_name + "."
         } else {
-            userName.text = "Friend."
+            userName.text = "Welcome"
             emptyMessage.visibility = View.VISIBLE
             yourRepublics.visibility = View.GONE
         }

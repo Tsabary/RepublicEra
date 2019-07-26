@@ -391,9 +391,9 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
 
         val accountsFollowingRef = db.collection("accounts_following").document(userProfile.uid)
         batch.update(accountsFollowingRef, "accounts_list", FieldValue.arrayRemove(currentUser.uid))
-
-        val userFollowersCountRef = db.collection("profiles").document(userProfile.uid)
-        batch.update(userFollowersCountRef, "followers", FieldValue.increment(-1))
+//
+//        val userFollowersCountRef = db.collection("profiles").document(userProfile.uid)
+//        batch.update(userFollowersCountRef, "followers", FieldValue.increment(-1))
 
         batch.commit().addOnSuccessListener {
 
@@ -431,9 +431,9 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
 
         val accountsFollowingRef = db.collection("accounts_following").document(userProfile.uid)
         batch.update(accountsFollowingRef, "accounts_list", FieldValue.arrayUnion(currentUser.uid))
-
-        val userFollowersCountRef = db.collection("profiles").document(userProfile.uid)
-        batch.update(userFollowersCountRef, "followers", FieldValue.increment(1))
+//
+//        val userFollowersCountRef = db.collection("profiles").document(userProfile.uid)
+//        batch.update(userFollowersCountRef, "followers", FieldValue.increment(1))
 
 
         batch.commit().addOnSuccessListener {

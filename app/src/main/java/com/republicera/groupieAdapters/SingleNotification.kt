@@ -25,7 +25,8 @@ import java.util.*
 class SingleNotification(
     val notification: Notification,
     val activity: MainActivity,
-    val currentUser: CommunityProfile
+    val currentUser: CommunityProfile,
+    val notification_ID : String
 ) :
     Item<ViewHolder>() {
 
@@ -53,20 +54,20 @@ class SingleNotification(
 
         val notificationBox = viewHolder.itemView.notification_box
 
-        viewHolder.itemView.notification_timestamp.text = PrettyTime().format(Date(notification.timestamp))
+//        viewHolder.itemView.notification_timestamp.text = PrettyTime().format(Date(notification.timestamp.values))
 
         viewHolder.itemView.notification_content.text = when (notification.scenario_type) {
 
             0 -> {
                 Spanner()
                     .append(notification.initiator_name)
-                    .append(" upvoted your question ", Spans.font("roboto_medium"))
+                    .append(" upvoted your question", Spans.font("roboto_medium"))
             }
 
             2 -> {
                 Spanner()
                     .append(notification.initiator_name)
-                    .append(" upvoted your answer on the question ", Spans.font("roboto_medium"))
+                    .append(" upvoted your answer", Spans.font("roboto_medium"))
             }
 
             4 -> {
@@ -79,44 +80,44 @@ class SingleNotification(
             6 -> {
                 Spanner()
                     .append("Someone")
-                    .append(" downvoted your answer to the question ", Spans.font("roboto_medium"))
+                    .append(" downvoted your answer", Spans.font("roboto_medium"))
             }
 
             8 -> {
 
                 Spanner()
                     .append(notification.initiator_name)
-                    .append(" answered your question ", Spans.font("roboto_medium"))
+                    .append(" answered your question", Spans.font("roboto_medium"))
             }
 
             10 -> {
                 Spanner()
                     .append(notification.initiator_name)
-                    .append(" saved your question ", Spans.font("roboto_medium"))
+                    .append(" saved your question", Spans.font("roboto_medium"))
             }
 
             12 -> {
                 Spanner()
                     .append(notification.initiator_name)
-                    .append(" commented on your answer to the question ", Spans.font("roboto_medium"))
+                    .append(" commented on your answer", Spans.font("roboto_medium"))
             }
 
             14 -> {
                 Spanner()
                     .append(notification.initiator_name)
-                    .append(" liked your shout ", Spans.font("roboto_medium"))
+                    .append(" liked your shout", Spans.font("roboto_medium"))
             }
 
             16 -> {
                 Spanner()
                     .append(notification.initiator_name)
-                    .append(" commented on your shout ", Spans.font("roboto_medium"))
+                    .append(" commented on your shout", Spans.font("roboto_medium"))
             }
 
             18 -> {
                 Spanner()
                     .append(notification.initiator_name)
-                    .append(" liked your comment ", Spans.font("roboto_medium"))
+                    .append(" liked your comment", Spans.font("roboto_medium"))
             }
 
             20 -> {

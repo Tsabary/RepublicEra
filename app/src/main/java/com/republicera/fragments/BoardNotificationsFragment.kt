@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.republicera.MainActivity
 import com.republicera.R
@@ -115,7 +116,7 @@ class BoardNotificationsFragment : Fragment() {
             dbNotifications.whereEqualTo("seen", 0).get()
                 .addOnSuccessListener {
                     for (doc in it) {
-                        dbNotifications.document(doc.id).set(mapOf("seen" to 1), SetOptions.merge())
+                        dbNotifications.document(doc.id).update(mapOf("seen" to 1))
                     }
                     notificationsRecyclerAdapter.clear()
                     listenToNotifications(currentUser)
@@ -141,11 +142,9 @@ class BoardNotificationsFragment : Fragment() {
                             if (user != null) {
                                 sharedViewModelRandomUser.randomUserObject.postValue(user)
                                 db.collection("notifications").document(currentUser.uid).collection("board")
-                                    .document(notification.notification.id).set(mapOf("seen" to 1), SetOptions.merge())
+                                    .document(notification.notification_ID).update(mapOf("seen" to 1))
                                     .addOnSuccessListener {
-                                        activity.boardNotificationsFragment.listenToNotifications(
-                                            currentUser
-                                        )
+                                        activity.boardNotificationsFragment.listenToNotifications(currentUser)
 
                                         activity.subFm.beginTransaction().add(
                                             R.id.feed_subcontents_frame_container,
@@ -168,7 +167,7 @@ class BoardNotificationsFragment : Fragment() {
 
         notificationsRecyclerAdapter.clear()
 
-        db.collection("notifications").document(currentUser.uid).collection("board").get().addOnSuccessListener {
+        db.collection("notifications").document(currentUser.uid).collection("board").orderBy("timestamp", Query.Direction.DESCENDING).get().addOnSuccessListener {
             for (doc in it) {
                 val notification = doc.toObject(Notification::class.java)
 
@@ -176,7 +175,8 @@ class BoardNotificationsFragment : Fragment() {
                     SingleNotification(
                         notification,
                         activity,
-                        currentUser
+                        currentUser,
+                        doc.id
                     )
                 )
 

@@ -9,8 +9,8 @@ class Notification(
     val initiator_image: String,
     val main_post_ID: String,
     val specific_post_ID: String,
-    val timestamp: Long,
+    val timestamp: HashMap<String, String>,
     val seen: Int
 ) {
-    constructor() : this("",0, 0, "", "", "", "", "", 0, 0)
+    constructor() : this("",0, 0, "", "", "", "", "", hashMapOf(), 0)
 }

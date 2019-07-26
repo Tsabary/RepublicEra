@@ -18,10 +18,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.*
 import com.republicera.MainActivity
 import com.republicera.R
 import com.republicera.groupieAdapters.SingleAnswer
@@ -202,7 +199,7 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                 timestamp.text = PrettyTime().format(Date(questionObject.timestamp))
                 tags.text = questionObject.tags.joinToString()
                 var finalVote = 0
-                for (item in questionObject.score_items){
+                for (item in questionObject.score_items) {
                     finalVote += item.value
                 }
                 votesCount.text = finalVote.toString()
@@ -320,7 +317,7 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                 when {
                     isUpvoted -> return@setOnClickListener
                     isDownvoted -> {
-                        votesCount.text = (votesCount.text.toString().toInt() +1).toString()
+                        votesCount.text = (votesCount.text.toString().toInt() + 1).toString()
 
                         executeVoteQuestion(
                             0,
@@ -342,7 +339,7 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                         isDownvoted = false
                     }
                     else -> {
-                        votesCount.text = (votesCount.text.toString().toInt() +1).toString()
+                        votesCount.text = (votesCount.text.toString().toInt() + 1).toString()
 
                         executeVoteQuestion(
                             1,
@@ -374,7 +371,7 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                 when {
                     isDownvoted -> return@setOnClickListener
                     isUpvoted -> {
-                        votesCount.text = (votesCount.text.toString().toInt() -1).toString()
+                        votesCount.text = (votesCount.text.toString().toInt() - 1).toString()
 
                         executeVoteQuestion(
                             0,
@@ -395,7 +392,7 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                         isUpvoted = false
                     }
                     else -> {
-                        votesCount.text = (votesCount.text.toString().toInt() -1).toString()
+                        votesCount.text = (votesCount.text.toString().toInt() - 1).toString()
 
                         executeVoteQuestion(
                             -1,
@@ -464,7 +461,8 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
     fun listenToAnswers() {
         answersAdapter.clear()
 
-        db.collection("answers").whereEqualTo("question_ID", questionObject.id).get()
+        db.collection("answers").whereEqualTo("question_ID", questionObject.id)
+            .orderBy("total_score", Query.Direction.DESCENDING).get()
             .addOnSuccessListener {
 
                 for (document in it) {
@@ -528,27 +526,28 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
 
                             for (tag in questionObject.tags) {
 
-                                db.collection("tags").document(tag[0] + tag[1].toString()).get().addOnSuccessListener { snapshot ->
-                                    val doc = snapshot.data
+                                db.collection("tags").document(tag[0] + tag[1].toString()).get()
+                                    .addOnSuccessListener { snapshot ->
+                                        val doc = snapshot.data
 
-                                    db.collection("tags").document(tag[0] + tag[1].toString()).set(
-                                        mapOf(
-                                            tag to
-                                                    if (doc != null) {
-                                                        if (doc[tag] == null) {
-                                                            1
+                                        db.collection("tags").document(tag[0] + tag[1].toString()).set(
+                                            mapOf(
+                                                tag to
+                                                        if (doc != null) {
+                                                            if (doc[tag] == null) {
+                                                                1
+                                                            } else {
+                                                                doc[tag].toString().toInt() + 1
+                                                            }
                                                         } else {
-                                                            doc[tag].toString().toInt() + 1
+                                                            1
                                                         }
-                                                    } else {
-                                                        1
-                                                    }
-                                        ), SetOptions.merge()
-                                    ).addOnSuccessListener {
-                                        db.collection("interests").document(currentUserObject.uid)
-                                            .update("interests_list", FieldValue.arrayUnion(tag))
+                                            ), SetOptions.merge()
+                                        ).addOnSuccessListener {
+                                            db.collection("interests").document(currentUserObject.uid)
+                                                .update("interests_list", FieldValue.arrayUnion(tag))
+                                        }
                                     }
-                                }
 
                                 interestsList.add(tag)
                                 sharedViewModelInterests.interestList.postValue(interestsList)

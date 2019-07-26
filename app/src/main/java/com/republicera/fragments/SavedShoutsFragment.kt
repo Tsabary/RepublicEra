@@ -76,10 +76,10 @@ class SavedShoutsFragment : Fragment() {
         val shoutsSavedShoutsIcon = board_toolbar_notifications_saved_questions_icon
 
         shoutsNotificationIcon.setOnClickListener {
-            activity.subFm.beginTransaction().hide(activity.savedQuestionFragment)
-                .show(activity.boardNotificationsFragment)
+            activity.subFm.beginTransaction().hide(activity.savedShoutsFragment)
+                .show(activity.shoutsNotificationsFragment)
                 .commit()
-            activity.subActive = activity.boardNotificationsFragment
+            activity.subActive = activity.shoutsNotificationsFragment
         }
 
         shoutsNotificationsBadge.setOnClickListener {
@@ -99,6 +99,7 @@ class SavedShoutsFragment : Fragment() {
             val row = item as SingleShout
             sharedViewModelForShout.shoutObject.postValue(row.shout)
         }
+
     }
 
 

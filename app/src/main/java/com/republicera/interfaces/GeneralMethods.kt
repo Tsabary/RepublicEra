@@ -13,6 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.republicera.models.Notification
 import com.republicera.models.ReputationScore
 import com.republicera.services.FCMMethods.sendMessageTopic
+import com.republicera.services.FCMMethods.sendNotification
 import kotlin.math.floor
 import kotlin.math.ln
 import kotlin.math.pow
@@ -20,40 +21,414 @@ import kotlin.math.pow
 interface GeneralMethods {
 
 
-    fun sendNotification(
-        postType: Int,
+//    fun sendNotification(
+//        postType: Int,
+//        scenarioType: Int,
+//        initiatorId: String,
+//        initiatorName: String,
+//        initiatorImage: String,
+//        mainPostId: String,
+//        specificPostId: String,
+//        receiverId: String,
+//        currentCommunity: String,
+//        collection: String
+//    ): Task<Void> {
+//        val db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity)
+//
+//        val docRef = db.collection("notifications").document(receiverId).collection(collection)
+//            .document(mainPostId + specificPostId + initiatorId + scenarioType)
+//
+//        val newNotification = Notification(
+//            docRef.id,
+//            postType,
+//            scenarioType,
+//            initiatorId,
+//            initiatorName,
+//            initiatorImage,
+//            mainPostId,
+//            specificPostId,
+//            System.currentTimeMillis(),
+//            0
+//        )
+//
+//        return docRef.set(newNotification)
+//    }
+
+
+    fun changeReputation(
         scenarioType: Int,
+        specificPostId: String,
+        mainPostId: String,
         initiatorId: String,
         initiatorName: String,
         initiatorImage: String,
-        mainPostId: String,
-        specificPostId: String,
         receiverId: String,
-        currentCommunity: String,
-        collection: String
-    ): Task<Void> {
+        userReputationView: TextView,
+        action: String,
+        activity: Activity,
+        currentCommunity: String
+    ) {
+
         val db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity)
 
-        val docRef = db.collection("notifications").document(receiverId).collection(collection)
-            .document(mainPostId + specificPostId + initiatorId + scenarioType)
+        val receiverReputationDoc = db.collection("reputation_events").document()
+        val initiatorReputationDoc = db.collection("reputation_events").document()
 
-        val newNotification = Notification(
-            docRef.id,
-            postType,
-            scenarioType,
-            initiatorId,
-            initiatorName,
-            initiatorImage,
-            mainPostId,
-            specificPostId,
-            System.currentTimeMillis(),
-            0
-        )
+        val queryBase = db.collection("reputation_events")
+            .whereEqualTo("initiator_ID", initiatorId)
+            .whereEqualTo("main_post_ID", mainPostId)
+            .whereEqualTo("specific_post_ID", specificPostId)
 
-        return docRef.set(newNotification)
+
+
+        val receiverReputationCounter = db.collection("reputation_counter").document(receiverId)
+        val initiatorReputationCounter = db.collection("reputation_counter").document(receiverId)
+
+
+
+        when (scenarioType) {
+
+
+            //0: question upvote +5 to receiver +notification // type 0
+            0 -> {
+                receiverReputationDoc.set(
+                    ReputationScore(
+                        receiverId,
+                        initiatorId,
+                        initiatorName,
+                        initiatorImage,
+                        mainPostId,
+                        specificPostId,
+                        0,
+                        0,
+                        "board",
+                        5,
+                        System.currentTimeMillis()
+                    )
+                )
+            }
+
+            //1: question upvote is removed -5 to receiver
+            1 -> {
+                queryBase
+                    .whereEqualTo("receiver_ID", receiverId)
+                    .whereEqualTo("post_type", 0)
+                    .whereEqualTo("scenario_type", 0)
+                    .whereEqualTo("collection", "board").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+            }
+
+            //2: answer upvoted +10 to receiver +notification  // type 1
+            2 -> {
+                receiverReputationDoc.set(
+                    ReputationScore(
+                        receiverId,
+                        initiatorId,
+                        initiatorName,
+                        initiatorImage,
+                        mainPostId,
+                        specificPostId,
+                        1,
+                        2,
+                        "board",
+                        10,
+                        System.currentTimeMillis()
+                    )
+                )
+            }
+
+            //3: answer upvote is removed -10 to receiver
+            3 -> {
+                queryBase
+                    .whereEqualTo("receiver_ID", receiverId)
+                    .whereEqualTo("post_type", 1)
+                    .whereEqualTo("scenario_type", 2)
+                    .whereEqualTo("collection", "board").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+            }
+
+
+
+            //4: question downvote -2 for receiver -1 for initiator +notification without initiator  // type 0
+            4 -> {
+                receiverReputationDoc.set(
+                    ReputationScore(
+                        receiverId,
+                        initiatorId,
+                        initiatorName,
+                        initiatorImage,
+                        mainPostId,
+                        specificPostId,
+                        0,
+                        4,
+                        "board",
+                        -2,
+                        System.currentTimeMillis()
+                    )
+                ).addOnSuccessListener {
+                    initiatorReputationDoc.set(
+                        ReputationScore(
+                            initiatorId,
+                            initiatorId,
+                            initiatorName,
+                            initiatorImage,
+                            mainPostId,
+                            specificPostId,
+                            0,
+                            4,
+                            "board",
+                            -1,
+                            System.currentTimeMillis()
+                        )
+                    )
+                }
+            }
+
+            //5: question downvote is removed +2 for receiver +1 for initiator
+            5 -> {
+                queryBase
+                    .whereEqualTo("receiver_ID", receiverId)
+                    .whereEqualTo("post_type", 0)
+                    .whereEqualTo("scenario_type", 4)
+                    .whereEqualTo("collection", "board").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+
+                queryBase
+                    .whereEqualTo("receiver_ID", initiatorId)
+                    .whereEqualTo("post_type", 0)
+                    .whereEqualTo("scenario_type", 4)
+                    .whereEqualTo("collection", "board").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+            }
+
+            //6: answer downvote -2 for receiver -1 for initiator +notification without initiator  // type 1
+            6 -> {
+                receiverReputationDoc.set(
+                    ReputationScore(
+                        receiverId,
+                        initiatorId,
+                        initiatorName,
+                        initiatorImage,
+                        mainPostId,
+                        specificPostId,
+                        1,
+                        6,
+                        "board",
+                        -2,
+                        System.currentTimeMillis()
+                    )
+                ).addOnSuccessListener {
+                    receiverReputationDoc.set(
+                        ReputationScore(
+                            initiatorId,
+                            initiatorId,
+                            initiatorName,
+                            initiatorImage,
+                            mainPostId,
+                            specificPostId,
+                            1,
+                            6,
+                            "board",
+                            -1,
+                            System.currentTimeMillis()
+                        )
+                    )
+                }
+            }
+
+            //7: answer downvote is removed +2 for receiver +1 for initiator
+            7 -> {
+                queryBase
+                    .whereEqualTo("receiver_ID", receiverId)
+                    .whereEqualTo("post_type", 1)
+                    .whereEqualTo("scenario_type", 6)
+                    .whereEqualTo("collection", "board").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+
+                queryBase
+                    .whereEqualTo("receiver_ID", initiatorId)
+                    .whereEqualTo("post_type", 1)
+                    .whereEqualTo("scenario_type", 6)
+                    .whereEqualTo("collection", "board").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+            }
+
+            //8: answer given +2 to initiator
+            8 -> {
+                initiatorReputationDoc.set(
+                    ReputationScore(
+                        initiatorId,
+                        initiatorId,
+                        initiatorName,
+                        initiatorImage,
+                        mainPostId,
+                        specificPostId,
+                        1,
+                        8,
+                        "board",
+                        2,
+                        System.currentTimeMillis()
+                    )
+                )
+            }
+
+            //9: answer removed -2 to initiator
+            9 -> {
+                queryBase
+                    .whereEqualTo("receiver_ID", initiatorId)
+                    .whereEqualTo("post_type", 1)
+                    .whereEqualTo("scenario_type", 8)
+                    .whereEqualTo("collection", "board").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+            }
+
+            //10: question saved +5 to receiver +notification  // type 0
+            10 -> {
+                receiverReputationDoc.set(
+                    ReputationScore(
+                        receiverId,
+                        initiatorId,
+                        initiatorName,
+                        initiatorImage,
+                        mainPostId,
+                        specificPostId,
+                        0,
+                        10,
+                        "board",
+                        5,
+                        System.currentTimeMillis()
+                    )
+                )
+            }
+
+            //11: question unsaved -5 to receiver
+            11 -> {
+                queryBase
+                    .whereEqualTo("receiver_ID", receiverId)
+                    .whereEqualTo("post_type", 0)
+                    .whereEqualTo("scenario_type", 10)
+                    .whereEqualTo("collection", "board").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+            }
+
+            //12: answer receives a comment
+            12 -> {
+            }
+
+            //13: comment on answer removed // needs to fix. causes a problem with the id of the comment as all other actions could be prformed only once, but here it might overwrite it
+            13 -> {
+            }
+
+            //14: shout liked
+            14 -> {
+                receiverReputationDoc.set(
+                    ReputationScore(
+                        receiverId,
+                        initiatorId,
+                        initiatorName,
+                        initiatorImage,
+                        mainPostId,
+                        specificPostId,
+                        2,
+                        14,
+                        "shouts",
+                        1,
+                        System.currentTimeMillis()
+                    )
+                )
+            }
+
+            //15: shout like removed
+            15 -> {
+                queryBase
+                    .whereEqualTo("receiver_ID", receiverId)
+                    .whereEqualTo("post_type", 2)
+                    .whereEqualTo("scenario_type", 14)
+                    .whereEqualTo("collection", "shouts").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+            }
+
+            //16: comment on a shout
+            16 -> {
+
+            }
+
+            //17: comment on a shout removed
+            17 -> {
+            }
+
+            //18: comment on a shout liked
+            18 -> {
+                receiverReputationDoc.set(
+                    ReputationScore(
+                        receiverId,
+                        initiatorId,
+                        initiatorName,
+                        initiatorImage,
+                        mainPostId,
+                        specificPostId,
+                        3,
+                        18,
+                        "shouts",
+                        1,
+                        System.currentTimeMillis()
+                    )
+                )
+            }
+
+            //19: comment on a shout like removed
+            19 -> {
+                queryBase
+                    .whereEqualTo("receiver_ID", receiverId)
+                    .whereEqualTo("post_type", 3)
+                    .whereEqualTo("scenario_type", 18)
+                    .whereEqualTo("collection", "shouts").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+            }
+
+            //20: profile got a follow
+            20 -> {
+
+            }
+
+            //21: profile follow removed
+            21 -> {
+            }
+        }
     }
 
 
+/*
     fun changeReputation(
         scenarioType: Int,
         specificPostId: String,
@@ -586,6 +961,9 @@ interface GeneralMethods {
             }
         }
     }
+    */
+
+
     //0: question upvote +5 to receiver +notification // type 0
     //1: question upvote is removed -5 to receiver
     //2: answer upvoted +10 to receiver +notification  // type 1
@@ -610,12 +988,12 @@ interface GeneralMethods {
     //21: profile follow removed
 
 
-    fun incrementCounter(ref: DocumentReference, value: Long): Task<Void> {
-        val shardId = floor(Math.random() * 20).toInt()
-        val shardRef = ref.collection("shards").document(shardId.toString())
-
-        return shardRef.update("count", FieldValue.increment(value))
-    }
+//    fun incrementCounter(ref: DocumentReference, value: Long): Task<Void> {
+//        val shardId = floor(Math.random() * 20).toInt()
+//        val shardRef = ref.collection("shards").document(shardId.toString())
+//
+//        return shardRef.update("count", FieldValue.increment(value))
+//    }
 
 
     fun onClickStak(case: Int, intentData: String, activity: Activity) {
