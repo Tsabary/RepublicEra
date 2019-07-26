@@ -39,7 +39,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginTop="32dp"
-                    android:fontFamily="@font/roboto_black"/>
+                    android:fontFamily="@font/montserrat_bold"/>
             <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -85,7 +85,8 @@
                     android:textColor="@color/white"
                     android:visibility="visible"
                     android:paddingTop="8dp"
-                    android:paddingBottom="8dp"/>
+                    android:paddingBottom="8dp"
+                    android:elevation="4dp"/>
 
             <View
                     android:id="@+id/divider6"

@@ -67,23 +67,22 @@ class SingleAnswerComment(val comment: AnswerComment, val activity: MainActivity
         commentContentEditable.setText(comment.content)
         commentContentTimestamp.text = PrettyTime().format(Date(comment.timestamp))
 
-        db.collection("profiles").document(comment.author_ID).get().addOnSuccessListener {
 
-            user = it.toObject(CommunityProfile::class.java)!!
+        viewHolder.itemView.answer_comment_author_name.text = comment.author_name
+//            viewHolder.itemView.answer_comment_author_reputation.text =
+//                "(${numberCalculation(user.reputation)})"
 
-            viewHolder.itemView.answer_comment_author_name.text = user.name
-            viewHolder.itemView.answer_comment_author_reputation.text =
-                "(${numberCalculation(user.reputation)})"
+        Glide.with(viewHolder.root.context).load(
+            if (comment.author_image.isNotEmpty()) {
+                comment.author_image
+            } else {
+                R.drawable.user_profile
+            }
+        )
+            .into(authorImage)
 
-            Glide.with(viewHolder.root.context).load(
-                if (user.image.isNotEmpty()) {
-                    user.image
-                } else {
-                    R.drawable.user_profile
-                }
-            )
-                .into(authorImage)
-        }
+
+
 
 
         if (comment.author_ID == currentUser.uid) {
@@ -103,7 +102,7 @@ class SingleAnswerComment(val comment: AnswerComment, val activity: MainActivity
         }
 
         remove.setOnClickListener {
-            db.collection("answer_comments").document(comment.comment_ID).delete().addOnSuccessListener {
+            db.collection("answer_comments").document(comment.id).delete().addOnSuccessListener {
 
                 changeReputation(
                     13,
@@ -139,7 +138,7 @@ class SingleAnswerComment(val comment: AnswerComment, val activity: MainActivity
         }
 
         save.setOnClickListener {
-            db.collection("answer_comments").document(comment.comment_ID)
+            db.collection("answer_comments").document(comment.id)
                 .set(mapOf("content" to commentContentEditable.text.toString()), SetOptions.merge())
                 .addOnSuccessListener {
                     delete.visibility = View.VISIBLE
@@ -155,14 +154,20 @@ class SingleAnswerComment(val comment: AnswerComment, val activity: MainActivity
 
         authorImage.setOnClickListener {
             if (currentUser.uid != comment.author_ID) {
-                sharedViewModelSecondRandomUser.randomUserObject.postValue(user)
-                activity.subFm.beginTransaction().add(
-                    R.id.feed_subcontents_frame_container,
-                    activity.profileSecondRandomUserFragment,
-                    "profileSecondRandomUserFragment"
-                ).addToBackStack("profileSecondRandomUserFragment")
-                    .commit()
-                activity.subActive = activity.profileSecondRandomUserFragment
+
+                db.collection("profiles").document(comment.author_ID).get().addOnSuccessListener {
+
+                    user = it.toObject(CommunityProfile::class.java)!!
+
+                    sharedViewModelSecondRandomUser.randomUserObject.postValue(user)
+                    activity.subFm.beginTransaction().add(
+                        R.id.feed_subcontents_frame_container,
+                        activity.profileSecondRandomUserFragment,
+                        "profileSecondRandomUserFragment"
+                    ).addToBackStack("profileSecondRandomUserFragment")
+                        .commit()
+                    activity.subActive = activity.profileSecondRandomUserFragment
+                }
             } else {
                 activity.navigateToProfile()
             }

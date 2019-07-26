@@ -33,7 +33,7 @@ import kotlinx.android.synthetic.main.fragment_answer.*
 
 class AnswerFragment : Fragment(), BoardMethods {
 
-    lateinit var db : DocumentReference
+    lateinit var db: DocumentReference
 
     private lateinit var sharedViewModelAnswerImages: AnswerImagesViewModel
 
@@ -55,7 +55,6 @@ class AnswerFragment : Fragment(), BoardMethods {
         super.onViewCreated(view, savedInstanceState)
 
         val questionTitle = answer_question_title
-        val addImage = answer_add_photos_button
         val answerButton = answer_btn
         answerButton.text = getString(R.string.answer)
 
@@ -87,11 +86,6 @@ class AnswerFragment : Fragment(), BoardMethods {
         }
 
 
-
-
-        val imagesRecycler = answer_photos_recycler
-        imagesRecycler.adapter = imagesRecyclerAdapter
-        imagesRecycler.layoutManager = GridLayoutManager(this.context, 3)
 
         answerContent = answer_content
 
@@ -152,7 +146,17 @@ class AnswerFragment : Fragment(), BoardMethods {
         val answerDoc = db.collection("answers").document()
 
         val newAnswer =
-            Answer(answerDoc.id, question.id, content, timestamp, currentUser.uid, imageListFinal, mapOf())
+            Answer(
+                answerDoc.id,
+                question.id,
+                content,
+                timestamp,
+                currentUser.uid,
+                currentUser.name,
+                currentUser.image,
+                imageListFinal,
+                mapOf()
+            )
 
         answerDoc.set(newAnswer).addOnSuccessListener {
 
@@ -175,16 +179,16 @@ class AnswerFragment : Fragment(), BoardMethods {
             db.collection("questions").document(question.id)
                 .set(mapOf("last_interaction" to timestamp), SetOptions.merge()).addOnSuccessListener {
 
-                activity.openedQuestionFragment.listenToAnswers()
-                activity.subActive = activity.openedQuestionFragment
-                closeKeyboard(activity)
-                answerContent.text.clear()
+                    activity.openedQuestionFragment.listenToAnswers()
+                    activity.subActive = activity.openedQuestionFragment
+                    closeKeyboard(activity)
+                    answerContent.text.clear()
 
-                val firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
-                firebaseAnalytics.logEvent("question_answer_added", null)
-                activity.subFm.popBackStack("answerFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                    val firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
+                    firebaseAnalytics.logEvent("question_answer_added", null)
+                    activity.subFm.popBackStack("answerFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
-            }
+                }
 
         }
     }

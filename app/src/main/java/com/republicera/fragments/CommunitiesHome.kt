@@ -83,9 +83,9 @@ class CommunitiesHome : Fragment() {
                     topLevelUser = user
                     if (topLevelUser != null) {
                         userName.text = if (user.first_name.isNotEmpty()) {
-                            user.first_name + "."
+                            user.first_name
                         } else {
-                            "Friend."
+                            "Visitor"
                         }
                         populateCommunities()
 
@@ -94,7 +94,7 @@ class CommunitiesHome : Fragment() {
                             popup.show()
                         }
                     } else {
-                        userName.text = "Friend."
+                        userName.text = "Welcome"
                     }
                 })
 

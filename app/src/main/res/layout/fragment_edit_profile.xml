@@ -104,12 +104,13 @@
                         android:layout_marginStart="8dp"
                         android:background="@drawable/button_curve_8_gray"
                         app:layout_constraintHorizontal_bias="0.0"
-                        android:textSize="15sp"
+                        android:textSize="14sp"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
                         android:paddingTop="8dp"
                         android:paddingBottom="8dp"
-                        android:hint="Profile name"/>
+                        android:hint="Profile name"
+                        android:fontFamily="@font/roboto"/>
                 <TextView
                         android:text="@string/tagline"
                         android:layout_height="wrap_content"
@@ -138,12 +139,13 @@
                         android:layout_marginStart="8dp"
                         android:background="@drawable/button_curve_8_gray"
                         app:layout_constraintHorizontal_bias="0.0"
-                        android:textSize="15sp"
+                        android:textSize="14sp"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
                         android:paddingTop="8dp"
                         android:paddingBottom="8dp"
-                        android:hint="Profile tagline"/>
+                        android:hint="Profile tagline"
+                        android:fontFamily="@font/roboto"/>
                 <TextView
                         android:text="Choose public contact details"
                         android:layout_width="0dp"

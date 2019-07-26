@@ -42,7 +42,6 @@ class AdminsAnswerFragment : Fragment(), BoardMethods {
     lateinit var question: Question
     lateinit var currentUser: CommunityProfile
 
-    private var imagesRecyclerAdapter = GroupAdapter<ViewHolder>()
     private var imageListFinal = mutableListOf<String>()
     private lateinit var answerContent: EditText
 
@@ -81,13 +80,8 @@ class AdminsAnswerFragment : Fragment(), BoardMethods {
         }
 
 
-        val addImage = answer_add_photos_button
         val answerButton = answer_btn
         answerButton.text = getString(R.string.answer)
-
-        val imagesRecycler = answer_photos_recycler
-        imagesRecycler.adapter = imagesRecyclerAdapter
-        imagesRecycler.layoutManager = GridLayoutManager(this.context, 3)
 
         answerContent = answer_content
 
@@ -110,7 +104,17 @@ class AdminsAnswerFragment : Fragment(), BoardMethods {
 
         val answerDoc = db.collection("admins_answers").document()
 
-        val newAnswer = Answer(answerDoc.id, question.id, content, timestamp, currentUser.uid, imageListFinal, mapOf())
+        val newAnswer = Answer(
+            answerDoc.id,
+            question.id,
+            content,
+            timestamp,
+            currentUser.uid,
+            currentUser.name,
+            currentUser.image,
+            imageListFinal,
+            mapOf()
+        )
 
         answerDoc.set(newAnswer).addOnSuccessListener {
 
@@ -131,7 +135,7 @@ class AdminsAnswerFragment : Fragment(), BoardMethods {
             }
 
             db.collection("admins_questions").document(question.id)
-                .set(mapOf("last_interaction" to timestamp), SetOptions.merge()).addOnSuccessListener {
+                .update(mapOf("last_interaction" to timestamp)).addOnSuccessListener {
 
                     activity.openedQuestionFragment.listenToAnswers()
                     activity.subActive = activity.openedQuestionFragment

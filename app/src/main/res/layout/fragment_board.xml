@@ -309,7 +309,7 @@
         <!--android:layout_height="70dp"-->
         <!--app:navGraph="@navigation/nav_graph"-->
         <!--app:defaultNavHost="true"-->
-        <!--android:answer_ID="@+answer_ID/bottom_nav_fragment"-->
+        <!--android:id="@+id/bottom_nav_fragment"-->
         <!--app:layout_constraintBottom_toBottomOf="parent"-->
         <!--/>-->
 

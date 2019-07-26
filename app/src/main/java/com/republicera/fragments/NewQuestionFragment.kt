@@ -332,6 +332,7 @@ class NewQuestionFragment : Fragment(), BoardMethods {
                         .put("langID", languageCode)
                         .put("_tags", tags)
                         .put("timestamp", timestamp)
+                        .put("answers", 0)
 
                     index.addObjectAsync(newQuestionJson, null)
 

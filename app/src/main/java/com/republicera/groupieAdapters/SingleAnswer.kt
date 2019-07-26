@@ -30,7 +30,7 @@ class SingleAnswer(
     val answer: Answer, val currentUser: CommunityProfile, val activity: MainActivity
 ) : Item<ViewHolder>(), BoardMethods {
 
-    lateinit var db : DocumentReference
+    lateinit var db: DocumentReference
 
     private val commentsAdapter = GroupAdapter<ViewHolder>()
     val imagesAdapter = GroupAdapter<ViewHolder>()
@@ -108,7 +108,7 @@ class SingleAnswer(
         }
 
         remove.setOnClickListener {
-            db.collection("answers").document(answer.answer_ID).delete().addOnSuccessListener {
+            db.collection("answers").document(answer.id).delete().addOnSuccessListener {
                 activity.openedQuestionFragment.answersAdapter.removeGroup(position)
                 activity.openedQuestionFragment.listenToAnswers()
                 deleteBox.visibility = View.GONE
@@ -119,52 +119,50 @@ class SingleAnswer(
         }
 
 
-
-        db.collection("profiles").document(answer.author_ID).get().addOnSuccessListener {
-
-            user = it.toObject(CommunityProfile::class.java)!!
-
-            val date = PrettyTime().format(Date(answer.timestamp))
-            Glide.with(viewHolder.root.context).load(
-                if (user.image.isNotEmpty()) {
-                    user.image
-                } else {
-                    R.drawable.user_profile
-                }
-            )
-                .into(userImage)
-
-            viewHolder.itemView.single_answer_author_name.text = user.name
-            viewHolder.itemView.single_answer_content.text = answer.content
-            viewHolder.itemView.single_answer_timestamp.text = date
-            viewHolder.itemView.single_answer_author_reputation.text =
-                "(${numberCalculation(user.reputation)})"
-
-            var finalVote = 0
-            for (item in answer.score_items){
-                finalVote += item.value
+        val date = PrettyTime().format(Date(answer.timestamp))
+        Glide.with(viewHolder.root.context).load(
+            if (answer.author_image.isNotEmpty()) {
+                answer.author_image
+            } else {
+                R.drawable.user_profile
             }
-            votesView.text = finalVote.toString()
+        )
+            .into(userImage)
 
-            if (answer.score_items.containsKey(currentUser.uid)) {
-                when (answer.score_items[currentUser.uid]) {
-                    -1 -> {
-                        downView(upvote, downvote)
-                        isDownvoted = true
-                    }
-                    0 -> {
-                        defaultView(upvote, downvote)
-                    }
+        viewHolder.itemView.single_answer_author_name.text = answer.author_name
+        viewHolder.itemView.single_answer_content.text = answer.content
+        viewHolder.itemView.single_answer_timestamp.text = date
+//        viewHolder.itemView.single_answer_author_reputation.text =
+//            "(${numberCalculation(user.reputation)})"
 
-                    1 -> {
-                        upView(upvote, downvote)
-                        isUpvoted = true
-                    }
+        var finalVote = 0
+        for (item in answer.score_items) {
+            finalVote += item.value
+        }
+        votesView.text = finalVote.toString()
+
+        if (answer.score_items.containsKey(currentUser.uid)) {
+            when (answer.score_items[currentUser.uid]) {
+                -1 -> {
+                    downView(upvote, downvote)
+                    isDownvoted = true
+                }
+                0 -> {
+                    defaultView(upvote, downvote)
+                }
+
+                1 -> {
+                    upView(upvote, downvote)
+                    isUpvoted = true
                 }
             }
+        }
 
-            userImage.setOnClickListener {
-                if (currentUser.uid != answer.author_ID) {
+        userImage.setOnClickListener {
+            if (currentUser.uid != answer.author_ID) {
+                db.collection("profiles").document(answer.author_ID).get().addOnSuccessListener {
+                    user = it.toObject(CommunityProfile::class.java)!!
+
                     sharedViewModelSecondRandomUser.randomUserObject.postValue(user)
                     activity.subFm.beginTransaction().add(
                         R.id.feed_subcontents_frame_container,
@@ -174,11 +172,10 @@ class SingleAnswer(
                         .commit()
                     activity.subActive = activity.profileSecondRandomUserFragment
                     activity.isSecondRandomUserProfileActive = true
-                } else {
-                    activity.navigateToProfile()
                 }
+            } else {
+                activity.navigateToProfile()
             }
-
         }
 
 
@@ -190,7 +187,7 @@ class SingleAnswer(
                 when {
                     isUpvoted -> return@setOnClickListener
                     isDownvoted -> {
-                        votesView.text = (votesView.text.toString().toInt() +1).toString()
+                        votesView.text = (votesView.text.toString().toInt() + 1).toString()
 
                         executeVoteAnswer(
                             0,
@@ -202,7 +199,7 @@ class SingleAnswer(
                             votesView,
                             upvote,
                             downvote,
-                            answer.answer_ID,
+                            answer.id,
                             viewHolder.itemView.single_answer_author_reputation,
                             activity,
                             -1,
@@ -212,7 +209,7 @@ class SingleAnswer(
                         isDownvoted = false
                     }
                     else -> {
-                        votesView.text = (votesView.text.toString().toInt() +1).toString()
+                        votesView.text = (votesView.text.toString().toInt() + 1).toString()
 
                         executeVoteAnswer(
                             1,
@@ -224,7 +221,7 @@ class SingleAnswer(
                             votesView,
                             upvote,
                             downvote,
-                            answer.answer_ID,
+                            answer.id,
                             viewHolder.itemView.single_answer_author_reputation,
                             activity,
                             0,
@@ -244,7 +241,7 @@ class SingleAnswer(
                 when {
                     isDownvoted -> return@setOnClickListener
                     isUpvoted -> {
-                        votesView.text = (votesView.text.toString().toInt() -1).toString()
+                        votesView.text = (votesView.text.toString().toInt() - 1).toString()
 
                         executeVoteAnswer(
                             0,
@@ -256,7 +253,7 @@ class SingleAnswer(
                             votesView,
                             upvote,
                             downvote,
-                            answer.answer_ID,
+                            answer.id,
                             viewHolder.itemView.single_answer_author_reputation,
                             activity,
                             1,
@@ -266,7 +263,7 @@ class SingleAnswer(
                         isUpvoted = false
                     }
                     else -> {
-                        votesView.text = (votesView.text.toString().toInt() -1).toString()
+                        votesView.text = (votesView.text.toString().toInt() - 1).toString()
 
                         executeVoteAnswer(
                             -1,
@@ -278,7 +275,7 @@ class SingleAnswer(
                             votesView,
                             upvote,
                             downvote,
-                            answer.answer_ID,
+                            answer.id,
                             viewHolder.itemView.single_answer_author_reputation,
                             activity,
                             0,
@@ -299,13 +296,22 @@ class SingleAnswer(
             val commentDoc = db.collection("answer_comments").document()
 
             val newComment =
-                AnswerComment(commentDoc.id, answer.answer_ID, answer.question_ID, commentInput.text.toString(), timestamp, currentUser.uid, currentUser.name, currentUser.image)
+                AnswerComment(
+                    commentDoc.id,
+                    answer.id,
+                    answer.question_ID,
+                    commentInput.text.toString(),
+                    timestamp,
+                    currentUser.uid,
+                    currentUser.name,
+                    currentUser.image
+                )
 
             commentDoc.set(newComment).addOnSuccessListener {
 
                 changeReputation(
                     12,
-                    answer.answer_ID,
+                    answer.id,
                     answer.question_ID,
                     currentUser.uid,
                     currentUser.name,
@@ -338,7 +344,7 @@ class SingleAnswer(
 
         commentsAdapter.clear()
 
-        db.collection("answer_comments").whereEqualTo("answer_ID", answer.answer_ID).get().addOnSuccessListener {
+        db.collection("answer_comments").whereEqualTo("answer_ID", answer.id).get().addOnSuccessListener {
             for (doc in it) {
                 val answerObject = doc.toObject(AnswerComment::class.java)
                 commentsAdapter.add(SingleAnswerComment(answerObject, activity, currentUser))

@@ -1,7 +1,7 @@
 package com.republicera.models
 
 class AnswerComment(
-    val comment_ID: String,
+    val id: String,
     val answer_ID: String,
     val question_ID: String,
     val content: String,

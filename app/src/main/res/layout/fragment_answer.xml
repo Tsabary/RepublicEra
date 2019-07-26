@@ -49,31 +49,10 @@
             app:layout_constraintBottom_toTopOf="@+id/answer_btn"
             android:layout_marginTop="24dp"
             app:layout_constraintTop_toBottomOf="@+id/answer_question_title"/>
-    <ImageButton
-            android:src="@drawable/gallery"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:id="@+id/answer_add_photos_button"
-            android:background="@drawable/button_curve_32_gray_stroke"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="32dp"
-            app:layout_constraintDimensionRatio="1:1"
-            android:contentDescription="@string/add_image"
-            android:visibility="gone"
-            tools:layout_editor_absoluteY="602dp"/>
-    <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            app:layout_constraintStart_toStartOf="parent"
-            android:id="@+id/answer_photos_recycler"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toStartOf="@+id/answer_add_photos_button"
-            app:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone"/>
+
+
     <TextView
-            android:text="What is the best way I can go around and make some american pancackes"
+            tools:text="What is the best way I can go around and make some american pancackes"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/answer_question_title"

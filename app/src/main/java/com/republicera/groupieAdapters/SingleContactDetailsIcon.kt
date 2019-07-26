@@ -6,12 +6,12 @@ import com.republicera.R
 import com.republicera.interfaces.GeneralMethods
 import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.stax.view.*
+import kotlinx.android.synthetic.main.contact_icon.view.*
 
 class SingleContactDetailsIcon(val case: Int, val data: String, val activity: Activity) : Item<ViewHolder>(),
     GeneralMethods {
 
-    override fun getLayout(): Int = R.layout.stax
+    override fun getLayout(): Int = R.layout.contact_icon
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
 

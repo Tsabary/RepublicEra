@@ -44,14 +44,6 @@ class SingleBoardRow(
         viewHolder.itemView.board_question.text = question.title
         viewHolder.itemView.board_tags.text = question.tags.joinToString()
         viewHolder.itemView.board_timestamp.text = date
-
-
-        db.collection("answers").whereEqualTo("question_ID", question.id).get().addOnSuccessListener {
-            viewHolder.itemView.board_answers.text = if (it.size() > 0) {
-                it.size().toString()
-            } else {
-                "0"
-            }
-        }
+        viewHolder.itemView.board_answers.text = question.answers.toString()
     }
 }

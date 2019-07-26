@@ -5,7 +5,7 @@
            parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/gray300</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/white</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:titleTextColor">@color/gray900</item>
         <item name="android:textColor">@color/gray900</item>

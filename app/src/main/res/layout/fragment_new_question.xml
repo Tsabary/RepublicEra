@@ -8,7 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".fragments.NewQuestionFragment"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:padding="24dp">
     <LinearLayout android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:orientation="vertical">
@@ -18,29 +19,46 @@
 
 
             <TextView
+                    android:text="Ask a new\nquestion"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/new_question_headline"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:textColor="@color/gray800"
+                    android:textSize="24sp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="16dp"/>
+            <TextView
                     tools:text="Startups and Business"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/new_question_community_name"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="32dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="32dp"
+                    android:layout_marginStart="16dp"
                     android:fontFamily="@font/roboto_bold"
-                    android:textColor="@color/gray500"/>
+                    android:textColor="@color/gray500"
+                    app:layout_constraintTop_toBottomOf="@+id/new_question_headline"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="16dp"/>
             <TextView
                     android:text="@string/question"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/new_question_static_title"
                     android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/gray900"
+                    android:textColor="@color/gray800"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="32dp"
-                    android:fontFamily="@font/roboto_bold"
+                    android:layout_marginStart="18dp"
+                    android:fontFamily="@font/roboto_medium"
                     app:layout_constraintTop_toBottomOf="@+id/new_question_community_name"
-                    android:layout_marginTop="32dp"/>
+                    android:layout_marginTop="32dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="18dp"/>
 
             <EditText
                     android:layout_width="match_parent"
@@ -52,30 +70,35 @@
                     app:layout_constraintStart_toStartOf="parent"
                     android:hint="@string/start_with_quot_how_quot_quot_what_quot_quot_where_quot_or_quot_when_quot"
                     app:layout_constraintHorizontal_bias="0.0"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginEnd="32dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginTop="8dp"
                     app:layout_constraintTop_toBottomOf="@+id/new_question_static_title"
                     android:inputType="textMultiLine|textCapSentences"
-                    android:background="@android:color/transparent"
+                    android:background="@drawable/button_curve_8_gray"
                     android:gravity="top"
-                    android:fontFamily="@font/roboto_medium"
-                    android:textSize="15sp"/>
+                    android:fontFamily="@font/roboto"
+                    android:textSize="14sp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"/>
 
 
             <TextView
                     android:text="@string/details"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/new_question_static_details"
                     android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/gray900"
-                    android:layout_marginTop="40dp"
+                    android:textColor="@color/gray800"
+                    android:layout_marginTop="32dp"
                     app:layout_constraintTop_toBottomOf="@+id/new_question_title"
-                    android:layout_marginStart="32dp"
+                    android:layout_marginStart="18dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:fontFamily="@font/roboto_bold"/>
+                    android:fontFamily="@font/roboto_medium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="18dp"/>
 
 
             <EditText
@@ -90,27 +113,32 @@
                     android:hint="@string/can_you_add_information_that_would_help_others_answer_your_question"
                     android:layout_marginTop="8dp"
                     app:layout_constraintHorizontal_bias="0.0"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginEnd="32dp"
-                    android:background="@android:color/transparent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/button_curve_8_gray"
                     android:gravity="top"
-                    android:textSize="15sp"
-                    android:fontFamily="@font/roboto_medium"/>
+                    android:textSize="14sp"
+                    android:fontFamily="@font/roboto"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"/>
 
 
             <TextView
                     android:text="@string/tags"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/new_question_static_tags"
                     android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/gray900"
-                    android:layout_marginTop="40dp"
+                    android:textColor="@color/gray800"
+                    android:layout_marginTop="32dp"
                     app:layout_constraintTop_toBottomOf="@+id/new_question_details"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="32dp"
-                    android:fontFamily="@font/roboto_bold"/>
+                    android:layout_marginStart="18dp"
+                    android:fontFamily="@font/roboto_medium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="18dp"/>
 
 
             <com.google.android.material.chip.ChipGroup
@@ -119,30 +147,34 @@
                     android:layout_height="wrap_content"
                     android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="32dp"
+                    android:layout_marginStart="8dp"
                     app:layout_constraintTop_toBottomOf="@+id/new_question_static_tags"
                     android:layout_marginTop="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="32dp"
+                    android:layout_marginEnd="8dp"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:chipSpacingVertical="10dp"/>
 
 
             <EditText android:layout_width="0dp"
-                      android:layout_height="23dp"
+                      android:layout_height="wrap_content"
                       android:hint="@string/enter_tags"
                       android:id="@+id/new_question_tag_input"
                       app:layout_constraintTop_toBottomOf="@+id/new_question_chip_group"
                       app:layout_constraintStart_toStartOf="parent"
-                      android:layout_marginStart="32dp"
-                      android:background="@android:color/transparent"
+                      android:layout_marginStart="8dp"
+                      android:background="@drawable/button_curve_8_gray"
                       android:layout_marginTop="8dp"
                       android:inputType="textEmailAddress"
                       android:layout_marginEnd="24dp"
                       app:layout_constraintEnd_toStartOf="@+id/new_question_add_tag_button"
                       app:layout_constraintHorizontal_bias="0.0"
-                      android:textSize="15sp"
-                      android:fontFamily="@font/roboto_medium"/>
+                      android:textSize="14sp"
+                      android:fontFamily="@font/roboto"
+                      android:paddingStart="16dp"
+                      android:paddingTop="8dp"
+                      android:paddingEnd="16dp"
+                      android:paddingBottom="8dp"/>
 
 
             <androidx.recyclerview.widget.RecyclerView
@@ -162,67 +194,70 @@
 
             <TextView
                     android:text="@string/maximum_5_tags"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/new_question_tag_instructions"
                     android:textColor="@color/gray500"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="32dp"
+                    android:layout_marginStart="18dp"
                     android:layout_marginTop="16dp"
                     app:layout_constraintTop_toBottomOf="@+id/new_question_tag_recycler"
                     android:fontFamily="@font/roboto_medium"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="18dp"/>
 
 
             <TextView
-                    android:text="@string/post_question"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/button_curve_32_gray_stroke"
                     android:id="@+id/new_question_btn"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginTop="120dp"
-                    app:layout_constraintTop_toBottomOf="@+id/new_question_tag_instructions"
-                    android:paddingBottom="16dp"
-                    android:paddingTop="16dp"
-                    android:paddingStart="24dp"
-                    android:paddingEnd="24dp"
-                    android:textColor="@color/gray500"
+                    android:text="Ask"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
                     android:fontFamily="@font/roboto_medium"
+                    android:background="@drawable/button_curve_16_500"
+                    android:textColor="@color/white"
+                    android:gravity="center"
                     android:textSize="15sp"
-                    android:layout_marginEnd="32dp"
-                    android:layout_marginStart="32dp"
-                    android:textAlignment="center"
+
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:layout_marginBottom="32dp"
-                    android:gravity="center"/>
+                    android:elevation="4dp"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintTop_toBottomOf="@id/new_question_language_input"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginBottom="24dp"/>
+
             <TextView
                     tools:text="English"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
                     android:textColor="@color/gray500"
                     app:layout_constraintTop_toBottomOf="@+id/new_question_static_language"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="32dp"
+                    android:layout_marginStart="18dp"
                     android:fontFamily="@font/roboto_medium"
                     android:layout_marginTop="8dp"
-                    android:id="@+id/new_question_language_input"/>
+                    android:id="@+id/new_question_language_input"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="18dp"/>
             <TextView
                     android:text="@string/language"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/new_question_static_language"
                     android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/gray900"
+                    android:textColor="@color/gray800"
                     android:layout_marginTop="32dp"
                     app:layout_constraintTop_toBottomOf="@id/new_question_tag_instructions"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="32dp"
-                    android:fontFamily="@font/roboto_bold"/>
+                    android:layout_marginStart="18dp"
+                    android:fontFamily="@font/roboto_medium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="18dp"/>
             <ImageButton
                     android:src="@drawable/plus"
                     android:layout_width="35dp"
@@ -232,7 +267,6 @@
                     app:layout_constraintTop_toTopOf="@+id/new_question_tag_input"
                     app:layout_constraintBottom_toBottomOf="@+id/new_question_tag_input"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="24dp"
                     android:scaleType="fitCenter"
                     android:padding="10dp"
                     android:contentDescription="@string/add_tag"/>
