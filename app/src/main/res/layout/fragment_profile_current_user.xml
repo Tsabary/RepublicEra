@@ -19,7 +19,7 @@
                 android:descendantFocusability="blocksDescendants">
 
 
-            <androidx.appcompat.widget.Toolbar
+            <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="0dp"
                     android:layout_height="50dp"
                     android:background="@color/white"
@@ -28,8 +28,20 @@
                     android:id="@+id/profile_li_toolbar"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-            />
+                    app:layout_constraintStart_toStartOf="parent">
+
+                <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="16dp"
+                        app:srcCompat="@drawable/menu"
+                        android:id="@+id/profile_li_menu_button"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:background="@android:color/transparent"
+                        android:padding="16dp"
+                        android:scaleType="centerInside"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
             <de.hdodenhof.circleimageview.CircleImageView
                     android:layout_width="112dp"
                     android:layout_height="112dp"

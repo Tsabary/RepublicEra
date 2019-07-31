@@ -386,14 +386,11 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
     private fun executeUnfollow() {
         val batch = FirebaseFirestore.getInstance().batch()
 
-        val followedAccountsRef = db.collection("followed_accounts").document(currentUser.uid)
+        val followedAccountsRef = db.collection("accounts_that_user_follows").document(currentUser.uid)
         batch.update(followedAccountsRef, "accounts_list", FieldValue.arrayRemove(userProfile.uid))
 
-        val accountsFollowingRef = db.collection("accounts_following").document(userProfile.uid)
+        val accountsFollowingRef = db.collection("accounts_that_follow_user").document(userProfile.uid)
         batch.update(accountsFollowingRef, "accounts_list", FieldValue.arrayRemove(currentUser.uid))
-//
-//        val userFollowersCountRef = db.collection("profiles").document(userProfile.uid)
-//        batch.update(userFollowersCountRef, "followers", FieldValue.increment(-1))
 
         batch.commit().addOnSuccessListener {
 
@@ -406,19 +403,6 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
             followedAccountsList.remove(userProfile.uid)
             followedAccountsViewModel.followedAccounts.postValue(followedAccountsList)
 
-            changeReputation(
-                21,
-                userProfile.uid,
-                userProfile.uid,
-                currentUser.uid,
-                currentUser.name,
-                currentUser.image,
-                userProfile.uid,
-                TextView(this.context),
-                "follow",
-                activity as MainActivity,
-                currentCommunity.id
-            )
         }
     }
 
@@ -426,15 +410,11 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
 
         val batch = FirebaseFirestore.getInstance().batch()
 
-        val followedAccountsRef = db.collection("followed_accounts").document(currentUser.uid)
+        val followedAccountsRef = db.collection("accounts_that_user_follows").document(currentUser.uid)
         batch.update(followedAccountsRef, "accounts_list", FieldValue.arrayUnion(userProfile.uid))
 
-        val accountsFollowingRef = db.collection("accounts_following").document(userProfile.uid)
+        val accountsFollowingRef = db.collection("accounts_that_follow_user").document(userProfile.uid)
         batch.update(accountsFollowingRef, "accounts_list", FieldValue.arrayUnion(currentUser.uid))
-//
-//        val userFollowersCountRef = db.collection("profiles").document(userProfile.uid)
-//        batch.update(userFollowersCountRef, "followers", FieldValue.increment(1))
-
 
         batch.commit().addOnSuccessListener {
 
@@ -446,20 +426,6 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
 
             followedAccountsList.add(userProfile.uid)
             followedAccountsViewModel.followedAccounts.postValue(followedAccountsList)
-
-            changeReputation(
-                20,
-                userProfile.uid,
-                userProfile.uid,
-                currentUser.uid,
-                currentUser.name,
-                currentUser.image,
-                userProfile.uid,
-                TextView(this.context),
-                "follow",
-                activity,
-                currentCommunity.id
-            )
         }
     }
 

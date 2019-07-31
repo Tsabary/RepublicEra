@@ -16,7 +16,7 @@
 
 
         <include
-                layout="@layout/board_toolbar"
+                layout="@layout/toolbar_with_search"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -54,12 +54,14 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/board_community_title"
                     android:fontFamily="@font/roboto_bold"
-                    android:textColor="@color/gray800"
+                    android:textColor="@color/mainColor900"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:clickable="false"/>
+                    android:clickable="false"
+                    android:ems="10"
+                    android:gravity="center"/>
 
             <com.jaredrummler.materialspinner.MaterialSpinner
                     android:id="@+id/board_language_spinner"
@@ -174,16 +176,17 @@
                 app:layout_constraintTop_toBottomOf="@id/constraintLayout3"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/constraintLayout_botton_check">
+                app:layout_constraintBottom_toTopOf="@+id/constraintLayout_botton_check"
+                android:visibility="gone">
 
             <!--<androidx.core.widget.NestedScrollView-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="0dp"-->
-                    <!--android:id="@+id/board_search_scroll_view"-->
-                    <!--app:layout_constraintBottom_toBottomOf="parent"-->
-                    <!--app:layout_constraintEnd_toEndOf="parent"-->
-                    <!--app:layout_constraintStart_toStartOf="parent"-->
-                    <!--app:layout_constraintTop_toTopOf="parent">-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:id="@+id/board_search_scroll_view"-->
+            <!--app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toTopOf="parent">-->
             <!--</androidx.core.widget.NestedScrollView>-->
 
 
@@ -215,16 +218,17 @@
                 app:layout_constraintTop_toBottomOf="@id/constraintLayout3"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/constraintLayout_botton_check">
+                app:layout_constraintBottom_toTopOf="@+id/constraintLayout_botton_check"
+                android:visibility="gone">
 
             <!--<androidx.core.widget.NestedScrollView-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="0dp"-->
-                    <!--android:id="@+id/board_quorum_scroll_view"-->
-                    <!--app:layout_constraintBottom_toBottomOf="parent"-->
-                    <!--app:layout_constraintEnd_toEndOf="parent"-->
-                    <!--app:layout_constraintStart_toStartOf="parent"-->
-                    <!--app:layout_constraintTop_toTopOf="parent">-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:id="@+id/board_quorum_scroll_view"-->
+            <!--app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toTopOf="parent">-->
             <!--</androidx.core.widget.NestedScrollView>-->
 
 

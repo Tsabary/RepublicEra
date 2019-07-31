@@ -89,17 +89,17 @@ class AdminsSearchFragment : Fragment() {
                     activity.subFm.beginTransaction()
                         .add(
                             R.id.feed_subcontents_frame_container,
-                            activity.openedQuestionFragment,
-                            "openedQuestionFragment"
+                            activity.adminsOpenedQuestionFragment,
+                            "adminsOpenedQuestionFragment"
                         )
-                        .addToBackStack("openedQuestionFragment").commit()
+                        .addToBackStack("adminsOpenedQuestionFragment").commit()
 
                     db.collection("profiles").document(questionObject.author_ID).get().addOnSuccessListener { documentSnapshot ->
                         val profile = documentSnapshot.toObject(CommunityProfile::class.java)
 
                         if (profile != null) {
                             sharedViewModelRandomUser.randomUserObject.postValue(profile)
-                            activity.subActive = activity.openedQuestionFragment
+                            activity.subActive = activity.adminsOpenedQuestionFragment
                             activity.isOpenedQuestionActive = true
                             activity.switchVisibility(1)
                         }

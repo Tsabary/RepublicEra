@@ -24,7 +24,7 @@ import org.json.JSONObject
 
 class NewCommunityFragment : Fragment() {
 
-    lateinit var index: com.algolia.search.saas.Index
+    private lateinit var index: com.algolia.search.saas.Index
 
     private lateinit var communityViewModel: CurrentCommunityViewModel
 
@@ -98,10 +98,10 @@ class NewCommunityFragment : Fragment() {
 //
 //                        index.addObjectAsync(newCommunityJson, null)
 //
-//                        communityViewModel.currentCommunity.postValue(newCommunity)
-//                        activity.userHomeFrame.visibility = View.GONE
+                        communityViewModel.currentCommunity.postValue(newCommunity)
+                        activity.userHomeFrame.visibility = View.GONE
                     }.addOnFailureListener {
-                        Toast.makeText(this.context, "Community failed", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this.context, "Community failed" + it.localizedMessage, Toast.LENGTH_SHORT).show()
 
                     }
                 } else {

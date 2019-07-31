@@ -1,5 +1,7 @@
 package com.republicera.models
 
+import java.util.*
+
 class Notification(
     val id: String,
     val post_type: Int,
@@ -9,8 +11,8 @@ class Notification(
     val initiator_image: String,
     val main_post_ID: String,
     val specific_post_ID: String,
-    val timestamp: HashMap<String, String>,
+    val timestamp: Date,
     val seen: Int
 ) {
-    constructor() : this("",0, 0, "", "", "", "", "", hashMapOf(), 0)
+    constructor() : this("",0, 0, "", "", "", "", "", Date(), 0)
 }

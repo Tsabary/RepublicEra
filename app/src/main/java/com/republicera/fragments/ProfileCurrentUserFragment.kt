@@ -7,9 +7,11 @@ import android.graphics.PorterDuff
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Observer
@@ -23,10 +25,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.*
 import com.google.firebase.messaging.FirebaseMessaging
 import com.republicera.MainActivity
 import com.republicera.R
@@ -50,15 +49,15 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
 
     lateinit var db: DocumentReference
 
-    lateinit var galleryShoutsRecycler: RecyclerView
-    lateinit var galleryQuestionsRecycler: RecyclerView
-    lateinit var galleryAnswersRecycler: RecyclerView
+    private lateinit var galleryShoutsRecycler: RecyclerView
+    private lateinit var galleryQuestionsRecycler: RecyclerView
+    private lateinit var galleryAnswersRecycler: RecyclerView
 
     private val galleryShoutsAdapter = GroupAdapter<ViewHolder>()
     private val galleryQuestionsAdapter = GroupAdapter<ViewHolder>()
     private val galleryAnswersAdapter = GroupAdapter<ViewHolder>()
 
-    lateinit var contactDetailsIconsRecycler: RecyclerView
+    private lateinit var contactDetailsIconsRecycler: RecyclerView
     private val contactDetailsIconsAdapter = GroupAdapter<ViewHolder>()
 
     private lateinit var shoutsBtn: TextView
@@ -67,10 +66,11 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
 
     lateinit var profileAnswers: TextView
 
-    lateinit var userProfile: CommunityProfile
+    private lateinit var userProfile: CommunityProfile
 
-    lateinit var contactDetailsViewModel: ContactDetailsViewModel
-    lateinit var currentCommunityProfileViewModel: CurrentCommunityProfileViewModel
+    private lateinit var currentCommunityViewModel: CurrentCommunityViewModel
+    private lateinit var contactDetailsViewModel: ContactDetailsViewModel
+    private lateinit var currentCommunityProfileViewModel: CurrentCommunityProfileViewModel
     lateinit var sharedViewModelRandomUser: RandomUserViewModel
     private lateinit var sharedViewModelForQuestion: QuestionViewModel
 
@@ -80,6 +80,8 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
 
     private lateinit var buo: BranchUniversalObject
     private lateinit var lp: LinkProperties
+
+    lateinit var menuResign: MenuItem
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -104,10 +106,13 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
         profileAnswers = profile_li_answers_count
         val tagline = profile_li_tagline
 
-        val toolbar = profile_li_toolbar
-        setHasOptionsMenu(true)
-        toolbar.inflateMenu(R.menu.profile_navigation)
-        toolbar.overflowIcon!!.setColorFilter(resources.getColor(R.color.gray500), PorterDuff.Mode.SRC_ATOP)
+        val menuButton = profile_li_menu_button
+        val popup = PopupMenu(this.context, menuButton)
+        popup.inflate(R.menu.profile_navigation)
+        menuResign = popup.menu.getItem(2)
+        menuButton.setOnClickListener {
+            popup.show()
+        }
 
         galleryShoutsRecycler.adapter = galleryShoutsAdapter
         galleryShoutsRecycler.layoutManager = LinearLayoutManager(this.context)
@@ -125,6 +130,7 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
         answersBtn = profile_li_answers_btn
 
         activity.let {
+            currentCommunityViewModel = ViewModelProviders.of(it).get(CurrentCommunityViewModel::class.java)
             currentCommunityProfileViewModel =
                 ViewModelProviders.of(it).get(CurrentCommunityProfileViewModel::class.java)
             sharedViewModelRandomUser = ViewModelProviders.of(it).get(RandomUserViewModel::class.java)
@@ -133,11 +139,11 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
 
             ViewModelProviders.of(it).get(CurrentCommunityViewModel::class.java).currentCommunity.observe(
                 activity,
-                Observer { communityName ->
-                    currentCommunity = communityName
+                Observer { community ->
+                    currentCommunity = community
                     db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity.id)
                     userProfile = currentCommunityProfileViewModel.currentCommunityProfileObject
-
+                    menuResign.isVisible = currentCommunity.admins.contains(userProfile.uid)
                     listenToShouts()
                     listenToQuestions()
                     listenToAnswers()
@@ -152,11 +158,13 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
                     .set(mapOf("reputation" to count), SetOptions.merge())
             }
 
-            Glide.with(this).load(if (userProfile.image.isNotEmpty()) {
-                userProfile.image
-            } else {
-                R.drawable.user_profile
-            }).into(picture)
+            Glide.with(this).load(
+                if (userProfile.image.isNotEmpty()) {
+                    userProfile.image
+                } else {
+                    R.drawable.user_profile
+                }
+            ).into(picture)
 
 
             name.text = userProfile.name
@@ -192,7 +200,11 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
 
         }
 
-        toolbar.setOnMenuItemClickListener {
+
+
+
+
+        popup.setOnMenuItemClickListener {
 
             when (it.itemId) {
 
@@ -218,6 +230,16 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
                         .commit()
                     activity.subActive = activity.editInterestsFragment
                     activity.switchVisibility(1)
+                    return@setOnMenuItemClickListener true
+                }
+
+                R.id.profile_resign_admin -> {
+
+                    FirebaseFirestore.getInstance().collection("communities").document(currentCommunity.id)
+                        .update("admins", FieldValue.arrayRemove(userProfile.uid))
+
+                    currentCommunity.admins.remove(userProfile.uid)
+                    currentCommunityViewModel.currentCommunity.postValue(currentCommunity)
                     return@setOnMenuItemClickListener true
                 }
 
@@ -396,7 +418,7 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
             }
     }
 
-    private fun listenToContactDetails() {////////////////////currently shows all contact details need to show only for community
+    private fun listenToContactDetails() {
 
         contactDetailsIconsAdapter.clear()
 
@@ -413,7 +435,6 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
                     } else {
                         contactDetailsIconsRecycler.visibility = View.VISIBLE
                     }
-
 
 
                     var totalAmountOfFields = 0

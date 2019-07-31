@@ -2,6 +2,7 @@ package com.republicera.models
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import java.util.*
 
 @Parcelize
 class CommunityProfile(
@@ -12,9 +13,12 @@ class CommunityProfile(
     val tag_line: String,
     val reputation: Long,
     val followers: Long,
-    val join_date: Long,
-    val last_activity: Long
+    val answers: Long,
+    val questions: Long,
+    val shouts: Long,
+    val join_date: Date,
+    val last_activity: Date
 ) : Parcelable {
 
-    constructor() : this("", "",  "", listOf(), "", 0, 0, 0, 0)
+    constructor() : this("", "", "", listOf(), "", 0, 0, 0, 0, 0, Date(), Date())
 }

@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.*
+import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage
 import com.google.firebase.storage.FirebaseStorage
 import com.republicera.MainActivity
 import com.republicera.groupieAdapters.SingleShout
@@ -40,12 +41,12 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_shouts.*
 import kotlinx.android.synthetic.main.shout_bottom_sheet.*
-import kotlinx.android.synthetic.main.shouts_toolbar.*
 import me.echodev.resizer.Resizer
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.util.*
 import com.republicera.R
+import kotlinx.android.synthetic.main.toolbar_with_search.*
 
 
 class ShoutsFragment : Fragment(), GeneralMethods {
@@ -54,7 +55,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
 
     private lateinit var currentCommunityViewModel: CurrentCommunityViewModel
     private lateinit var followersViewModel: FollowersViewModel
-    lateinit var followersList: MutableList<String>
+    private lateinit var followersList: MutableList<String>
 
 
     lateinit var currentUser: CommunityProfile
@@ -62,7 +63,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
 
     private lateinit var freshMessageAll: TextView
     private lateinit var freshMessageFollowing: TextView
-    lateinit var feedStateTitle: TextView
+    private lateinit var feedStateTitle: TextView
 
     lateinit var allSwipeRefresh: SwipeRefreshLayout
     lateinit var followingSwipeRefresh: SwipeRefreshLayout
@@ -166,12 +167,12 @@ class ShoutsFragment : Fragment(), GeneralMethods {
                 .show()
         }
 
-        val savedShoutsButton = shouts_toolbar_saved_questions_icon
+        val savedShoutsButton = toolbar_with_search_saved_icon
         savedShoutsButton.setOnClickListener {
             goToSavedShouts(activity)
         }
 
-        val shoutsNotificationsIcon = shouts_toolbar_notifications_icon
+        val shoutsNotificationsIcon = toolbar_with_search_notifications_icon
         shoutsNotificationsIcon.setOnClickListener {
             goToNotifications(activity)
         }
@@ -253,6 +254,16 @@ class ShoutsFragment : Fragment(), GeneralMethods {
             shoutCard.visibility = View.GONE
             shoutRemoveImage.visibility = View.GONE
         }
+
+        switchRecyclers()
+
+        val notificationBadge = toolbar_with_search_notifications_badge
+
+        activity.shoutsNotificationsCount.observe(this, Observer {
+            it?.let { notCount ->
+                notificationBadge.setNumber(notCount)
+            }
+        })
     }
 
 
@@ -319,39 +330,50 @@ class ShoutsFragment : Fragment(), GeneralMethods {
     }
 
     private fun shout(image: String, shoutDoc: DocumentReference) {
-        val shout = Shout(
-            shoutDoc.id,
-            currentUser.uid,
-            currentUser.name,
-            currentUser.image,
-            shoutInput.text.toString(),
-            if (image.isNotEmpty()) {
-                listOf(image)
-            } else {
-                listOf()
-            },
-            System.currentTimeMillis(),
-            System.currentTimeMillis(),
-            listOf(),
-            true,
-            mutableListOf(),
-            0,
-            followersList
-        )
 
-        shoutDoc.set(shout).addOnSuccessListener {
-            shoutsAllAdapter.add(0, SingleShout(shout, currentUser, activity as MainActivity))
-            shoutInput.text.clear()
-            shoutInput.clearFocus()
-            closeKeyboard(activity as MainActivity)
-            shoutsFollowingRecycler.smoothScrollToPosition(0)
-            shoutButton.visibility = View.GONE
-            shoutAddImage.visibility = View.GONE
-            shoutCard.visibility = View.GONE
-            shoutProgress.visibility = View.GONE
-            selectedPhotoUri = null
+        val languageIdentifier = FirebaseNaturalLanguage.getInstance().languageIdentification
+        languageIdentifier.identifyLanguage(shoutInput.text.toString()).addOnSuccessListener {
 
+            val timestamp = Date(System.currentTimeMillis())
+
+            val shout = Shout(
+                shoutDoc.id,
+                currentUser.uid,
+                currentUser.name,
+                currentUser.image,
+                shoutInput.text.toString(),
+                if (image.isNotEmpty()) {
+                    listOf(image)
+                } else {
+                    listOf()
+                },
+                it,
+                timestamp,
+                timestamp,
+                reported = false,
+                visible = true,
+                likes = mutableListOf(),
+                comments = 0,
+                xfollowers = followersList
+            )
+
+            shoutDoc.set(shout).addOnSuccessListener {
+                shoutsAllAdapter.add(0, SingleShout(shout, currentUser, activity as MainActivity))
+                shoutInput.text.clear()
+                shoutInput.clearFocus()
+                closeKeyboard(activity as MainActivity)
+                shoutsFollowingRecycler.smoothScrollToPosition(0)
+                shoutButton.visibility = View.GONE
+                shoutAddImage.visibility = View.GONE
+                shoutCard.visibility = View.GONE
+                shoutProgress.visibility = View.GONE
+                selectedPhotoUri = null
+
+                freshMessageAll.visibility = View.GONE
+            }
         }
+
+
     }
 
     private fun listenToAllShouts() {
@@ -360,12 +382,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
         db.collection("shouts").whereEqualTo("visible", true).orderBy("last_interaction", Query.Direction.DESCENDING)
             .limit(25)
             .get().addOnSuccessListener {
-                if (it.size() == 0) {
-                    freshMessageAll.visibility = View.VISIBLE
-                } else {
-                    freshMessageAll.visibility = View.GONE
-
-
+                if (it.size() != 0) {
                     for (oneShout in it) {
                         val shoutDoc = oneShout.toObject(Shout::class.java)
                         shoutsAllAdapter.add(SingleShout(shoutDoc, currentUser, activity as MainActivity))
@@ -373,6 +390,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
                     shoutsAllAdapter.notifyDataSetChanged()
 
                     allLastVisible = it.documents[it.size() - 1]
+                    freshMessageAll.visibility = View.GONE
                 }
             }
 
@@ -441,12 +459,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
         db.collection("shouts").whereArrayContains("xfollowers", currentUser.uid).whereEqualTo("visible", true)
             .orderBy("last_interaction", Query.Direction.DESCENDING).limit(25)
             .get().addOnSuccessListener {
-                if (it.size() == 0) {
-                    freshMessageFollowing.visibility = View.VISIBLE
-                } else {
-                    freshMessageFollowing.visibility = View.GONE
-
-
+                if (it.size() != 0) {
                     for (oneShout in it) {
                         val shoutDoc = oneShout.toObject(Shout::class.java)
                         shoutsFollowingAdapter.add(SingleShout(shoutDoc, currentUser, activity as MainActivity))
@@ -454,6 +467,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
                     shoutsFollowingAdapter.notifyDataSetChanged()
 
                     followingLastVisible = it.documents[it.size() - 1]
+                    freshMessageFollowing.visibility = View.GONE
                 }
             }
 
@@ -522,11 +536,27 @@ class ShoutsFragment : Fragment(), GeneralMethods {
             feedStateTitle.text = "All"
             allSwipeRefresh.visibility = View.VISIBLE
             followingSwipeRefresh.visibility = View.GONE
+
+            freshMessageFollowing.visibility = View.GONE
+
+            if(shoutsAllAdapter.itemCount == 0){
+                freshMessageAll.visibility = View.VISIBLE
+            } else {
+                freshMessageAll.visibility = View.GONE
+            }
         } else {
             feedStateTitle.tag = "following"
             feedStateTitle.text = "Following"
             allSwipeRefresh.visibility = View.GONE
             followingSwipeRefresh.visibility = View.VISIBLE
+
+            freshMessageAll.visibility = View.GONE
+
+            if(shoutsFollowingAdapter.itemCount == 0){
+                freshMessageFollowing.visibility = View.VISIBLE
+            } else {
+                freshMessageFollowing.visibility = View.VISIBLE
+            }
         }
     }
 

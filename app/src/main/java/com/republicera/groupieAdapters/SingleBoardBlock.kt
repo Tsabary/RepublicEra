@@ -44,7 +44,7 @@ class SingleBoardBlock(
 
         Glide.with(viewHolder.root.context).load(if (currentUser.image.isNotEmpty()){currentUser.image}else{R.drawable.user_profile}).into(viewHolder.itemView.board_block_current_user_photo)
 
-        val date = PrettyTime().format(Date(question.timestamp))
+        val date = PrettyTime().format(question.timestamp)
         viewHolder.itemView.board_block_timestamp.text = date
         viewHolder.itemView.board_block_question.text = question.title
         viewHolder.itemView.board_block_tags.text = question.tags.joinToString()
@@ -54,13 +54,6 @@ class SingleBoardBlock(
         Glide.with(viewHolder.root.context).load(if(question.author_image.isNotEmpty()){question.author_image}else{R.drawable.user_profile})
             .into(viewHolder.itemView.board_block_author_image)
 
-        db.collection("answers").whereEqualTo("question_ID", question.id).get().addOnSuccessListener {
-            viewHolder.itemView.board_block_answers.text = if (it.size()>0){
-                "${it.size()} answers"
-            } else{
-                "0 answers"
-            }
-        }
-
+        viewHolder.itemView.board_block_answers.text = question.answers.toString()
     }
 }

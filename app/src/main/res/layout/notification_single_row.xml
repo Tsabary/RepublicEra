@@ -18,7 +18,8 @@
             android:layout_marginStart="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="16dp"
-            android:id="@+id/notification_initiator_image"/>
+            android:id="@+id/notification_initiator_image"
+            android:layout_marginTop="16dp"/>
 
 
     <TextView

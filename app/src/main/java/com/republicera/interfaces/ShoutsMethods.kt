@@ -34,19 +34,17 @@ interface ShoutsMethods : GeneralMethods {
         executeLikeForFastResponse(likeButton, likeCount)
 
         if (shout.likes.contains(initiatorId)) {
-            db.update("likes", FieldValue.arrayRemove(initiatorId)).addOnSuccessListener {
 
                 db.update("likes", FieldValue.arrayRemove(initiatorId))
                     .addOnSuccessListener {
                         changeReputation(
-                            15,
+                            13,
                             shout.id,
                             shout.id,
                             initiatorId,
                             initiatorName,
                             initiatorImage,
                             receiverId,
-                            userReputationView,
                             "shoutLike",
                             activity,
                             currentCommunity
@@ -57,35 +55,28 @@ interface ShoutsMethods : GeneralMethods {
                     }
 
 
-            }
+
 
         } else {
-            db.update("likes", FieldValue.arrayUnion(initiatorId)).addOnSuccessListener {
-
                 db.update("likes", FieldValue.arrayUnion(initiatorId))
                     .addOnSuccessListener {
 
-                        db.collection("shouts").document(shout.id)
-                            .set(mapOf("last_interaction" to System.currentTimeMillis()), SetOptions.merge())
-                            .addOnSuccessListener {
-                                changeReputation(
-                                    14,
-                                    shout.id,
-                                    shout.id,
-                                    initiatorId,
-                                    initiatorName,
-                                    initiatorImage,
-                                    receiverId,
-                                    userReputationView,
-                                    "shoutLike",
-                                    activity,
-                                    currentCommunity
-                                )
+                        changeReputation(
+                            12,
+                            shout.id,
+                            shout.id,
+                            initiatorId,
+                            initiatorName,
+                            initiatorImage,
+                            receiverId,
+                            "shoutLike",
+                            activity,
+                            currentCommunity
+                        )
 
-                                firebaseAnalytics.logEvent("shout_liked", null)
-                            }
+                        firebaseAnalytics.logEvent("shout_liked", null)
                     }
-            }
+
         }
     }
 
@@ -206,14 +197,13 @@ interface ShoutsMethods : GeneralMethods {
         if (comment.likes.contains(initiatorId)) {
             db.update("likes", FieldValue.arrayRemove(initiatorId)).addOnSuccessListener {
                 changeReputation(
-                    19,
+                    15,
                     comment.id,
                     comment.shout_ID,
                     initiatorId,
                     initiatorName,
                     initiatorImage,
                     receiverId,
-                    userReputationView,
                     "shoutCommentLike",
                     activity,
                     currentCommunity
@@ -224,14 +214,13 @@ interface ShoutsMethods : GeneralMethods {
         } else {
             db.update("likes", FieldValue.arrayUnion(initiatorId)).addOnSuccessListener {
                 changeReputation(
-                    18,
+                    14,
                     comment.id,
                     comment.shout_ID,
                     initiatorId,
                     initiatorName,
                     initiatorImage,
                     receiverId,
-                    userReputationView,
                     "shoutCommentLike",
                     activity,
                     currentCommunity

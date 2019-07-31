@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.SetOptions
 import com.republicera.MainActivity
 import com.republicera.R
 import com.republicera.groupieAdapters.SingleNotification
@@ -25,8 +24,8 @@ import com.republicera.viewModels.QuestionViewModel
 import com.republicera.viewModels.RandomUserViewModel
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.board_toolbar_notifications.*
-import kotlinx.android.synthetic.main.fragment_notifications_board.*
+import kotlinx.android.synthetic.main.toolbar_without_search.*
+import kotlinx.android.synthetic.main.fragment_notifications.*
 
 
 class BoardNotificationsFragment : Fragment() {
@@ -47,7 +46,7 @@ class BoardNotificationsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_notifications_board, container, false)
+    ): View? = inflater.inflate(R.layout.fragment_notifications, container, false)
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -69,7 +68,7 @@ class BoardNotificationsFragment : Fragment() {
                 })
         }
 
-        val boardNotificationBadge = board_toolbar_notifications_notifications_badge
+        val boardNotificationBadge = toolbar_without_search_notifications_badge
 
         activity.boardNotificationsCount.observe(this, androidx.lifecycle.Observer {
             it?.let { notCount ->
@@ -86,8 +85,8 @@ class BoardNotificationsFragment : Fragment() {
         notificationsRecycler.adapter = notificationsRecyclerAdapter
         notificationsRecycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this.context)
 
-        val boardNotificationIcon = board_toolbar_notifications_notifications_icon
-        val boardSavedQuestionIcon = board_toolbar_notifications_saved_questions_icon
+        val boardNotificationIcon = toolbar_without_search_notifications_icon
+        val boardSavedQuestionIcon = toolbar_without_search_saved_icon
 
         listenToNotifications(currentUser)
 
@@ -112,15 +111,15 @@ class BoardNotificationsFragment : Fragment() {
 
         notifications_mark_all_as_read.setOnClickListener {
 
-            val dbNotifications = db.collection("notifications").document(currentUser.uid).collection("board")
-            dbNotifications.whereEqualTo("seen", 0).get()
-                .addOnSuccessListener {
-                    for (doc in it) {
-                        dbNotifications.document(doc.id).update(mapOf("seen" to 1))
+                db.collection("notifications").document(currentUser.uid).collection("board").whereEqualTo("seen", 0)
+                    .get()
+                    .addOnSuccessListener {
+                        for (doc in it) {
+                            doc.reference.update(mapOf("seen" to 1))
+                        }
+                        notificationsRecyclerAdapter.clear()
+                        listenToNotifications(currentUser)
                     }
-                    notificationsRecyclerAdapter.clear()
-                    listenToNotifications(currentUser)
-                }
         }
 
         notificationsRecyclerAdapter.setOnItemClickListener { item, _ ->
@@ -167,7 +166,8 @@ class BoardNotificationsFragment : Fragment() {
 
         notificationsRecyclerAdapter.clear()
 
-        db.collection("notifications").document(currentUser.uid).collection("board").orderBy("timestamp", Query.Direction.DESCENDING).get().addOnSuccessListener {
+        db.collection("notifications").document(currentUser.uid).collection("board")
+            .orderBy("timestamp", Query.Direction.DESCENDING).get().addOnSuccessListener {
             for (doc in it) {
                 val notification = doc.toObject(Notification::class.java)
 

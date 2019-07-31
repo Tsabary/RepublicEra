@@ -22,13 +22,13 @@ import com.republicera.viewModels.RandomUserViewModel
 import com.republicera.viewModels.ShoutViewModel
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.board_toolbar_notifications.*
-import kotlinx.android.synthetic.main.fragment_notifications_board.*
+import kotlinx.android.synthetic.main.toolbar_without_search.*
+import kotlinx.android.synthetic.main.fragment_notifications.*
 
 
 class ShoutsNotificationsFragment : Fragment() {
 
-    lateinit var db : DocumentReference
+    lateinit var db: DocumentReference
 
     private val notificationsRecyclerAdapter = GroupAdapter<ViewHolder>()
 
@@ -43,7 +43,7 @@ class ShoutsNotificationsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_notifications_board, container, false)
+    ): View? = inflater.inflate(R.layout.fragment_notifications, container, false)
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,19 +54,19 @@ class ShoutsNotificationsFragment : Fragment() {
         activity.let {
             sharedViewModelShout = ViewModelProviders.of(it).get(ShoutViewModel::class.java)
             sharedViewModelRandomUser = ViewModelProviders.of(it).get(RandomUserViewModel::class.java)
-            currentUser = ViewModelProviders.of(it).get(CurrentCommunityProfileViewModel::class.java).currentCommunityProfileObject
+            currentUser = ViewModelProviders.of(it).get(CurrentCommunityProfileViewModel::class.java)
+                .currentCommunityProfileObject
 
             ViewModelProviders.of(it).get(CurrentCommunityViewModel::class.java).currentCommunity.observe(
-                activity,
-                Observer { communityName ->
+                activity, Observer { communityName ->
                     currentCommunity = communityName
                     db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity.id)
                 })
         }
 
-        val shoutsNotificationBadge = board_toolbar_notifications_notifications_badge
+        val shoutsNotificationBadge = toolbar_without_search_notifications_badge
 
-        activity.boardNotificationsCount.observe(this, Observer {
+        activity.shoutsNotificationsCount.observe(this, Observer {
             it?.let { notCount ->
                 shoutsNotificationBadge.setNumber(notCount)
             }
@@ -81,8 +81,8 @@ class ShoutsNotificationsFragment : Fragment() {
         notificationsRecycler.adapter = notificationsRecyclerAdapter
         notificationsRecycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this.context)
 
-        val shoutsNotificationIcon = board_toolbar_notifications_notifications_icon
-        val shoutsSavedQuestionIcon = board_toolbar_notifications_saved_questions_icon
+        val shoutsNotificationIcon = toolbar_without_search_notifications_icon
+        val shoutsSavedQuestionIcon = toolbar_without_search_saved_icon
 
         listenToNotifications(currentUser)
 
@@ -106,16 +106,15 @@ class ShoutsNotificationsFragment : Fragment() {
 
 
         notifications_mark_all_as_read.setOnClickListener {
-
-            val dbNotifications = db.collection("notifications").document(currentUser.uid).collection("shouts")
-            dbNotifications.whereEqualTo("seen", 0).get()
-                .addOnSuccessListener {
-                    for (doc in it) {
-                        dbNotifications.document(doc.id).update(mapOf("seen" to 1))
+                db.collection("notifications").document(currentUser.uid).collection("shouts").whereEqualTo("seen", 0)
+                    .get()
+                    .addOnSuccessListener {
+                        for (doc in it) {
+                            doc.reference.update(mapOf("seen" to 1))
+                        }
+                        notificationsRecyclerAdapter.clear()
+                        listenToNotifications(currentUser)
                     }
-                    notificationsRecyclerAdapter.clear()
-                    listenToNotifications(currentUser)
-                }
         }
 
 
@@ -164,27 +163,28 @@ class ShoutsNotificationsFragment : Fragment() {
 
         notificationsRecyclerAdapter.clear()
 
-        db.collection("notifications").document(currentUser.uid).collection("shouts").orderBy("timestamp", Query.Direction.DESCENDING).get().addOnSuccessListener {
-            for (doc in it) {
-                val notification = doc.toObject(Notification::class.java)
+        db.collection("notifications").document(currentUser.uid).collection("shouts")
+            .orderBy("timestamp", Query.Direction.DESCENDING).get().addOnSuccessListener {
+                for (doc in it) {
+                    val notification = doc.toObject(Notification::class.java)
 
-                notificationsRecyclerAdapter.add(
-                    SingleNotification(
-                        notification,
-                        activity,
-                        currentUser,
-                        doc.id
+                    notificationsRecyclerAdapter.add(
+                        SingleNotification(
+                            notification,
+                            activity,
+                            currentUser,
+                            doc.id
+                        )
                     )
-                )
 
-                var boardNotCount = 0
+                    var shoutNotCount = 0
 
-                if (notification.seen == 0) {
-                    boardNotCount++
+                    if (notification.seen == 0) {
+                        shoutNotCount++
+                    }
+                    activity.shoutsNotificationsCount.postValue(shoutNotCount)
                 }
-                activity.shoutsNotificationsCount.postValue(boardNotCount)
             }
-        }
     }
 }
 

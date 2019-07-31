@@ -144,5 +144,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="edit_basic_information">Edit basic information</string>
+    <string name="admins">Admins</string>
 
 </resources>

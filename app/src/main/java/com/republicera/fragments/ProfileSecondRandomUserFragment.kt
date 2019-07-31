@@ -33,7 +33,7 @@ import com.republicera.groupieAdapters.SingleContactDetailsIcon
 
 class ProfileSecondRandomUserFragment : Fragment(), ProfileMethods {
 
-    lateinit var db : DocumentReference
+    lateinit var db: DocumentReference
 
     val topLevelDB = FirebaseFirestore.getInstance()
 
@@ -44,8 +44,8 @@ class ProfileSecondRandomUserFragment : Fragment(), ProfileMethods {
 
     private lateinit var currentCommunity: Community
 
-    lateinit var followedAccountsList: MutableList<String>
-    lateinit var followButton: TextView
+    private lateinit var followedAccountsList: MutableList<String>
+    private lateinit var followButton: TextView
 
     lateinit var userProfile: CommunityProfile
     lateinit var currentUser: CommunityProfile
@@ -54,18 +54,18 @@ class ProfileSecondRandomUserFragment : Fragment(), ProfileMethods {
     lateinit var questionsBtn: TextView
     lateinit var answersBtn: TextView
 
-    lateinit var contactDetailsIconsRecycler : RecyclerView
+    lateinit var contactDetailsIconsRecycler: RecyclerView
     lateinit var profileGalleryShouts: RecyclerView
     lateinit var profileGalleryQuestions: RecyclerView
     lateinit var profileGalleryAnswers: RecyclerView
 
     lateinit var profileAnswers: TextView
-    lateinit var profileFollowersCount : TextView
+    lateinit var profileFollowersCount: TextView
 
     private val galleryShoutsAdapter = GroupAdapter<ViewHolder>()
     private val galleryQuestionsAdapter = GroupAdapter<ViewHolder>()
     private val galleryAnswersAdapter = GroupAdapter<ViewHolder>()
-    val contactDetailsIconsAdapter = GroupAdapter<ViewHolder>()
+    private val contactDetailsIconsAdapter = GroupAdapter<ViewHolder>()
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -87,11 +87,12 @@ class ProfileSecondRandomUserFragment : Fragment(), ProfileMethods {
 
             followedAccountsViewModel =
                 ViewModelProviders.of(it).get(FollowedAccountsViewModel::class.java)
-            followedAccountsViewModel.followedAccounts.observe(activity, Observer { list->
+            followedAccountsViewModel.followedAccounts.observe(activity, Observer { list ->
                 followedAccountsList = list
             })
 
-            currentUser = ViewModelProviders.of(it).get(CurrentCommunityProfileViewModel::class.java).currentCommunityProfileObject
+            currentUser = ViewModelProviders.of(it).get(CurrentCommunityProfileViewModel::class.java)
+                .currentCommunityProfileObject
 
             ViewModelProviders.of(it).get(CurrentCommunityViewModel::class.java).currentCommunity.observe(
                 activity,
@@ -105,7 +106,7 @@ class ProfileSecondRandomUserFragment : Fragment(), ProfileMethods {
         questionsBtn = profile_ru_questions_btn
         answersBtn = profile_ru_answers_btn
 
-         contactDetailsIconsRecycler = profile_ru_staks_recycler
+        contactDetailsIconsRecycler = profile_ru_staks_recycler
         profileGalleryShouts = profile_ru_gallery_shouts
         profileGalleryQuestions = profile_ru_gallery_questions
         profileGalleryAnswers = profile_ru_gallery_answers
@@ -114,7 +115,7 @@ class ProfileSecondRandomUserFragment : Fragment(), ProfileMethods {
         val profilePicture: ImageView = profile_ru_image
         val profileName: TextView = profile_ru_user_name
         val profileReputation = profile_ru_reputation_count
-         profileFollowersCount = profile_ru_followers_count
+        profileFollowersCount = profile_ru_followers_count
         profileAnswers = profile_ru_answers_count
         val profileFollowers = profile_ru_answers_count
         followButton = profile_ru_follow_button
@@ -167,7 +168,7 @@ class ProfileSecondRandomUserFragment : Fragment(), ProfileMethods {
                 if (it.tag_line.isNotEmpty()) {
                     profileTagLine.visibility = View.VISIBLE
                     profileTagLine.text = it.tag_line
-                } else{
+                } else {
                     profileTagLine.visibility = View.GONE
                 }
 
@@ -389,39 +390,23 @@ class ProfileSecondRandomUserFragment : Fragment(), ProfileMethods {
     private fun executeUnfollow() {
         val batch = FirebaseFirestore.getInstance().batch()
 
-        val followedAccountsRef = db.collection("followed_accounts").document(currentUser.uid)
+        val followedAccountsRef = db.collection("accounts_that_user_follows").document(currentUser.uid)
         batch.update(followedAccountsRef, "accounts_list", FieldValue.arrayRemove(userProfile.uid))
 
-        val accountsFollowingRef = db.collection("accounts_following").document(userProfile.uid)
+        val accountsFollowingRef = db.collection("accounts_that_follow_user").document(userProfile.uid)
         batch.update(accountsFollowingRef, "accounts_list", FieldValue.arrayRemove(currentUser.uid))
-
-//        val userFollowersCountRef = db.collection("profiles").document(userProfile.uid)
-//        batch.update(userFollowersCountRef, "followers", FieldValue.increment(-1))
 
         batch.commit().addOnSuccessListener {
 
             followButton.tag = "notFollowed"
 
-            profileFollowersCount.text = numberCalculation(userProfile.followers -1)
+            profileFollowersCount.text = numberCalculation(userProfile.followers - 1)
 
             notFollowedButton(followButton, activity as MainActivity)
 
             followedAccountsList.remove(userProfile.uid)
             followedAccountsViewModel.followedAccounts.postValue(followedAccountsList)
 
-            changeReputation(
-                21,
-                userProfile.uid,
-                userProfile.uid,
-                currentUser.uid,
-                currentUser.name,
-                currentUser.image,
-                userProfile.uid,
-                TextView(this.context),
-                "follow",
-                activity as MainActivity,
-                currentCommunity.id
-            )
         }
     }
 
@@ -429,40 +414,22 @@ class ProfileSecondRandomUserFragment : Fragment(), ProfileMethods {
 
         val batch = FirebaseFirestore.getInstance().batch()
 
-        val followedAccountsRef = db.collection("followed_accounts").document(currentUser.uid)
+        val followedAccountsRef = db.collection("accounts_that_user_follows").document(currentUser.uid)
         batch.update(followedAccountsRef, "accounts_list", FieldValue.arrayUnion(userProfile.uid))
 
-        val accountsFollowingRef = db.collection("accounts_following").document(userProfile.uid)
+        val accountsFollowingRef = db.collection("accounts_that_follow_user").document(userProfile.uid)
         batch.update(accountsFollowingRef, "accounts_list", FieldValue.arrayUnion(currentUser.uid))
-//
-//        val userFollowersCountRef = db.collection("profiles").document(userProfile.uid)
-//        batch.update(userFollowersCountRef, "followers", FieldValue.increment(1))
-
 
         batch.commit().addOnSuccessListener {
 
             followButton.tag = "followed"
 
-            profileFollowersCount.text = numberCalculation(userProfile.followers +1)
+            profileFollowersCount.text = numberCalculation(userProfile.followers + 1)
 
             followedButton(followButton, activity as MainActivity)
 
             followedAccountsList.add(userProfile.uid)
             followedAccountsViewModel.followedAccounts.postValue(followedAccountsList)
-
-            changeReputation(
-                20,
-                userProfile.uid,
-                userProfile.uid,
-                currentUser.uid,
-                currentUser.name,
-                currentUser.image,
-                userProfile.uid,
-                TextView(this.context),
-                "follow",
-                activity,
-                currentCommunity.id
-            )
         }
     }
 

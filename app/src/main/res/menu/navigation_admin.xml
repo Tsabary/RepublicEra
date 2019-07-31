@@ -24,7 +24,7 @@
             app:showAsAction="ifRoom"
             android:id="@+id/destination_quorum"
             android:icon="@drawable/quorum"
-            android:title="quorum"
+            android:title="@string/admins"
             app:cnb_iconColor="@color/mainColor600"/>
 
 

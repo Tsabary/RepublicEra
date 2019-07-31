@@ -39,7 +39,7 @@ class SingleBoardRow(
         }
 
 
-        val date = PrettyTime().format(Date(question.timestamp))
+        val date = PrettyTime().format(question.timestamp)
 
         viewHolder.itemView.board_question.text = question.title
         viewHolder.itemView.board_tags.text = question.tags.joinToString()

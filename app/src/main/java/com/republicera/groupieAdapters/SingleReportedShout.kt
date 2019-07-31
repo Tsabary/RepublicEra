@@ -57,7 +57,7 @@ class SingleReportedShout(val reportedShout: ReportedShout, val currentUser: Use
             }
         ).into(authorImage)
 
-        timestamp.text = PrettyTime().format(Date(reportedShout.timestamp))
+        timestamp.text = PrettyTime().format(reportedShout.timestamp)
 
         if (reportedShout.content.isNotEmpty()) {
             content.visibility = View.VISIBLE

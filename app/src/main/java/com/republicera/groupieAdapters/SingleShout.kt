@@ -47,6 +47,7 @@ class SingleShout(val shout: Shout, val currentUser: CommunityProfile, val activ
     lateinit var menuEdit: MenuItem
     lateinit var menuDelete: MenuItem
 
+    var hasUserReported = false
 
     override fun getLayout(): Int = R.layout.shout_layout
 
@@ -106,6 +107,24 @@ class SingleShout(val shout: Shout, val currentUser: CommunityProfile, val activ
 
         checkIfShoutSaved(0, activity)
 
+        if (shout.reported) {
+            db.collection("shout_review_requests").document(shout.id).get().addOnSuccessListener {
+                val doc = it.data
+                if (doc != null) {
+                    val list = doc["shout_review_requests"] as MutableList<String>
+                    if (list.contains(currentUser.uid)){
+                        hasUserReported = true
+                        menuReport.title = "Remove report"
+                    } else {
+                        hasUserReported = false
+                        menuReport.title = "Report"
+                    }
+                }
+            }
+        } else {
+
+        }
+
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.shout_save -> {
@@ -115,8 +134,22 @@ class SingleShout(val shout: Shout, val currentUser: CommunityProfile, val activ
 
                 R.id.shout_report -> {
 
-                    db.collection("shouts").document(shout.id).update("reports", FieldValue.arrayUnion(currentUser.uid)).addOnSuccessListener {
-                        Toast.makeText(activity, "Thank you for reporting", Toast.LENGTH_SHORT).show()
+                    if (hasUserReported) {
+                        db.collection("reported_shouts").document(shout.id)
+                            .set(mapOf("reporters_list" to FieldValue.arrayRemove(currentUser.uid)), SetOptions.merge())
+                            .addOnSuccessListener {
+                                Toast.makeText(activity, "Thank you for reporting", Toast.LENGTH_SHORT).show()
+                                hasUserReported = false
+                                menuReport.title = "Report"
+                            }
+                    } else {
+                        db.collection("reported_shouts").document(shout.id)
+                            .set(mapOf("reporters_list" to FieldValue.arrayUnion(currentUser.uid), "rounds" to 1), SetOptions.merge())
+                            .addOnSuccessListener {
+                                Toast.makeText(activity, "Thank you for reporting", Toast.LENGTH_SHORT).show()
+                                hasUserReported = true
+                                menuReport.title = "Remove report"
+                            }
                     }
 
                     true
@@ -137,8 +170,14 @@ class SingleShout(val shout: Shout, val currentUser: CommunityProfile, val activ
                         .setMessage("Are you sure you want to remove this post?")
                         .setPositiveButton("Remove") { _, _ ->
                             db.collection("shouts").document(shout.id).delete().addOnSuccessListener {
-                                activity.shoutsFragment.shoutsFollowingAdapter.removeGroup(position)
-                                activity.shoutsFragment.shoutsFollowingAdapter.notifyDataSetChanged()
+                                if (activity.shoutsFragment.followingSwipeRefresh.visibility == View.VISIBLE) {
+                                    activity.shoutsFragment.shoutsFollowingAdapter.removeGroup(position)
+                                    activity.shoutsFragment.shoutsFollowingAdapter.notifyDataSetChanged()
+                                } else {
+                                    activity.shoutsFragment.shoutsAllAdapter.removeGroup(position)
+                                    activity.shoutsFragment.shoutsAllAdapter.notifyDataSetChanged()
+                                }
+
                             }
                         }
                         .show()
@@ -170,7 +209,7 @@ class SingleShout(val shout: Shout, val currentUser: CommunityProfile, val activ
             }
         ).into(authorImage)
 
-        timestamp.text = PrettyTime().format(Date(shout.timestamp))
+        timestamp.text = PrettyTime().format(shout.timestamp)
 
         if (shout.content.isNotEmpty()) {
             content.visibility = View.VISIBLE
@@ -211,7 +250,7 @@ class SingleShout(val shout: Shout, val currentUser: CommunityProfile, val activ
         commentCount.text = shout.comments.toString()
 
         likeButton.setOnClickListener {
-            if(shout.author_ID != currentUser.uid){
+            if (shout.author_ID != currentUser.uid) {
                 executeShoutLike(
                     shout,
                     currentUser.uid,

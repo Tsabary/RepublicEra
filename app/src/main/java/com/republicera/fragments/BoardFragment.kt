@@ -38,7 +38,7 @@ import com.republicera.models.*
 import com.republicera.viewModels.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.board_toolbar.*
+import kotlinx.android.synthetic.main.toolbar_with_search.*
 import kotlinx.android.synthetic.main.fragment_board.*
 
 class BoardFragment : Fragment(), BoardMethods {
@@ -48,8 +48,8 @@ class BoardFragment : Fragment(), BoardMethods {
     lateinit var db: DocumentReference
     lateinit var currentCommunity: Community
     lateinit var currentLanguage: String
-    var currentLayout = 0
-    lateinit var sharedPref: SharedPreferences
+    private var currentLayout = 0
+    private lateinit var sharedPref: SharedPreferences
 
     val tagsFilteredAdapter = GroupAdapter<ViewHolder>()
     private val searchedQuestionsRecyclerAdapter = GroupAdapter<ViewHolder>()
@@ -213,7 +213,7 @@ class BoardFragment : Fragment(), BoardMethods {
         index = client.getIndex("${currentCommunity.id}_questions")
 
 
-        val notificationBadge = board_toolbar_notifications_badge
+        val notificationBadge = toolbar_with_search_notifications_badge
 
         activity.boardNotificationsCount.observe(this, Observer {
             it?.let { notCount ->
@@ -227,9 +227,9 @@ class BoardFragment : Fragment(), BoardMethods {
 
 //        scrollView = board_questions_scroll_view
 
-        val boardSearchBox = board_toolbar_search_box
+        val boardSearchBox = toolbar_with_search_search_box
         val tagSuggestionRecycler = board_search_recycler
-        boardFilterChipGroup = board_toolbar_filter_chipgroup
+        boardFilterChipGroup = toolbar_with_search_filter_chipgroup
 //        val fab: FloatingActionButton = board_fab
 
         tagSuggestionRecycler.layoutManager = LinearLayoutManager(this.context)
@@ -253,8 +253,8 @@ class BoardFragment : Fragment(), BoardMethods {
         searchSwipeRefresh.isEnabled = false
 
 
-        val boardNotificationIcon = board_toolbar_notifications_icon
-        val boardSavedQuestionIcon = board_toolbar_saved_questions_icon
+        val boardNotificationIcon = toolbar_with_search_notifications_icon
+        val boardSavedQuestionIcon = toolbar_with_search_saved_icon
 
         notificationBadge.setOnClickListener {
             goToNotifications(activity)
@@ -592,7 +592,7 @@ class BoardFragment : Fragment(), BoardMethods {
         questionsBlockLayoutAdapter.clear()
 
         db.collection("questions").whereEqualTo("language", currentLanguage)
-            .orderBy("last_interaction", Query.Direction.DESCENDING).limit(25)
+            .orderBy("last_interaction", Query.Direction.DESCENDING).limit(75)
             .get().addOnSuccessListener {
 
                 if (it.size() == 0) {

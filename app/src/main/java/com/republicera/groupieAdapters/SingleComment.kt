@@ -73,7 +73,7 @@ class SingleComment(
         val cancelButton = viewHolder.itemView.single_comment_cancel
         val removeButton = viewHolder.itemView.single_comment_remove
 
-        val date = PrettyTime().format(Date(comment.timestamp))
+        val date = PrettyTime().format(comment.timestamp)
 
         content.text = comment.content
         contentEditable.setText(comment.content)
@@ -90,9 +90,6 @@ class SingleComment(
         }
 
         likeCount.text = comment.likes.size.toString()
-
-//        listenToImageCommentLikeCount(likeCount, comment)
-
 
         likeButton.setOnClickListener {
             if (currentUser.uid != comment.author_ID) {
@@ -189,40 +186,17 @@ class SingleComment(
 
                 db.collection("shout_comments").document(comment.id).delete().addOnSuccessListener {
 
-                    db.collection("shouts").document(comment.shout_ID)
-                        .update("comments", FieldValue.increment(-1)).addOnSuccessListener {
-                            activity.shoutExpendedFragment.commentsAdapter.removeGroup(position)
-                            activity.shoutExpendedFragment.commentsAdapter.notifyDataSetChanged()
-                            deleteContainer.visibility = View.GONE
+                    activity.shoutExpendedFragment.commentsAdapter.removeGroup(position)
+                    activity.shoutExpendedFragment.commentsAdapter.notifyDataSetChanged()
+                    deleteContainer.visibility = View.GONE
 
-                            val firebaseAnalytics = FirebaseAnalytics.getInstance(viewHolder.itemView.context)
-                            firebaseAnalytics.logEvent("shout_comment_removed", null)
-                        }
+                    val firebaseAnalytics = FirebaseAnalytics.getInstance(viewHolder.itemView.context)
+                    firebaseAnalytics.logEvent("shout_comment_removed", null)
 
                 }
             }
         }
     }
-
-//    private fun listenToImageCommentLikeCount(commentLikeCount: TextView, comment: ShoutComment) {
-//
-//        db.collection("shout_comment_likes").document(comment.id).get().addOnSuccessListener {
-//
-//            val doc = it.data
-//            if (doc != null) {
-//                likesList = doc["likes_list"] as MutableList<String>
-//                commentLikeCount.text = numberCalculation(likesList.size.toLong())
-//
-//                if (likesList.contains(currentUser.uid)) {
-//                    likeButton.setImageResource(R.drawable.heart_active)
-//                    likeButton.tag = "liked"
-//                } else {
-//                    likeButton.setImageResource(R.drawable.heart)
-//                    likeButton.tag = "notLiked"
-//                }
-//            }
-//        }
-//    }
 
 
     private fun goToProfile() {

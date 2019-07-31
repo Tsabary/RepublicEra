@@ -30,6 +30,7 @@ import com.republicera.viewModels.QuestionViewModel
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_answer.*
+import java.util.*
 
 class AnswerFragment : Fragment(), BoardMethods {
 
@@ -89,58 +90,21 @@ class AnswerFragment : Fragment(), BoardMethods {
 
         answerContent = answer_content
 
-        /*
-        sharedViewModelAnswerImages.imageList.observe(this, Observer {
-            it?.let { existingImageList ->
-
-                imagesRecyclerAdapter.clear()
-                imageListFinal.clear()
-
-                imagesRecycler.visibility = if (existingImageList.isNotEmpty()) {
-                    View.VISIBLE
-                } else {
-                    View.GONE
-                }
-
-                for (image in existingImageList) {
-
-                    db.collection("images").document(image).get().addOnSuccessListener {
-
-                        val imageObject = it.toObject(Image::class.java)
-                        if (imageObject != null) {
-                            imagesRecyclerAdapter.add(CollectionPhoto(imageObject, activity, "answer", 0))
-                            imageListFinal.add(imageObject.id)
-                        }
-
-                    }
-                }
-            }
-        })
-*/
         answerButton.setOnClickListener {
 
             if (answer_content.text.length > 15) {
                 postAnswer(
                     answerContent.text.toString(),
-                    System.currentTimeMillis(),
+                    Date(System.currentTimeMillis()),
                     activity
                 )
             } else {
                 Toast.makeText(this.context, "Your answer is too short, please elaborate", Toast.LENGTH_SHORT).show()
             }
         }
-
-/*
-        addImage.setOnClickListener {
-            activity.subFm.beginTransaction()
-                .add(R.id.feed_subcontents_frame_container, activity.addImageToAnswer, "addImageToAnswer")
-                .addToBackStack("addImageToAnswer").commit()
-            activity.subActive = activity.addImageToAnswer
-        }
-        */
     }
 
-    private fun postAnswer(content: String, timestamp: Long, activity: MainActivity) {
+    private fun postAnswer(content: String, timestamp: Date, activity: MainActivity) {
 
 
         val answerDoc = db.collection("answers").document()
@@ -169,28 +133,21 @@ class AnswerFragment : Fragment(), BoardMethods {
                     currentUser.uid,
                     currentUser.name,
                     currentUser.image,
-                    question.author_ID,
-                    TextView(this.context),
+                    currentUser.uid,
                     "answer",
                     activity,
                     currentCommunity.id
                 )
             }
 
-            db.collection("questions").document(question.id)
-                .set(mapOf("last_interaction" to timestamp), SetOptions.merge()).addOnSuccessListener {
+            activity.openedQuestionFragment.listenToAnswers()
+            activity.subActive = activity.openedQuestionFragment
+            closeKeyboard(activity)
+            answerContent.text.clear()
 
-                    activity.openedQuestionFragment.listenToAnswers()
-                    activity.subActive = activity.openedQuestionFragment
-                    closeKeyboard(activity)
-                    answerContent.text.clear()
-
-                    val firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
-                    firebaseAnalytics.logEvent("question_answer_added", null)
-                    activity.subFm.popBackStack("answerFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
-
-                }
-
+            val firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
+            firebaseAnalytics.logEvent("question_answer_added", null)
+            activity.subFm.popBackStack("answerFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
         }
     }
 }

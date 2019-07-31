@@ -2,6 +2,7 @@ package com.republicera.models
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import java.util.*
 
 @Parcelize
 class ReportedShout(
@@ -11,9 +12,9 @@ class ReportedShout(
     val author_image: String,
     val content: String,
     val images: List<String>,
-    val timestamp: Long,
+    val timestamp: Date,
     val keeps: MutableList<String>,
     val removes: MutableList<String>
 ) : Parcelable {
-    constructor() : this("", "", "", "", "", listOf(), 0, mutableListOf(), mutableListOf())
+    constructor() : this("", "", "", "", "", listOf(), Date(), mutableListOf(), mutableListOf())
 }

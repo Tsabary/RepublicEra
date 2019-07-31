@@ -11,13 +11,45 @@
 
 
     <include
-            layout="@layout/shouts_toolbar"
+            layout="@layout/toolbar_with_search"
             android:layout_width="0dp"
             android:layout_height="50dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:id="@+id/includeShoutsToolbar"/>
+    <TextView
+            android:text='No one you follow has posted yet.\nClick "Following" to see all posts'
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/shouts_fresh_following_message"
+            android:fontFamily="@font/roboto_bold"
+            android:textColor="@color/gray800"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/divider9"
+            app:layout_constraintTop_toBottomOf="@+id/shouts_join_quorum_cotainer"
+            android:gravity="center"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="32dp"
+            android:elevation="2dp"/>
+    <TextView
+            android:text="This is a fresh republic.\nMake the first post"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/shouts_fresh_message"
+            android:fontFamily="@font/roboto_bold"
+            android:textColor="@color/gray800"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/divider9"
+            app:layout_constraintTop_toBottomOf="@+id/shouts_join_quorum_cotainer"
+            android:gravity="center"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="32dp"
+            android:elevation="2dp"/>
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="50dp"
@@ -32,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/shouts_feed_title"
                 android:fontFamily="@font/roboto_bold"
-                android:textColor="@color/gray800"
+                android:textColor="@color/mainColor900"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -79,34 +111,12 @@
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:id="@+id/shouts_following_swipe_refresh"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/divider9"
-            android:id="@+id/shouts_following_swipe_refresh"
             app:layout_constraintTop_toBottomOf="@+id/shouts_join_quorum_cotainer"
     >
-
-
-
-
-        <TextView
-                android:text='No one you follow has posted yet.\nClick "Following" to see all posts and start following more people'
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/shouts_fresh_following_message"
-                android:elevation="2dp"
-                android:fontFamily="@font/roboto_bold"
-                android:textColor="@color/gray800"
-                android:visibility="visible"
-                android:layout_marginTop="8dp"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginEnd="32dp"
-                android:layout_marginStart="32dp"
-                app:layout_constraintStart_toStartOf="parent"
-                android:gravity="center"/>
 
 
         <androidx.recyclerview.widget.RecyclerView
@@ -115,7 +125,8 @@
                 android:background="@color/white"
                 android:clickable="true"
                 android:focusable="true"
-                android:id="@+id/shouts_following_recycler"/>
+                android:id="@+id/shouts_following_recycler"
+                android:visibility="visible"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -126,36 +137,17 @@
             app:layout_constraintBottom_toTopOf="@+id/divider9"
             android:id="@+id/shouts_all_swipe_refresh"
             app:layout_constraintTop_toBottomOf="@+id/shouts_join_quorum_cotainer"
-            android:visibility="gone">
-
-
-        <TextView
-                android:text="This is a fresh republic. Make the first announcement."
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/shouts_fresh_message"
-                android:elevation="2dp"
-                android:fontFamily="@font/roboto_bold"
-                android:textColor="@color/gray800"
-                android:visibility="gone"
-                android:layout_marginTop="8dp"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginEnd="32dp"
-                android:layout_marginStart="32dp"
-                app:layout_constraintStart_toStartOf="parent"
-                android:gravity="center"/>
+            android:visibility="visible"
+    >
 
 
         <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/white"
+                android:layout_height="200dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:id="@+id/shouts_all_recycler"/>
+                android:id="@+id/shouts_all_recycler"
+                android:visibility="visible"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 

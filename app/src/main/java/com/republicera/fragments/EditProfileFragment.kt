@@ -194,6 +194,9 @@ class EditProfileFragment : Fragment() {
                     tagline,
                     currentProfile.reputation,
                     currentProfile.followers,
+                    currentProfile.answers,
+                    currentProfile.questions,
+                    currentProfile.shouts,
                     currentProfile.join_date,
                     currentProfile.last_activity
                 )

@@ -28,7 +28,7 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_answer.*
 
-class EditAnswerFragment : Fragment(), BoardMethods {
+class AdminsEditAnswerFragment : Fragment(), BoardMethods {
 
     lateinit var db: DocumentReference
 
@@ -89,7 +89,7 @@ class EditAnswerFragment : Fragment(), BoardMethods {
 //                            answer.total_score
 //                        )
 
-                        db.collection("answers").document(answer.id).update(
+                        db.collection("admins_answers").document(answer.id).update(
                             mapOf("content" to content.text.toString())
                         ).addOnSuccessListener {
 

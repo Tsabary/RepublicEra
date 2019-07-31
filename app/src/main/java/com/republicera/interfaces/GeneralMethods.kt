@@ -63,7 +63,6 @@ interface GeneralMethods {
         initiatorName: String,
         initiatorImage: String,
         receiverId: String,
-        userReputationView: TextView,
         action: String,
         activity: Activity,
         currentCommunity: String
@@ -71,8 +70,7 @@ interface GeneralMethods {
 
         val db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity)
 
-        val receiverReputationDoc = db.collection("reputation_events").document()
-        val initiatorReputationDoc = db.collection("reputation_events").document()
+        val reputationDoc = db.collection("reputation_events").document()
 
         val queryBase = db.collection("reputation_events")
             .whereEqualTo("initiator_ID", initiatorId)
@@ -91,7 +89,7 @@ interface GeneralMethods {
 
             //0: question upvote +5 to receiver +notification // type 0
             0 -> {
-                receiverReputationDoc.set(
+                reputationDoc.set(
                     ReputationScore(
                         receiverId,
                         initiatorId,
@@ -123,7 +121,7 @@ interface GeneralMethods {
 
             //2: answer upvoted +10 to receiver +notification  // type 1
             2 -> {
-                receiverReputationDoc.set(
+                reputationDoc.set(
                     ReputationScore(
                         receiverId,
                         initiatorId,
@@ -157,7 +155,7 @@ interface GeneralMethods {
 
             //4: question downvote -2 for receiver -1 for initiator +notification without initiator  // type 0
             4 -> {
-                receiverReputationDoc.set(
+                reputationDoc.set(
                     ReputationScore(
                         receiverId,
                         initiatorId,
@@ -172,7 +170,7 @@ interface GeneralMethods {
                         System.currentTimeMillis()
                     )
                 ).addOnSuccessListener {
-                    initiatorReputationDoc.set(
+                    db.collection("reputation_events").document().set(
                         ReputationScore(
                             initiatorId,
                             initiatorId,
@@ -215,7 +213,7 @@ interface GeneralMethods {
 
             //6: answer downvote -2 for receiver -1 for initiator +notification without initiator  // type 1
             6 -> {
-                receiverReputationDoc.set(
+                reputationDoc.set(
                     ReputationScore(
                         receiverId,
                         initiatorId,
@@ -230,7 +228,7 @@ interface GeneralMethods {
                         System.currentTimeMillis()
                     )
                 ).addOnSuccessListener {
-                    receiverReputationDoc.set(
+                    db.collection("reputation_events").document().set(
                         ReputationScore(
                             initiatorId,
                             initiatorId,
@@ -273,9 +271,9 @@ interface GeneralMethods {
 
             //8: answer given +2 to initiator
             8 -> {
-                initiatorReputationDoc.set(
+                reputationDoc.set(
                     ReputationScore(
-                        initiatorId,
+                        receiverId,
                         initiatorId,
                         initiatorName,
                         initiatorImage,
@@ -303,9 +301,9 @@ interface GeneralMethods {
                     }
             }
 
-            //10: question saved +5 to receiver +notification  // type 0
+            //10: question bookmark +5 to receiver +notification  // type 0
             10 -> {
-                receiverReputationDoc.set(
+                reputationDoc.set(
                     ReputationScore(
                         receiverId,
                         initiatorId,
@@ -335,17 +333,10 @@ interface GeneralMethods {
                     }
             }
 
-            //12: answer receives a comment
+
+            //12: shout liked
             12 -> {
-            }
-
-            //13: comment on answer removed // needs to fix. causes a problem with the id of the comment as all other actions could be prformed only once, but here it might overwrite it
-            13 -> {
-            }
-
-            //14: shout liked
-            14 -> {
-                receiverReputationDoc.set(
+                reputationDoc.set(
                     ReputationScore(
                         receiverId,
                         initiatorId,
@@ -354,7 +345,7 @@ interface GeneralMethods {
                         mainPostId,
                         specificPostId,
                         2,
-                        14,
+                        12,
                         "shouts",
                         1,
                         System.currentTimeMillis()
@@ -362,12 +353,12 @@ interface GeneralMethods {
                 )
             }
 
-            //15: shout like removed
-            15 -> {
+            //13: shout like removed
+            13 -> {
                 queryBase
                     .whereEqualTo("receiver_ID", receiverId)
                     .whereEqualTo("post_type", 2)
-                    .whereEqualTo("scenario_type", 14)
+                    .whereEqualTo("scenario_type", 12)
                     .whereEqualTo("collection", "shouts").get().addOnSuccessListener {
                         for(doc in it){
                             doc.reference.delete()
@@ -375,18 +366,10 @@ interface GeneralMethods {
                     }
             }
 
-            //16: comment on a shout
-            16 -> {
 
-            }
-
-            //17: comment on a shout removed
-            17 -> {
-            }
-
-            //18: comment on a shout liked
-            18 -> {
-                receiverReputationDoc.set(
+            //14: comment on a shout liked
+            14 -> {
+                reputationDoc.set(
                     ReputationScore(
                         receiverId,
                         initiatorId,
@@ -395,7 +378,7 @@ interface GeneralMethods {
                         mainPostId,
                         specificPostId,
                         3,
-                        18,
+                        14,
                         "shouts",
                         1,
                         System.currentTimeMillis()
@@ -403,12 +386,12 @@ interface GeneralMethods {
                 )
             }
 
-            //19: comment on a shout like removed
-            19 -> {
+            //15: comment on a shout like removed
+            15 -> {
                 queryBase
                     .whereEqualTo("receiver_ID", receiverId)
                     .whereEqualTo("post_type", 3)
-                    .whereEqualTo("scenario_type", 18)
+                    .whereEqualTo("scenario_type", 14)
                     .whereEqualTo("collection", "shouts").get().addOnSuccessListener {
                         for(doc in it){
                             doc.reference.delete()
@@ -416,15 +399,258 @@ interface GeneralMethods {
                     }
             }
 
-            //20: profile got a follow
+
+            //16: admin question upvote +5 to receiver +notification // type 0
+            16 -> {
+                reputationDoc.set(
+                    ReputationScore(
+                        receiverId,
+                        initiatorId,
+                        initiatorName,
+                        initiatorImage,
+                        mainPostId,
+                        specificPostId,
+                        0,
+                        16,
+                        "admins_board",
+                        5,
+                        System.currentTimeMillis()
+                    )
+                )
+            }
+
+            //17: admin question upvote is removed -5 to receiver
+            17 -> {
+                queryBase
+                    .whereEqualTo("receiver_ID", receiverId)
+                    .whereEqualTo("post_type", 0)
+                    .whereEqualTo("scenario_type", 16)
+                    .whereEqualTo("collection", "admins_board").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+            }
+
+            //18: admin answer upvoted +10 to receiver +notification  // type 1
+            18 -> {
+                reputationDoc.set(
+                    ReputationScore(
+                        receiverId,
+                        initiatorId,
+                        initiatorName,
+                        initiatorImage,
+                        mainPostId,
+                        specificPostId,
+                        1,
+                        18,
+                        "admins_board",
+                        10,
+                        System.currentTimeMillis()
+                    )
+                )
+            }
+
+            //19: admin answer upvote is removed -10 to receiver
+            19 -> {
+                queryBase
+                    .whereEqualTo("receiver_ID", receiverId)
+                    .whereEqualTo("post_type", 1)
+                    .whereEqualTo("scenario_type", 18)
+                    .whereEqualTo("collection", "admins_board").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+            }
+
+
+
+            //20: admin question downvote -2 for receiver -1 for initiator +notification without initiator  // type 0
             20 -> {
-
+                reputationDoc.set(
+                    ReputationScore(
+                        receiverId,
+                        initiatorId,
+                        initiatorName,
+                        initiatorImage,
+                        mainPostId,
+                        specificPostId,
+                        0,
+                        20,
+                        "admins_board",
+                        -2,
+                        System.currentTimeMillis()
+                    )
+                ).addOnSuccessListener {
+                    db.collection("reputation_events").document().set(
+                        ReputationScore(
+                            initiatorId,
+                            initiatorId,
+                            initiatorName,
+                            initiatorImage,
+                            mainPostId,
+                            specificPostId,
+                            0,
+                            20,
+                            "admins_board",
+                            -1,
+                            System.currentTimeMillis()
+                        )
+                    )
+                }
             }
 
-            //21: profile follow removed
+            //21: admin question downvote is removed +2 for receiver +1 for initiator
             21 -> {
+                queryBase
+                    .whereEqualTo("receiver_ID", receiverId)
+                    .whereEqualTo("post_type", 0)
+                    .whereEqualTo("scenario_type", 20)
+                    .whereEqualTo("collection", "admins_board").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+
+                queryBase
+                    .whereEqualTo("receiver_ID", initiatorId)
+                    .whereEqualTo("post_type", 0)
+                    .whereEqualTo("scenario_type", 20)
+                    .whereEqualTo("collection", "admins_board").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
             }
+
+            //22: admin answer downvote -2 for receiver -1 for initiator +notification without initiator  // type 1
+            22 -> {
+                reputationDoc.set(
+                    ReputationScore(
+                        receiverId,
+                        initiatorId,
+                        initiatorName,
+                        initiatorImage,
+                        mainPostId,
+                        specificPostId,
+                        1,
+                        22,
+                        "admins_board",
+                        -2,
+                        System.currentTimeMillis()
+                    )
+                ).addOnSuccessListener {
+                    db.collection("reputation_events").document().set(
+                        ReputationScore(
+                            initiatorId,
+                            initiatorId,
+                            initiatorName,
+                            initiatorImage,
+                            mainPostId,
+                            specificPostId,
+                            1,
+                            22,
+                            "admins_board",
+                            -1,
+                            System.currentTimeMillis()
+                        )
+                    )
+                }
+            }
+
+            //23: admin answer downvote is removed +2 for receiver +1 for initiator
+            23 -> {
+                queryBase
+                    .whereEqualTo("receiver_ID", receiverId)
+                    .whereEqualTo("post_type", 1)
+                    .whereEqualTo("scenario_type", 22)
+                    .whereEqualTo("collection", "admins_board").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+
+                queryBase
+                    .whereEqualTo("receiver_ID", initiatorId)
+                    .whereEqualTo("post_type", 1)
+                    .whereEqualTo("scenario_type", 22)
+                    .whereEqualTo("collection", "admins_board").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+            }
+
+            //24: admin answer given +2 to initiator
+            24 -> {
+                reputationDoc.set(
+                    ReputationScore(
+                        receiverId,
+                        initiatorId,
+                        initiatorName,
+                        initiatorImage,
+                        mainPostId,
+                        specificPostId,
+                        1,
+                        24,
+                        "admins_board",
+                        2,
+                        System.currentTimeMillis()
+                    )
+                )
+            }
+
+            //25: admin answer removed -2 to initiator
+            25 -> {
+                queryBase
+                    .whereEqualTo("receiver_ID", initiatorId)
+                    .whereEqualTo("post_type", 1)
+                    .whereEqualTo("scenario_type", 24)
+                    .whereEqualTo("collection", "admins_board").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+            }
+
+            //26: admin question bookmark +5 to receiver +notification  // type 0
+            26 -> {
+                reputationDoc.set(
+                    ReputationScore(
+                        receiverId,
+                        initiatorId,
+                        initiatorName,
+                        initiatorImage,
+                        mainPostId,
+                        specificPostId,
+                        0,
+                        26,
+                        "admins_board",
+                        5,
+                        System.currentTimeMillis()
+                    )
+                )
+            }
+
+            //27: admin question unsaved -5 to receiver
+            27 -> {
+                queryBase
+                    .whereEqualTo("receiver_ID", receiverId)
+                    .whereEqualTo("post_type", 0)
+                    .whereEqualTo("scenario_type", 26)
+                    .whereEqualTo("collection", "admins_board").get().addOnSuccessListener {
+                        for(doc in it){
+                            doc.reference.delete()
+                        }
+                    }
+            }
+
+
         }
+
+
+
     }
 
 
@@ -736,7 +962,7 @@ interface GeneralMethods {
                     }
             }
 
-            //10: question saved +5 to receiver +notification  // type 0
+            //10: question bookmark +5 to receiver +notification  // type 0
             10 -> {
                 receiverReputationDoc.set(
                     ReputationScore(
@@ -974,7 +1200,7 @@ interface GeneralMethods {
     //7: question/answer downvote is removed +2 for receiver +1 for initiator
     //8: answer given +2 to initiator
     //9: answer removed -2 to initiator
-    //10: question saved +5 to receiver +notification  // type 0
+    //10: question bookmark +5 to receiver +notification  // type 0
     //11: question unsaved -5 to receiver
     //12: answer receives a comment
     //13: comment on answer removed // needs to fix. causes a problem with the id of the comment as all other actions could be prformed only once, but here it might overwrite it

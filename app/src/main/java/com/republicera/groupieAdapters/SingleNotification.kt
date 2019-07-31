@@ -93,34 +93,34 @@ class SingleNotification(
             10 -> {
                 Spanner()
                     .append(notification.initiator_name)
-                    .append(" saved your question", Spans.font("roboto_medium"))
+                    .append(" bookmarked your question", Spans.font("roboto_medium"))
             }
 
             12 -> {
                 Spanner()
                     .append(notification.initiator_name)
-                    .append(" commented on your answer", Spans.font("roboto_medium"))
+                    .append(" liked your shout", Spans.font("roboto_medium"))
             }
 
             14 -> {
                 Spanner()
                     .append(notification.initiator_name)
-                    .append(" liked your shout", Spans.font("roboto_medium"))
+                    .append(" liked your comment", Spans.font("roboto_medium"))
             }
 
-            16 -> {
+            994 -> {
                 Spanner()
                     .append(notification.initiator_name)
                     .append(" commented on your shout", Spans.font("roboto_medium"))
             }
 
-            18 -> {
-                Spanner()
-                    .append(notification.initiator_name)
-                    .append(" liked your comment", Spans.font("roboto_medium"))
-            }
+            996 -> {
+            Spanner()
+                .append(notification.initiator_name)
+                .append(" commented on your answer", Spans.font("roboto_medium"))
+        }
 
-            20 -> {
+            998 -> {
                 Spanner()
                     .append(notification.initiator_name)
                     .append(" started following you", Spans.font("roboto_medium"))
@@ -176,7 +176,7 @@ class SingleNotification(
     //4: question downvote -2 for receiver -1 for initiator +notification without initiator  // type 0 or 1
     //6: answer downvote -2 for receiver -1 for initiator +notification without initiator  // type 0 or 1
     //8: answer given +2 to initiator
-    //10: question saved +5 to receiver +notification  // type 0
+    //10: question bookmark +5 to receiver +notification  // type 0
     //12: answer receives a comment
     //14: shout liked
     //16: comment on a shout

@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.answer_comment_layout.view.*
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
 
-class SingleAnswerComment(val comment: AnswerComment, val activity: MainActivity, val currentUser: CommunityProfile) :
+class SingleAdminAnswerComment(val comment: AnswerComment, val activity: MainActivity, val currentUser: CommunityProfile) :
     Item<ViewHolder>(), GeneralMethods {
 
     lateinit var db : DocumentReference
@@ -83,6 +83,8 @@ class SingleAnswerComment(val comment: AnswerComment, val activity: MainActivity
 
 
 
+
+
         if (comment.author_ID == currentUser.uid) {
             edit.visibility = View.VISIBLE
             delete.visibility = View.VISIBLE
@@ -100,7 +102,8 @@ class SingleAnswerComment(val comment: AnswerComment, val activity: MainActivity
         }
 
         remove.setOnClickListener {
-            db.collection("answer_comments").document(comment.id).delete().addOnSuccessListener {
+            db.collection("admins_answer_comments").document(comment.id).delete().addOnSuccessListener {
+
 
                 viewHolder.itemView.answer_comment_removed_filler_box.visibility = View.VISIBLE
                 deleteBox.visibility = View.GONE
@@ -122,7 +125,7 @@ class SingleAnswerComment(val comment: AnswerComment, val activity: MainActivity
         }
 
         save.setOnClickListener {
-            db.collection("answer_comments").document(comment.id)
+            db.collection("admins_answer_comments").document(comment.id)
                 .update(mapOf("content" to commentContentEditable.text.toString()))
                 .addOnSuccessListener {
                     delete.visibility = View.VISIBLE

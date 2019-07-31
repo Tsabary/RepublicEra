@@ -30,6 +30,7 @@ import com.republicera.viewModels.QuestionViewModel
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_answer.*
+import java.util.*
 
 class AdminsAnswerFragment : Fragment(), BoardMethods {
 
@@ -53,6 +54,8 @@ class AdminsAnswerFragment : Fragment(), BoardMethods {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val questionTitle = answer_question_title
+
         val activity = activity as MainActivity
 
         activity.let {
@@ -73,6 +76,8 @@ class AdminsAnswerFragment : Fragment(), BoardMethods {
                 this, Observer { observedQuestion ->
                     observedQuestion?.let { questionObject ->
                         question = questionObject
+                        questionTitle.text = question.title
+
                         sharedViewModelAnswerImages.imageList.postValue(mutableListOf())
                         answerContent.text.clear()
                     }
@@ -90,7 +95,7 @@ class AdminsAnswerFragment : Fragment(), BoardMethods {
             if (answer_content.text.length > 15) {
                 postAnswer(
                     answerContent.text.toString(),
-                    System.currentTimeMillis(),
+                    Date(System.currentTimeMillis()),
                     activity
                 )
             } else {
@@ -99,7 +104,7 @@ class AdminsAnswerFragment : Fragment(), BoardMethods {
         }
     }
 
-    private fun postAnswer(content: String, timestamp: Long, activity: MainActivity) {
+    private fun postAnswer(content: String, timestamp: Date, activity: MainActivity) {
 
 
         val answerDoc = db.collection("admins_answers").document()
@@ -128,27 +133,20 @@ class AdminsAnswerFragment : Fragment(), BoardMethods {
                     currentUser.name,
                     currentUser.image,
                     question.author_ID,
-                    TextView(this.context),
                     "answer",
                     activity,
                     currentCommunity.id
                 )
             }
 
-            db.collection("admins_questions").document(question.id)
-                .update(mapOf("last_interaction" to timestamp)).addOnSuccessListener {
+            activity.adminsOpenedQuestionFragment.listenToAnswers()
+            activity.subActive = activity.adminsOpenedQuestionFragment
+            closeKeyboard(activity)
+            answerContent.text.clear()
 
-                    activity.openedQuestionFragment.listenToAnswers()
-                    activity.subActive = activity.openedQuestionFragment
-                    closeKeyboard(activity)
-                    answerContent.text.clear()
-
-                    val firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
-                    firebaseAnalytics.logEvent("question_answer_added", null)
-                    activity.subFm.popBackStack("answerFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
-
-                }
-
+            val firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
+            firebaseAnalytics.logEvent("question_answer_added", null)
+            activity.subFm.popBackStack("adminsAnswerFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
         }
     }
 }

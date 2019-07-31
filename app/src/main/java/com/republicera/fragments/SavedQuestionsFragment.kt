@@ -22,8 +22,8 @@ import com.republicera.viewModels.QuestionViewModel
 import com.republicera.viewModels.RandomUserViewModel
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.board_toolbar_notifications.*
-import kotlinx.android.synthetic.main.fragment_saved_questions.view.*
+import kotlinx.android.synthetic.main.toolbar_without_search.*
+import kotlinx.android.synthetic.main.fragment_saved_items.view.*
 
 
 class SavedQuestionsFragment : Fragment() {
@@ -42,7 +42,7 @@ class SavedQuestionsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_saved_questions, container, false)
+    ): View? = inflater.inflate(R.layout.fragment_saved_items, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -70,9 +70,15 @@ class SavedQuestionsFragment : Fragment() {
         questionsRecycler.adapter = questionsRecyclerAdapter
         questionsRecycler.layoutManager = questionRecyclerLayoutManager
 
-        val boardNotificationIcon = board_toolbar_notifications_notifications_icon
-        val boardNotificationsBadge = board_toolbar_notifications_notifications_badge
-        val boardSavedQuestionIcon = board_toolbar_notifications_saved_questions_icon
+        val boardNotificationIcon = toolbar_without_search_notifications_icon
+        val boardNotificationsBadge = toolbar_without_search_notifications_badge
+        val boardSavedQuestionIcon = toolbar_without_search_saved_icon
+
+        activity.shoutsNotificationsCount.observe(this, Observer {
+            it?.let { notCount ->
+                boardNotificationsBadge.setNumber(notCount)
+            }
+        })
 
         boardNotificationIcon.setOnClickListener {
             activity.subFm.beginTransaction().hide(activity.savedQuestionFragment)
@@ -94,11 +100,6 @@ class SavedQuestionsFragment : Fragment() {
         }
 
         listenToQuestions()
-
-//        questionsRecyclerAdapter.setOnItemClickListener { item, _ ->
-//            val row = item as SingleBoardRow
-//            sharedViewModelForQuestion.questionObject.postValue(row.question)
-//        }
 
 
         questionsRecyclerAdapter.setOnItemClickListener { item, _ ->

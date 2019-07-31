@@ -44,7 +44,6 @@ interface BoardMethods : GeneralMethods {
                             initiatorName,
                             initiatorImage,
                             receiverId,
-                            userReputationView,
                             "vote",
                             activity,
                             currentCommunity
@@ -64,7 +63,6 @@ interface BoardMethods : GeneralMethods {
                                     initiatorName,
                                     initiatorImage,
                                     receiverId,
-                                    userReputationView,
                                     "vote",
                                     activity,
                                     currentCommunity
@@ -80,7 +78,6 @@ interface BoardMethods : GeneralMethods {
                                     initiatorName,
                                     initiatorImage,
                                     receiverId,
-                                    userReputationView,
                                     "vote",
                                     activity,
                                     currentCommunity
@@ -101,7 +98,6 @@ interface BoardMethods : GeneralMethods {
                             initiatorName,
                             initiatorImage,
                             receiverId,
-                            userReputationView,
                             "vote",
                             activity,
                             currentCommunity
@@ -147,7 +143,6 @@ interface BoardMethods : GeneralMethods {
                             initiatorName,
                             initiatorImage,
                             receiverId,
-                            userReputationView,
                             "vote",
                             activity,
                             currentCommunity
@@ -167,7 +162,6 @@ interface BoardMethods : GeneralMethods {
                                     initiatorName,
                                     initiatorImage,
                                     receiverId,
-                                    userReputationView,
                                     "vote",
                                     activity,
                                     currentCommunity
@@ -183,7 +177,6 @@ interface BoardMethods : GeneralMethods {
                                     initiatorName,
                                     initiatorImage,
                                     receiverId,
-                                    userReputationView,
                                     "vote",
                                     activity,
                                     currentCommunity
@@ -204,7 +197,6 @@ interface BoardMethods : GeneralMethods {
                             initiatorName,
                             initiatorImage,
                             receiverId,
-                            userReputationView,
                             "vote",
                             activity,
                             currentCommunity
@@ -216,6 +208,207 @@ interface BoardMethods : GeneralMethods {
             }
 
     }
+
+
+
+    fun executeVoteAdminQuestion(
+        vote: Int,
+        mainPostId: String,
+        initiatorId: String,
+        initiatorName: String,
+        initiatorImage: String,
+        receiverId: String,
+        votesView: TextView,
+        upvoteView: ImageButton,
+        downvoteView: ImageButton,
+        specificPostId: String,
+        userReputationView: TextView,
+        activity: Activity,
+        previousVote: Int,
+        currentCommunity: String
+    ) {
+
+        val firebaseAnalytics = FirebaseAnalytics.getInstance(activity)
+        val db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity)
+        db.collection("admins_questions").document(mainPostId)
+            .set(mapOf("score_items" to mapOf(initiatorId to vote)), SetOptions.merge()).addOnSuccessListener {
+
+                when (vote) {
+
+                    -1 -> {
+                        changeReputation(
+                            20,
+                            specificPostId,
+                            mainPostId,
+                            initiatorId,
+                            initiatorName,
+                            initiatorImage,
+                            receiverId,
+                            "vote",
+                            activity,
+                            currentCommunity
+                        )
+                        downView(upvoteView, downvoteView)
+                        firebaseAnalytics.logEvent("question_downvote", null)
+                    }
+
+                    0 -> {
+                        when (previousVote) {
+                            -1 -> {
+                                changeReputation(
+                                    21,
+                                    specificPostId,
+                                    mainPostId,
+                                    initiatorId,
+                                    initiatorName,
+                                    initiatorImage,
+                                    receiverId,
+                                    "vote",
+                                    activity,
+                                    currentCommunity
+                                )
+                                firebaseAnalytics.logEvent("question_downvote_cancelled", null)
+                            }
+                            1 -> {
+                                changeReputation(
+                                    17,
+                                    specificPostId,
+                                    mainPostId,
+                                    initiatorId,
+                                    initiatorName,
+                                    initiatorImage,
+                                    receiverId,
+                                    "vote",
+                                    activity,
+                                    currentCommunity
+                                )
+
+                                firebaseAnalytics.logEvent("question_upvote_cancelled", null)
+                            }
+                        }
+                        defaultView(upvoteView, downvoteView)
+                    }
+
+                    1 -> {
+                        changeReputation(
+                            16,
+                            specificPostId,
+                            mainPostId,
+                            initiatorId,
+                            initiatorName,
+                            initiatorImage,
+                            receiverId,
+                            "vote",
+                            activity,
+                            currentCommunity
+                        )
+                        upView(upvoteView, downvoteView)
+                        firebaseAnalytics.logEvent("question_upvote", null)
+                    }
+                }
+            }
+    }
+
+
+    fun executeVoteAdminAnswer(
+        vote: Int,
+        mainPostId: String,
+        initiatorId: String,
+        initiatorName: String,
+        initiatorImage: String,
+        receiverId: String,
+        votesView: TextView,
+        upvoteView: ImageButton,
+        downvoteView: ImageButton,
+        specificPostId: String,
+        userReputationView: TextView,
+        activity: Activity,
+        previousVote: Int,
+        currentCommunity: String
+    ) {
+
+        val firebaseAnalytics = FirebaseAnalytics.getInstance(activity)
+        val db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity)
+        db.collection("admins_answers").document(specificPostId)
+            .set(mapOf("score_items" to mapOf(initiatorId to vote)), SetOptions.merge()).addOnSuccessListener {
+
+                when (vote) {
+
+                    -1 -> {
+                        changeReputation(
+                            22,
+                            specificPostId,
+                            mainPostId,
+                            initiatorId,
+                            initiatorName,
+                            initiatorImage,
+                            receiverId,
+                            "vote",
+                            activity,
+                            currentCommunity
+                        )
+                        downView(upvoteView, downvoteView)
+                        firebaseAnalytics.logEvent("question_downvote", null)
+                    }
+
+                    0 -> {
+                        when (previousVote) {
+                            -1 -> {
+                                changeReputation(
+                                    23,
+                                    specificPostId,
+                                    mainPostId,
+                                    initiatorId,
+                                    initiatorName,
+                                    initiatorImage,
+                                    receiverId,
+                                    "vote",
+                                    activity,
+                                    currentCommunity
+                                )
+                                firebaseAnalytics.logEvent("answer_downvote_cancelled", null)
+                            }
+                            1 -> {
+                                changeReputation(
+                                    19,
+                                    specificPostId,
+                                    mainPostId,
+                                    initiatorId,
+                                    initiatorName,
+                                    initiatorImage,
+                                    receiverId,
+                                    "vote",
+                                    activity,
+                                    currentCommunity
+                                )
+
+                                firebaseAnalytics.logEvent("answer_upvote_cancelled", null)
+                            }
+                        }
+                        defaultView(upvoteView, downvoteView)
+                    }
+
+                    1 -> {
+                        changeReputation(
+                            18,
+                            specificPostId,
+                            mainPostId,
+                            initiatorId,
+                            initiatorName,
+                            initiatorImage,
+                            receiverId,
+                            "vote",
+                            activity,
+                            currentCommunity
+                        )
+                        upView(upvoteView, downvoteView)
+                        firebaseAnalytics.logEvent("answer_upvote", null)
+                    }
+                }
+            }
+    }
+
+
 
 
     fun upView(upvoteView: ImageView, downvoteView: ImageView) {

@@ -14,5 +14,10 @@
             android:title="@string/edit_interests"
     />
 
+    <item
+            android:id="@+id/profile_resign_admin"
+            android:title="Resign of admin duties"
+    />
+
 
 </menu>

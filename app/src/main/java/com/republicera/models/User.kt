@@ -2,6 +2,8 @@ package com.republicera.models
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import java.util.*
+import kotlin.collections.HashMap
 
 @Parcelize
 class User(
@@ -9,10 +11,10 @@ class User(
     val first_name: String,
     val last_name: String,
     val communities_list: MutableList<String>,
-    val lang_list: List<String>,
+    val lang_list: MutableList<String>,
     val reputation: Long,
-    val join_date: Long,
-    val last_activity: Long
+    val join_date: HashMap<String,String>,
+    val last_activity: HashMap<String,String>
 ) : Parcelable {
-    constructor() : this("","", "", mutableListOf<String>(), listOf(), 0, 0, 0)
+    constructor() : this("","", "", mutableListOf(), mutableListOf(), 0, hashMapOf(), hashMapOf())
 }

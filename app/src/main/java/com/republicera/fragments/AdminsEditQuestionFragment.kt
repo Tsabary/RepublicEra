@@ -35,7 +35,7 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_new_question.*
 
-class EditQuestionFragment : Fragment(), BoardMethods {
+class AdminsEditQuestionFragment : Fragment(), BoardMethods {
 
     lateinit var db: DocumentReference
 
@@ -132,41 +132,46 @@ class EditQuestionFragment : Fragment(), BoardMethods {
                             }
 
 
-                            db.collection("questions").document(question.id).set(
+                            db.collection("admins_questions").document(question.id).update(
                                 mapOf(
                                     "title" to questionTitle.text.toString(),
                                     "details" to questionDetails.text.toString(),
                                     "tags" to tagsList,
                                     "last_interaction" to FieldValue.serverTimestamp()
-                                ), SetOptions.merge()
+                                )
                             ).addOnSuccessListener {
 
-                                for (tag in question.tags) {
+//                                for (tag in question.tags) {
+//
+//                                    val tagRef = db.collection("tags")
+//                                        .document(tag[0] + tag[1].toString())
+//
+//                                    if (!tagsList.contains(tag)) {
+//                                        tagRef.update(tag, FieldValue.increment(-1))
+//                                    }
+//                                }
 
-                                    val tagRef = db.collection("tags")
-                                        .document(tag[0] + tag[1].toString())
+//                                for (tag in tagsList) {
+//
+//                                    if (!question.tags.contains(tag)) {
+//                                        db.collection("tags")
+//                                            .document(tag[0] + tag[1].toString()).update(
+//                                                tag, FieldValue.increment(1)
+//                                            ).addOnSuccessListener {
+//                                                db.collection("interests")
+//                                                    .document(currentUser.uid)
+//                                                    .update("interests_list", FieldValue.arrayUnion(tag)).addOnSuccessListener {
+//                                                        interestsList.add(tag)
+//                                                        sharedViewModelInterests.interestList.postValue(interestsList)
+//                                                    }
+//                                            }
+//                                    }
+//                                }
 
-                                    if (!tagsList.contains(tag)) {
-                                        tagRef.update(tag, FieldValue.increment(-1))
-                                    }
-                                }
 
                                 for (tag in tagsList) {
-
-                                    if (!question.tags.contains(tag)) {
-                                        db.collection("tags")
-                                            .document(tag[0] + tag[1].toString()).update(
-                                                tag, FieldValue.increment(1)
-                                            ).addOnSuccessListener {
-                                                db.collection("interests")
-                                                    .document(currentUser.uid)
-                                                    .update("interests_list", FieldValue.arrayUnion(tag))
-                                                    .addOnSuccessListener {
-                                                        interestsList.add(tag)
-                                                        sharedViewModelInterests.interestList.postValue(interestsList)
-                                                    }
-                                            }
-                                    }
+                                    interestsList.add(tag)
+                                    sharedViewModelInterests.interestList.postValue(interestsList)
                                 }
 
                                 val updatedQuestion = Question(
@@ -191,7 +196,7 @@ class EditQuestionFragment : Fragment(), BoardMethods {
                                 questionTitle.text.clear()
 
                                 activity.subFm.popBackStack(
-                                    "editQuestionFragment",
+                                    "adminsEditQuestionFragment",
                                     FragmentManager.POP_BACK_STACK_INCLUSIVE
                                 )
                                 activity.subActive = activity.openedQuestionFragment
@@ -317,6 +322,6 @@ class EditQuestionFragment : Fragment(), BoardMethods {
     }
 
     companion object {
-        fun newInstance(): EditQuestionFragment = EditQuestionFragment()
+        fun newInstance(): AdminsEditQuestionFragment = AdminsEditQuestionFragment()
     }
 }

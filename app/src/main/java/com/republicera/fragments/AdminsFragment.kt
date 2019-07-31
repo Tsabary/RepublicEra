@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +14,6 @@ import android.widget.AbsListView
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,10 +38,10 @@ import com.republicera.models.*
 import com.republicera.viewModels.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.board_toolbar.*
+import kotlinx.android.synthetic.main.toolbar_with_search.*
 import kotlinx.android.synthetic.main.fragment_board.*
 
-class QuorumFragment : Fragment(), BoardMethods {
+class AdminsFragment : Fragment(), BoardMethods {
 
     lateinit var firebaseAnalytics: FirebaseAnalytics
 
@@ -86,6 +84,10 @@ class QuorumFragment : Fragment(), BoardMethods {
     lateinit var boardLastVisible: DocumentSnapshot
     var boardIsScrolling = false
     var boardIsLastItemReached = false
+
+    lateinit var reportedLastVisible: DocumentSnapshot
+    var reportedIsScrolling = false
+    var reportedIsLastItemReached = false
 
     lateinit var searchLastVisible: DocumentSnapshot
     var searchIsScrolling = false
@@ -189,7 +191,7 @@ class QuorumFragment : Fragment(), BoardMethods {
                     currentCommunity = communityName
                     db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity.id)
                     listenToQuestions()
-                    listenToReportedShouts()
+                    listenToReported()
                 })
         }
 
@@ -202,7 +204,7 @@ class QuorumFragment : Fragment(), BoardMethods {
             editor.putString("last_language", topLevelUser.lang_list[position])
             editor.apply()
             listenToQuestions()
-            listenToReportedShouts()
+            listenToReported()
         }
 
         val applicationID = activity.getString(R.string.algolia_application_id)
@@ -212,9 +214,9 @@ class QuorumFragment : Fragment(), BoardMethods {
         index = client.getIndex("${currentCommunity.id}_questions")
 
 
-        val notificationBadge = board_toolbar_notifications_badge
+        val notificationBadge = toolbar_with_search_notifications_badge
 
-        activity.boardNotificationsCount.observe(this, Observer {
+        activity.quorumNotificationsCount.observe(this, Observer {
             it?.let { notCount ->
                 notificationBadge.setNumber(notCount)
             }
@@ -226,9 +228,9 @@ class QuorumFragment : Fragment(), BoardMethods {
 
 //        scrollView = board_questions_scroll_view
 
-        val boardSearchBox = board_toolbar_search_box
+        val boardSearchBox = toolbar_with_search_search_box
         val tagSuggestionRecycler = board_search_recycler
-        boardFilterChipGroup = board_toolbar_filter_chipgroup
+        boardFilterChipGroup = toolbar_with_search_filter_chipgroup
 
         tagSuggestionRecycler.layoutManager = LinearLayoutManager(this.context)
         tagSuggestionRecycler.adapter = tagsFilteredAdapter
@@ -246,25 +248,25 @@ class QuorumFragment : Fragment(), BoardMethods {
         }
 
         reportedPostsSwipeRefresh.setOnRefreshListener {
-            listenToReportedShouts()
+            listenToReported()
             reportedPostsSwipeRefresh.isRefreshing = false
         }
 
 
-        val boardNotificationIcon = board_toolbar_notifications_icon
-        val boardSavedQuestionIcon = board_toolbar_saved_questions_icon
+        val boardNotificationIcon = toolbar_with_search_notifications_icon
+        val boardSavedQuestionIcon = toolbar_with_search_saved_icon
 
-        notificationBadge.setOnClickListener {
-            goToNotifications(activity)
-        }
-
-        boardNotificationIcon.setOnClickListener {
-            goToNotifications(activity)
-        }
-
-        boardSavedQuestionIcon.setOnClickListener {
-            goToSavedQuestions(activity)
-        }
+//        notificationBadge.setOnClickListener {
+//            goToNotifications(activity)
+//        }
+//
+//        boardNotificationIcon.setOnClickListener {
+//            goToNotifications(activity)
+//        }
+//
+//        boardSavedQuestionIcon.setOnClickListener {
+//            goToSavedQuestions(activity)
+//        }
 
         val constraintButton = constraintLayout_botton_check
 
@@ -391,29 +393,31 @@ class QuorumFragment : Fragment(), BoardMethods {
 
     }
 
-    private fun goToSavedQuestions(activity: MainActivity) {
-        activity.subFm.beginTransaction().hide(activity.boardNotificationsFragment)
-            .show(activity.savedQuestionFragment).commit()
-        activity.subActive = activity.savedQuestionFragment
-        activity.switchVisibility(1)
-        activity.isBoardNotificationsActive = true
-    }
+    ///need to create admins equivelant
 
-    private fun goToNotifications(activity: MainActivity) {
-        activity.subFm.beginTransaction().hide(activity.savedQuestionFragment)
-            .show(activity.boardNotificationsFragment)
-            .commit()
-        activity.subActive = activity.boardNotificationsFragment
-
-        activity.switchVisibility(1)
-        activity.isBoardNotificationsActive = true
-    }
+//    private fun goToSavedQuestions(activity: MainActivity) {
+//        activity.subFm.beginTransaction().hide(activity.boardNotificationsFragment)
+//            .show(activity.savedQuestionFragment).commit()
+//        activity.subActive = activity.savedQuestionFragment
+//        activity.switchVisibility(1)
+//        activity.isBoardNotificationsActive = true
+//    }
+//
+//    private fun goToNotifications(activity: MainActivity) {
+//        activity.subFm.beginTransaction().hide(activity.savedQuestionFragment)
+//            .show(activity.boardNotificationsFragment)
+//            .commit()
+//        activity.subActive = activity.boardNotificationsFragment
+//
+//        activity.switchVisibility(1)
+//        activity.isBoardNotificationsActive = true
+//    }
 
     private fun openQuestion(author: String, activity: MainActivity) {
 
         activity.subFm.beginTransaction()
-            .add(R.id.feed_subcontents_frame_container, activity.openedQuestionFragment, "openedQuestionFragment")
-            .addToBackStack("openedQuestionFragment").commit()
+            .add(R.id.feed_subcontents_frame_container, activity.adminsOpenedQuestionFragment, "adminsOpenedQuestionFragment")
+            .addToBackStack("adminsOpenedQuestionFragment").commit()
 
         db.collection("profiles").document(author).get().addOnSuccessListener {
             val user = it.toObject(CommunityProfile::class.java)
@@ -481,9 +485,6 @@ class QuorumFragment : Fragment(), BoardMethods {
 
             1 -> {
 
-//                index.search(Query("query").setFilters(searchedTagsList[0]), RequestOptions())
-
-
                 searchQuestionsOneTag(
                     searchedTagsList[0]
                 )
@@ -492,36 +493,7 @@ class QuorumFragment : Fragment(), BoardMethods {
                     firebaseAnalytics.logEvent("search_board", null)
                 }
             }
-//            2 -> {
-//                searchQuestionsTwoTags(
-//                    searchedTagsList[0],
-//                    searchedTagsList[1]
-//                )
-//            }
-//            3 -> {
-//                searchQuestionsThreeTags(
-//                    searchedTagsList[0],
-//                    searchedTagsList[1],
-//                    searchedTagsList[2]
-//                )
-//            }
-//            4 -> {
-//                searchQuestionsFourTags(
-//                    searchedTagsList[0],
-//                    searchedTagsList[1],
-//                    searchedTagsList[2],
-//                    searchedTagsList[3]
-//                )
-//            }
-//            5 -> {
-//                searchQuestionsFiveTags(
-//                    searchedTagsList[0],
-//                    searchedTagsList[1],
-//                    searchedTagsList[2],
-//                    searchedTagsList[3],
-//                    searchedTagsList[4]
-//                )
-//            }
+
 
             else -> {
                 Toast.makeText(this.context, "You can only filter by one tag at a time", Toast.LENGTH_LONG)
@@ -616,7 +588,7 @@ class QuorumFragment : Fragment(), BoardMethods {
         questionsBlockLayoutAdapter.clear()
 
         db.collection("admins_questions").whereEqualTo("language", currentLanguage)
-            .orderBy("last_interaction", Query.Direction.DESCENDING).limit(25)
+            .orderBy("last_interaction", Query.Direction.DESCENDING).limit(75)
             .get().addOnSuccessListener {
 
                 if (it.size() == 0) {
@@ -735,16 +707,106 @@ class QuorumFragment : Fragment(), BoardMethods {
 
     }
 
+
+
+    fun listenToReported() {
+
+        reportedPostsRecyclerAdapter.clear()
+
+        db.collection("reported_shouts").orderBy("timestamp", Query.Direction.ASCENDING)
+            .get().addOnSuccessListener {
+
+                if (it.size() == 0) {
+//                    freshMessage.visibility = View.VISIBLE //need another one for reported
+                } else {
+//                    freshMessage.visibility = View.GONE
+
+
+                    for (document in it) {
+                        val reportedShoutObject = document.toObject(ReportedShout::class.java)
+
+                        reportedPostsRecyclerAdapter.add(
+                            SingleReportedShout(
+                                reportedShoutObject,
+                                topLevelUser,
+                                activity as MainActivity
+                            )
+                        )
+                    }
+
+                    reportedPostsRecyclerAdapter.notifyDataSetChanged()
+
+                    reportedLastVisible = it.documents[it.size() - 1]
+                }
+            }
+
+        reportedPostsRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    reportedIsScrolling = true
+                }
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val thisLayoutManager = recyclerView.layoutManager as LinearLayoutManager
+
+                val firstVisibleItem = thisLayoutManager.findFirstCompletelyVisibleItemPosition()
+                val visibleItemCount = thisLayoutManager.childCount
+                val totalItemCount = thisLayoutManager.itemCount
+
+                reportedPostsSwipeRefresh.isEnabled = firstVisibleItem == 0
+
+                val countCheck = firstVisibleItem + visibleItemCount == totalItemCount
+
+                if (reportedIsScrolling && countCheck && !reportedIsLastItemReached) {
+                    reportedIsScrolling = false
+
+                    db.collection("reported_shouts").orderBy("timestamp", Query.Direction.ASCENDING).startAfter(reportedLastVisible)
+                        .limit(25).get()
+                        .addOnSuccessListener { querySnapshot ->
+
+                            if (!querySnapshot.isEmpty) {
+                                for (document in querySnapshot) {
+                                    val reportedShoutObject = document.toObject(ReportedShout::class.java)
+
+                                    reportedPostsRecyclerAdapter.add(
+                                        SingleReportedShout(
+                                            reportedShoutObject,
+                                            topLevelUser,
+                                            activity as MainActivity
+                                        )
+                                    )
+                                }
+
+                                reportedPostsRecyclerAdapter.notifyDataSetChanged()
+
+                                reportedLastVisible = querySnapshot.documents[querySnapshot.size() - 1]
+
+                                if (querySnapshot.size() < 25) {
+                                    reportedIsLastItemReached = true
+                                }
+                            } else {
+                                reportedIsLastItemReached = true
+                            }
+                        }
+                }
+            }
+        })
+
+    }
+
+    /*
+
     fun listenToReportedShouts() {
 
         reportedPostsRecyclerAdapter.clear()
 
-
-        db.collection("reported_shouts").orderBy("timestamp")
+        db.collection("reported_shouts").orderBy("timestamp", Query.Direction.ASCENDING)
             .get().addOnSuccessListener {
                 for (document in it) {
-
-                    val reportedShoutObject = document.toObject(ReportedShout::class.java)
 
                     if (reportedShoutObject.keeps.size + reportedShoutObject.removes.size >= currentCommunity.admins.size * 0.5) {
                         when {
@@ -770,20 +832,13 @@ class QuorumFragment : Fragment(), BoardMethods {
                                 batch.commit()
                             }
                         }
-                    } else {
-                        reportedPostsRecyclerAdapter.add(
-                            SingleReportedShout(
-                                reportedShoutObject,
-                                topLevelUser,
-                                activity as MainActivity
-                            )
-                        )
                     }
                 }
             }
     }
 
+*/
     companion object {
-        fun newInstance(): QuorumFragment = QuorumFragment()
+        fun newInstance(): AdminsFragment = AdminsFragment()
     }
 }

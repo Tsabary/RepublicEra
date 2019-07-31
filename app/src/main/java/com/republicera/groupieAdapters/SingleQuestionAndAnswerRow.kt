@@ -18,7 +18,7 @@ class SingleQuestionAndAnswerRow(
     override fun bind(viewHolder: ViewHolder, position: Int) {
         viewHolder.itemView.question_and_answer_question_title.text = question.title
         viewHolder.itemView.question_and_answer_answer_content.text = answer.content
-        val date = PrettyTime().format(Date(answer.timestamp))
+        val date = PrettyTime().format(answer.timestamp)
         viewHolder.itemView.question_and_answer_answer_timestamp.text = date
     }
 }

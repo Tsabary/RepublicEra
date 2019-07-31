@@ -66,7 +66,9 @@
             android:background="@color/white"
             android:elevation="6dp">
 
-        <com.ismaeldivita.chipnavigation.ChipNavigationBar
+
+
+        <com.volcaniccoder.bottomify.BottomifyNavigationView
                 android:id="@+id/main_activity_bottom_nav"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -76,38 +78,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginEnd="32dp"
-                android:layout_marginStart="32dp"/>
+                android:layout_marginStart="32dp"
+                android:orientation="horizontal"
+                app:menu="@menu/navigation_admin"
+                app:active_color="@color/mainColor600"
+                app:passive_color="@color/gray300"
+                app:pressed_color="@color/mainColor300"
+                app:item_text_size="10sp"
+                app:item_padding="8dp"
+                app:animation_duration="300"
+                app:scale_percent="5" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!--<com.etebarian.meowbottomnavigation.MeowBottomNavigation-->
-            <!--android:id="@+id/main_activity_bottom_nav"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintStart_toStartOf="parent"-->
-            <!--app:mbn_backgroundBottomColor="#ffffff"-->
-            <!--app:mbn_defaultIconColor="@color/gray300"-->
-            <!--app:mbn_selectedIconColor="@color/gray500"-->
-            <!--app:mbn_shadowColor="#1f212121"-->
-            <!--app:mbn_countBackgroundColor="@color/green600"-->
-            <!--app:mbn_countTextColor="#ffffff"-->
-            <!--android:background="@android:color/transparent"/>-->
-
-    <!--<com.google.android.material.bottomnavigation.BottomNavigationView-->
-            <!--android:id="@+id/feed_bottom_nav"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="50dp"-->
-            <!--android:background="@color/gray900"-->
-            <!--app:itemBackground="@color/gray900"-->
-            <!--app:itemTextColor="@color/bottom_nav_color"-->
-            <!--app:itemIconTint="@color/bottom_nav_color"-->
-            <!--app:menu="@menu/navigation"-->
-            <!--app:labelVisibilityMode="unlabeled"-->
-            <!--app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintStart_toStartOf="parent"/>-->
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

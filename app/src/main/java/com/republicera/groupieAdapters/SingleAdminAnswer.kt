@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.answer_layout.view.*
 import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
 
-class SingleAnswer(
+class SingleAdminAnswer(
     val answer: Answer, val currentUser: CommunityProfile, val activity: MainActivity
 ) : Item<ViewHolder>(), BoardMethods {
 
@@ -92,10 +92,10 @@ class SingleAnswer(
         edit.setOnClickListener {
             sharedViewModelAnswer.sharedAnswerObject.postValue(answer)
             activity.subFm.beginTransaction()
-                .add(R.id.feed_subcontents_frame_container, activity.editAnswerFragment, "editAnswerFragment")
-                .addToBackStack("editAnswerFragment")
+                .add(R.id.feed_subcontents_frame_container, activity.adminsEditAnswerFragment, "adminsEditAnswerFragment")
+                .addToBackStack("adminsEditAnswerFragment")
                 .commit()
-            activity.subActive = activity.editAnswerFragment
+            activity.subActive = activity.adminsEditAnswerFragment
             activity.isEditAnswerActive = true
         }
 
@@ -108,9 +108,9 @@ class SingleAnswer(
         }
 
         remove.setOnClickListener {
-            db.collection("answers").document(answer.id).delete().addOnSuccessListener {
+            db.collection("admins_answers").document(answer.id).delete().addOnSuccessListener {
                 changeReputation(
-                    9,
+                    25,
                     answer.id,
                     answer.question_ID,
                     currentUser.uid,
@@ -202,7 +202,7 @@ class SingleAnswer(
                     isDownvoted -> {
                         votesView.text = (votesView.text.toString().toInt() + 1).toString()
 
-                        executeVoteAnswer(
+                        executeVoteAdminAnswer(
                             0,
                             answer.question_ID,
                             currentUser.uid,
@@ -224,7 +224,7 @@ class SingleAnswer(
                     else -> {
                         votesView.text = (votesView.text.toString().toInt() + 1).toString()
 
-                        executeVoteAnswer(
+                        executeVoteAdminAnswer(
                             1,
                             answer.question_ID,
                             currentUser.uid,
@@ -256,7 +256,7 @@ class SingleAnswer(
                     isUpvoted -> {
                         votesView.text = (votesView.text.toString().toInt() - 1).toString()
 
-                        executeVoteAnswer(
+                        executeVoteAdminAnswer(
                             0,
                             answer.question_ID,
                             currentUser.uid,
@@ -278,7 +278,7 @@ class SingleAnswer(
                     else -> {
                         votesView.text = (votesView.text.toString().toInt() - 1).toString()
 
-                        executeVoteAnswer(
+                        executeVoteAdminAnswer(
                             -1,
                             answer.question_ID,
                             currentUser.uid,
@@ -306,7 +306,7 @@ class SingleAnswer(
 
             val timestamp = Date(System.currentTimeMillis())
 
-            val commentDoc = db.collection("answer_comments").document()
+            val commentDoc = db.collection("admins_answer_comments").document()
 
             val newComment =
                 AnswerComment(
@@ -337,7 +337,7 @@ class SingleAnswer(
 
         commentsAdapter.clear()
 
-        db.collection("answer_comments").whereEqualTo("answer_ID", answer.id).get().addOnSuccessListener {
+        db.collection("admins_answer_comments").whereEqualTo("answer_ID", answer.id).get().addOnSuccessListener {
             for (doc in it) {
                 val answerObject = doc.toObject(AnswerComment::class.java)
                 commentsAdapter.add(SingleAnswerComment(answerObject, activity, currentUser))

@@ -100,7 +100,7 @@ class ShoutExpendedFragment : Fragment(), ShoutsMethods {
                     }
                 ).into(authorImage)
 
-                timestamp.text = PrettyTime().format(Date(shout.timestamp))
+                timestamp.text = PrettyTime().format(shout.timestamp)
 
                 if (shout.content.isNotEmpty()) {
                     content.visibility = View.VISIBLE
@@ -159,56 +159,28 @@ class ShoutExpendedFragment : Fragment(), ShoutsMethods {
                 commentPost.setOnClickListener {
                     if (commentInput.text.isNotEmpty()) {
 
-                        val commentDoc = db.collection("shout_comments").document()
+                        val commentDocRef = db.collection("shout_comments").document()
 
                         val comment = ShoutComment(
-                            commentDoc.id,
+                            commentDocRef.id,
                             currentProfile.uid,
                             commentInput.text.toString(),
-                            System.currentTimeMillis(),
+                            Date(System.currentTimeMillis()),
                             shout.id,
                             mutableListOf()
                         )
-
                         commentInput.text.clear()
 
-                        commentDoc.set(comment).addOnSuccessListener {
-
-                            db.collection("shouts").document(shout.id)
-                                .set(mapOf("last_interaction" to System.currentTimeMillis()), SetOptions.merge())
-                                .addOnSuccessListener {
-
-                                    db.collection("shouts").document(shout.id)
-                                        .update("comments", FieldValue.increment(1)).addOnSuccessListener {
-                                            changeReputation(
-                                                16,
-                                                commentDoc.id,
-                                                shout.id,
-                                                currentProfile.uid,
-                                                currentProfile.name,
-                                                currentProfile.image,
-                                                shout.author_ID,
-                                                TextView(this.context),
-                                                "shoutComment",
-                                                activity,
-                                                currentCommunity.id
-                                            )
-
-                                            commentsAdapter.add(SingleComment(comment, currentProfile, activity))
-
-                                            val firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
-                                            firebaseAnalytics.logEvent("image_comment_added", null)
-                                        }
-                                }
-
-
+                        commentDocRef.set(comment).addOnSuccessListener {
+                            commentsAdapter.add(SingleComment(comment, currentProfile, activity))
+                            val firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
+                            firebaseAnalytics.logEvent("image_comment_added", null)
                         }
                     }
                 }
 
             }
         })
-
 
 
         authorImage.setOnClickListener {
@@ -244,11 +216,6 @@ class ShoutExpendedFragment : Fragment(), ShoutsMethods {
     ) {
         adapter.clear()
         db.collection("shout_comments").whereEqualTo("shout_ID", shout.id).get().addOnSuccessListener {
-            //            commentCount.text = if (it.size() > 0) {
-//                it.size().toString()
-//            } else {
-//                "0"
-//            }
 
             for (doc in it) {
 

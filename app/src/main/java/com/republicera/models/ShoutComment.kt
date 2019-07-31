@@ -1,12 +1,14 @@
 package com.republicera.models
 
+import java.util.*
+
 class ShoutComment(
     val id: String,
     val author_ID: String,
     val content: String,
-    val timestamp: Long,
+    val timestamp: Date,
     val shout_ID: String,
     val likes: MutableList<String>
 ) {
-    constructor() : this("", "", "", 0, "", mutableListOf())
+    constructor() : this("", "", "", Date(), "", mutableListOf())
 }

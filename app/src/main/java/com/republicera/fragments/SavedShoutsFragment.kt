@@ -22,8 +22,8 @@ import com.republicera.viewModels.RandomUserViewModel
 import com.republicera.viewModels.ShoutViewModel
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.board_toolbar_notifications.*
-import kotlinx.android.synthetic.main.fragment_saved_questions.*
+import kotlinx.android.synthetic.main.toolbar_without_search.*
+import kotlinx.android.synthetic.main.fragment_saved_items.*
 
 
 class SavedShoutsFragment : Fragment() {
@@ -42,7 +42,7 @@ class SavedShoutsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_saved_questions, container, false)
+    ): View? = inflater.inflate(R.layout.fragment_saved_items, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -71,9 +71,17 @@ class SavedShoutsFragment : Fragment() {
         shoutsRecycler.adapter = shoutsRecyclerAdapter
         shoutsRecycler.layoutManager = shoutsRecyclerLayoutManager
 
-        val shoutsNotificationIcon = board_toolbar_notifications_notifications_icon
-        val shoutsNotificationsBadge = board_toolbar_notifications_notifications_badge
-        val shoutsSavedShoutsIcon = board_toolbar_notifications_saved_questions_icon
+        val shoutsNotificationIcon = toolbar_without_search_notifications_icon
+        val shoutsNotificationsBadge = toolbar_without_search_notifications_badge
+        val shoutsSavedShoutsIcon = toolbar_without_search_saved_icon
+
+        activity.shoutsNotificationsCount.observe(this, Observer {
+            it?.let { notCount ->
+                shoutsNotificationsBadge.setNumber(notCount)
+            }
+        })
+
+        shoutsSavedShoutsIcon.setImageResource(R.drawable.bookmark_active)
 
         shoutsNotificationIcon.setOnClickListener {
             activity.subFm.beginTransaction().hide(activity.savedShoutsFragment)

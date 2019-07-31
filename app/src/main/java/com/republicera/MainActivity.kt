@@ -15,26 +15,28 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.algolia.search.saas.Client
 import com.github.nisrulz.sensey.Sensey
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseApp
+import com.google.firebase.Timestamp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.ismaeldivita.chipnavigation.ChipNavigationBar
 import com.republicera.fragments.*
 import com.republicera.interfaces.GeneralMethods
 import com.republicera.models.*
 import com.republicera.viewModels.*
+import com.volcaniccoder.bottomify.BottomifyNavigationView
+import com.volcaniccoder.bottomify.OnNavigationItemChangeListener
 import io.branch.indexing.BranchUniversalObject
+import io.branch.referral.Branch
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.user_home_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.subcontents_main.*
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), GeneralMethods {
 
@@ -51,7 +53,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
     lateinit var lastCommunity: String
 
-    lateinit var bottomNavigation: ChipNavigationBar
+    lateinit var bottomNavigation: BottomifyNavigationView
 
     lateinit var mainFrame: FrameLayout
     lateinit var subFrame: FrameLayout
@@ -79,7 +81,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
     lateinit var boardFragment: BoardFragment
     lateinit var shoutsFragment: ShoutsFragment
-    lateinit var quorumFragment: QuorumFragment
+    lateinit var adminsFragment: AdminsFragment
     lateinit var profileCurrentUserFragment: ProfileCurrentUserFragment
 
 
@@ -97,10 +99,15 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
     lateinit var editInterestsFragment: EditInterestsFragment
     lateinit var shoutExpendedFragment: ShoutExpendedFragment
     lateinit var searchFragment: SearchFragment
-    lateinit var adminsNewQuestionFragment: AdminsNewQuestionFragment
-    lateinit var adminsSearchFragment: AdminsSearchFragment
     lateinit var savedShoutsFragment: SavedShoutsFragment
     lateinit var shoutsNotificationsFragment: ShoutsNotificationsFragment
+    lateinit var adminsNewQuestionFragment: AdminsNewQuestionFragment
+    lateinit var adminsSearchFragment: AdminsSearchFragment
+    lateinit var adminsAnswerFragment: AdminsAnswerFragment
+    lateinit var adminsEditAnswerFragment: AdminsEditAnswerFragment
+    lateinit var adminsOpenedQuestionFragment: AdminsOpenedQuestionFragment
+    lateinit var adminsEditQuestionFragment: AdminsEditQuestionFragment
+
 
     lateinit var communitiesHomeFragment: CommunitiesHome
     lateinit var exploreCommunitiesFragment: ExploreCommunitiesFragment
@@ -110,10 +117,9 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
     lateinit var editBasicInfoFragment: EditBasicInfoFragment
 
 
-
-
     var boardNotificationsCount = MutableLiveData<Int>()
     var shoutsNotificationsCount = MutableLiveData<Int>()
+    var quorumNotificationsCount = MutableLiveData<Int>()
 
     var isOpenedQuestionActive = false
     var isEditAnswerActive = false
@@ -177,9 +183,12 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
     override fun onResume() {
         super.onResume()
+        branchInitSession()
+
         if (uid == null) {
 
             if (!checkIfLoggedIn()) {
+
                 userFm.beginTransaction()
                     .add(R.id.user_home_frame_container, communitiesHomeFragment, "communitiesHomeFragment")
                     .addToBackStack("communitiesHomeFragment")
@@ -187,7 +196,9 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                 userActive = communitiesHomeFragment
                 userHomeFrame.visibility = View.VISIBLE
             } else {
+
                 if (lastCommunity != "default") {
+
                     topLevelDB.collection("communities").document(lastCommunity).get().addOnSuccessListener {
                         val community = it.toObject(Community::class.java)
                         if (community != null) {
@@ -195,6 +206,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                         }
                     }
                 } else {
+
                     userFm.beginTransaction()
                         .add(
                             R.id.user_home_frame_container,
@@ -213,7 +225,6 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
 
     private fun checkIfLoggedIn(): Boolean {
-
         uid = FirebaseAuth.getInstance().uid
         return if (uid == null) {
             false
@@ -254,21 +265,19 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         db.collection("profiles").document(uid).get().addOnSuccessListener {
             val profile = it.toObject(CommunityProfile::class.java)
             if (profile != null) {
-
+                Log.d("checkProgress", "fetchCurrentProfile1")
                 currentProfile = profile
                 currentProfileViewModel.currentCommunityProfileObject = currentProfile
-                Log.d("checkkkkkk", "profile exists")
 
                 setupBottomNav()
             } else {
+                Log.d("checkProgress", "fetchCurrentProfile2")
+
                 topLevelDB.collection("users").document(uid).get().addOnSuccessListener { documentSnapshot ->
                     val topLevelUser = documentSnapshot.toObject(User::class.java)
                     if (topLevelUser != null) {
-                        Log.d("checkkkkkk", "trying to create profile")
 
-                        val batch = topLevelDB.batch()
-
-                        val currentTime = System.currentTimeMillis()
+                        val currentTime = Date(System.currentTimeMillis())
                         val newCommunityProfile =
                             CommunityProfile(
                                 uid,
@@ -278,89 +287,15 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                                 "",
                                 0,
                                 0,
+                                0,
+                                0,
+                                0,
                                 currentTime,
                                 currentTime
                             )
 
-
-                        val profileRef = db.collection("profiles").document(uid)
-                        batch.set(profileRef, newCommunityProfile)
-
-                        val interestsRef = db.collection("interests").document(uid)
-                        batch.set(interestsRef, mapOf("interests_list" to listOf("welcome-to-the-community")))
-
-                        val communityMembersRef = topLevelDB.collection("communities").document(currentCommunity!!.id)
-                        batch.update(communityMembersRef, "members", FieldValue.increment(1))
-
-                        val updateUerCommunitiesRef = topLevelDB.collection("users").document(uid)
-                        batch.update(
-                            updateUerCommunitiesRef,
-                            "communities_list",
-                            FieldValue.arrayUnion(currentCommunity!!.id)
-                        )
-
-                        val savedQuestionsRef = db.collection("saved_questions").document(uid)
-                        batch.set(savedQuestionsRef, mapOf("saved_questions" to listOf<String>()))
-
-                        val savedShoutsRef = db.collection("saved_shouts").document(uid)
-                        batch.set(savedShoutsRef, mapOf("saved_shouts" to listOf<String>()))
-
-                        val followedAccountsRef = db.collection("followed_accounts").document(uid)
-                        batch.set(followedAccountsRef, mapOf("accounts_list" to listOf<String>()))
-
-                        val accountsFollowingRef = db.collection("accounts_following").document(uid)
-                        batch.set(accountsFollowingRef, mapOf("accounts_list" to listOf<String>()))
-
-                        if (currentCommunity!!.founder == topLevelUser.uid) {
-                            Log.d("checkkkkkk", "need to create super profile")
-
-                            val communityProfileUid = "communityAdminProfile"
-                            val communityProfileImage = ""
-
-                            val communityAdminProfile =
-                                CommunityProfile(
-                                    communityProfileUid,
-                                    "Community profile",
-                                    communityProfileImage,
-                                    listOf(),
-                                    "",
-                                    0,
-                                    0,
-                                    currentTime,
-                                    currentTime
-                                )
-
-
-                            val communityAdminProfileRef = db.collection("profiles").document(communityProfileUid)
-                            batch.set(communityAdminProfileRef, communityAdminProfile)
-
-
-                            val firstQuestionRef = db.collection("questions").document()
-
-                            val firstQuestion = Question(
-                                firstQuestionRef.id,
-                                "Welcome to ${currentCommunity!!.title} community",
-                                "Hi there, and welcome to the community!\nTo begin interacting with other members of the community, head over to your profile, make it your own and edit your interests so our system would know what content to show you.\n\nOh! One last thing - how did you get here?",
-                                "en",
-                                mutableListOf("welcome-to-the-community"),
-                                currentTime,
-                                communityProfileUid,
-                                "Community profile",
-                                communityProfileImage,
-                                0,
-                                currentTime,
-                                mapOf()
-                            )
-
-                            batch.set(firstQuestionRef, firstQuestion)
-                        }
-
-                        batch.commit().addOnSuccessListener {
-
-                            createCounter(
-                                db.collection("reputation_counter").document(uid),
-                                20
-                            ).addOnSuccessListener {
+                        db.collection("profiles").document(uid).set(newCommunityProfile)
+                            .addOnSuccessListener {
                                 currentProfile = newCommunityProfile
                                 currentProfileViewModel.currentCommunityProfileObject =
                                     currentProfile
@@ -368,57 +303,33 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                                 topLevelUser.communities_list.add(currentCommunity!!.id)
 
                                 currentTopLevelUserViewModel.currentUserObject.postValue(topLevelUser)
-                                increaseAlgoliaMemberCount()
-                            }
-                        }.addOnFailureListener {
-                            Log.d("checkkkkkk", "batch failed because $it")
 
-                        }
+                                Log.d("checkProgress", "fetchCurrentProfile3")
+
+                                setupBottomNav()
+
+                            }
                     }
                 }
             }
         }
     }
 
-    private fun increaseAlgoliaMemberCount() {
-
-        val applicationID = getString(R.string.algolia_application_id)
-        val apiKey = getString(R.string.algolia_api_key)
-
-        val client = Client(applicationID, apiKey)
-        val index = client.getIndex("communities")
-
-        val updateArray = ArrayList<JSONObject>()
-
-        updateArray.add(
-            JSONObject().put("members", currentCommunity!!.members + 1).put(
-                "objectID",
-                currentCommunity!!.id
-            )
-        )
-
-        index.partialUpdateObjectsAsync(JSONArray(updateArray), null)
-        setupBottomNav()
-    }
 
     private fun setupBottomNav() {
-        bottomNavigation.setOnItemSelectedListener {
-            when (it) {
-                R.id.destination_board -> navigateToBoard()
-                R.id.destination_shouts -> navigateToShouts()
-                R.id.destination_profile_logged_in_user -> navigateToProfile()
-                R.id.destination_quorum -> navigateToQuorum()
+
+        bottomNavigation.setOnNavigationItemChangedListener(object : OnNavigationItemChangeListener {
+            override fun onNavigationItemChanged(navigationItem: BottomifyNavigationView.NavigationItem) {
+                when (navigationItem.position) {
+                    0 -> navigateToBoard()
+                    1 -> navigateToShouts()
+                    2 -> navigateToQuorum()
+                    3 -> navigateToProfile()
+                }
             }
-        }
+        })
 
-        bottomNavigation.setItemSelected(R.id.destination_board)
-
-        bottomNavigation.setHideOnScroll(true)
-        if (currentCommunity!!.admins.contains(currentProfile.uid)) {
-            bottomNavigation.setMenuResource(R.menu.navigation_admin)
-        } else {
-            bottomNavigation.setMenuResource(R.menu.navigation)
-        }
+        Log.d("checkProgress", "setupBottomNav")
 
         addTagsToViewModel()
     }
@@ -435,6 +346,8 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             tagsViewModel.tagList = tags
 
             createInterestList()
+            Log.d("checkProgress", "addTagsToViewModel")
+
         }
     }
 
@@ -448,14 +361,16 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                 interestsViewModel.interestList.postValue(interestsList)
             }
             createFollowedAccountsList()
+            Log.d("checkProgress", "createInterestList")
         }
     }
 
     private fun createFollowedAccountsList() {
+        Log.d("checkProgress", "createFollowedAccountsList1")
 
         followedAccountsViewModel.followedAccounts.postValue(mutableListOf())
 
-        db.collection("followed_accounts").document(currentProfile.uid).get()
+        db.collection("accounts_that_user_follows").document(currentProfile.uid).get()
             .addOnSuccessListener {
 
                 val doc = it.data
@@ -464,6 +379,11 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                     followedAccountsViewModel.followedAccounts.postValue(accountsList)
                 }
                 createFollowersList()
+                Log.d("checkProgress", "createFollowedAccountsList2")
+
+            }.addOnFailureListener {
+                Log.d("checkProgress", "createFollowedAccountsList3" + it.localizedMessage)
+
             }
     }
 
@@ -472,7 +392,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
         followersViewModel.followers.postValue(mutableListOf())
 
-        db.collection("accounts_following").document(currentProfile.uid).get()
+        db.collection("accounts_that_follow_user").document(currentProfile.uid).get()
             .addOnSuccessListener {
 
                 val doc = it.data
@@ -481,16 +401,19 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                     followersViewModel.followers.postValue(accountsList)
                 }
                 addFragmentsToFragmentManagers()
+                Log.d("checkProgress", "createFollowersList")
+
             }
     }
 
 
     private fun addFragmentsToFragmentManagers() {
         //main container
+        Log.d("checkProgress", "addFragmentsToFragmentManagers")
 
         boardFragment = BoardFragment()
         shoutsFragment = ShoutsFragment()
-        quorumFragment = QuorumFragment()
+        adminsFragment = AdminsFragment()
         profileCurrentUserFragment = ProfileCurrentUserFragment()
 
 
@@ -500,8 +423,8 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         fm.beginTransaction().add(R.id.feed_frame_container, shoutsFragment, "shoutsFragment")
             .hide(shoutsFragment).commitAllowingStateLoss()
 
-        fm.beginTransaction().add(R.id.feed_frame_container, quorumFragment, "quorumFragment")
-            .hide(quorumFragment).commitAllowingStateLoss()
+        fm.beginTransaction().add(R.id.feed_frame_container, adminsFragment, "adminsFragment")
+            .hide(adminsFragment).commitAllowingStateLoss()
 
         fm.beginTransaction()
             .add(R.id.feed_frame_container, profileCurrentUserFragment, "profileCurrentUserFragment")
@@ -523,10 +446,14 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         editInterestsFragment = EditInterestsFragment()
         shoutExpendedFragment = ShoutExpendedFragment()
         searchFragment = SearchFragment()
-        adminsNewQuestionFragment = AdminsNewQuestionFragment()
-        adminsSearchFragment = AdminsSearchFragment()
         savedShoutsFragment = SavedShoutsFragment()
         shoutsNotificationsFragment = ShoutsNotificationsFragment()
+        adminsNewQuestionFragment = AdminsNewQuestionFragment()
+        adminsSearchFragment = AdminsSearchFragment()
+        adminsAnswerFragment = AdminsAnswerFragment()
+        adminsEditAnswerFragment = AdminsEditAnswerFragment()
+        adminsOpenedQuestionFragment = AdminsOpenedQuestionFragment()
+        adminsEditQuestionFragment = AdminsEditQuestionFragment()
 
         subFm.beginTransaction()
             .add(R.id.feed_subcontents_frame_container, boardNotificationsFragment, "boardNotificationsFragment")
@@ -556,8 +483,8 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         } else {
             navigateToShouts()
         }
+        Log.d("checkProgress", "allowUserInteraction")
 
-        bottomNavigation.setItemSelected(R.id.destination_board)
     }
 
     private fun resetFragments() {
@@ -773,67 +700,28 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
     }
 
 
-//    private fun branchInitSession() {
-//        Branch.getInstance().initSession({ branchUniversalObject, _, error ->
-//
-//            if (error == null) {
-//                if (branchUniversalObject != null) {
-//
-//                    when (branchUniversalObject.contentMetadata.customMetadata["type"]) {
-//                        "user" -> collectProfile(branchUniversalObject,)
-//                        "question" -> collectQuestion(branchUniversalObject)
-//                    }
-//                }
-//            } else {
-//                println("branch definitely error" + error.message)
-//            }
-//        }, this.intent.data, this)
-//    }
-//
-//    override fun onResume() {
-//        super.onResume()
-//        sd.start(sm)
-////        branchInitSession()
-//    }
-////
-////    override fun onStart() {
-////        super.onStart()
-////        branchInitSession()
-////    }
-//
-//    override fun onPause() {
-//        super.onPause()
-//        sd.stop()
-//    }
+    private fun branchInitSession() {
+        Branch.getInstance().initSession({ branchUniversalObject, _, error ->
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Sensey.getInstance().stop()
-    }
+            if (error == null) {
+                if (branchUniversalObject != null) {
 
-    private fun createCounter(ref: DocumentReference, numShards: Int): Task<Void> {
-        // Initialize the counter document, then initialize each shard.
-        return ref.set(Counter(numShards))
-            .continueWithTask { task ->
-                if (!task.isSuccessful) {
-
-                    throw task.exception!!
+                    when (branchUniversalObject.contentMetadata.customMetadata["type"]) {
+                        "community" -> collectCommunity(branchUniversalObject)
+                    }
                 }
-
-                val tasks = arrayListOf<Task<Void>>()
-
-                // Initialize each shard with count=0
-                for (i in 0 until numShards) {
-                    val makeShard = ref.collection("shards")
-                        .document(i.toString())
-                        .set(Shard(0))
-
-                    tasks.add(makeShard)
-                }
-
-                Tasks.whenAll(tasks)
+            } else {
+                println("branch definitely error" + error.message)
             }
+        }, this.intent.data, this)
     }
+
+
+    override fun onStart() {
+        super.onStart()
+        branchInitSession()
+    }
+
 
     private fun navigateToBoard() {
         if (active != null) {
@@ -844,7 +732,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             val editor = sharedPref.edit()
             editor.putString("last_feed", "board")
             editor.apply()
-            bottomNavigation.setItemSelected(R.id.destination_board)
+//            bottomNavigation.setActiveNavigationIndex(0)
         }
     }
 
@@ -857,16 +745,15 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             val editor = sharedPref.edit()
             editor.putString("last_feed", "shouts")
             editor.apply()
-            bottomNavigation.setItemSelected(R.id.destination_shouts)
-
+//            bottomNavigation.setActiveNavigationIndex(1)
         }
     }
 
 
     private fun navigateToQuorum() {
         if (active != null) {
-            fm.beginTransaction().hide(active!!).show(quorumFragment).commit()
-            active = quorumFragment
+            fm.beginTransaction().hide(active!!).show(adminsFragment).commit()
+            active = adminsFragment
             resetFragments()
             profileCurrentUserFragment.scrollView.fullScroll(View.FOCUS_UP)
         }
@@ -881,6 +768,19 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             profileCurrentUserFragment.scrollView.fullScroll(View.FOCUS_UP)
         }
     }
+
+    private fun collectCommunity(branchUniversalObject: BranchUniversalObject) {
+
+        val communityId = branchUniversalObject.canonicalIdentifier
+
+        db.collection("communities").document(communityId).get().addOnSuccessListener {
+            val community = it.toObject(Community::class.java)
+            if (community != null) {
+                currentCommunityViewModel.currentCommunity.postValue(community)
+            }
+        }
+    }
+
 
     private fun collectProfile(branchUniversalObject: BranchUniversalObject) {
         val uid = FirebaseAuth.getInstance().uid
@@ -935,4 +835,3 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
 
 }
-

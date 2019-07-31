@@ -3,12 +3,14 @@ package com.republicera.fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.algolia.search.saas.Client
@@ -33,6 +35,7 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_new_question.*
 import org.json.JSONObject
+import java.util.*
 
 
 class AdminsNewQuestionFragment : Fragment(), BoardMethods {
@@ -125,6 +128,8 @@ class AdminsNewQuestionFragment : Fragment(), BoardMethods {
                     Toast.LENGTH_SHORT
                 ).show()
                 else -> {
+                    tagsList.clear()
+
                     for (i in 0 until questionChipGroup.childCount) {
                         val chip = questionChipGroup.getChildAt(i) as Chip
                         tagsList.add(chip.text.toString())
@@ -134,7 +139,7 @@ class AdminsNewQuestionFragment : Fragment(), BoardMethods {
                         questionTitle.text.toString(),
                         questionDetails.text.toString(),
                         tagsList,
-                        System.currentTimeMillis(),
+                        Date(System.currentTimeMillis()),
                         currentUser
                     )
                 }
@@ -204,7 +209,7 @@ class AdminsNewQuestionFragment : Fragment(), BoardMethods {
 
         addTagButton.setOnClickListener {
 
-            if (questionTagsInput.text.isNotEmpty()) {
+            if (questionTagsInput.text.length > 1) {
 
                 var tagsMatchCount = 0
 
@@ -265,16 +270,17 @@ class AdminsNewQuestionFragment : Fragment(), BoardMethods {
         title: String,
         details: String,
         tags: MutableList<String>,
-        timestamp: Long,
+        timestamp: Date,
         currentUser: CommunityProfile
     ) {
 
         val activity = activity as MainActivity
 
-        val questionDoc = db.collection("admins_questions").document()
+        val batch = FirebaseFirestore.getInstance().batch()
 
+        val questionDocRef = db.collection("admins_questions").document()
         val newQuestion = Question(
-            questionDoc.id,
+            questionDocRef.id,
             title,
             details,
             languageCode,
@@ -287,81 +293,58 @@ class AdminsNewQuestionFragment : Fragment(), BoardMethods {
             timestamp,
             mapOf()
         )
+        batch.set(questionDocRef, newQuestion)
+//
+//        val userLanguagesRef = FirebaseFirestore.getInstance().collection("users").document(currentUser.uid)
+//        batch.update(userLanguagesRef, "lang_list", FieldValue.arrayUnion(languageCode))
 
+        for (tag in tags) {
 
-        sharedViewModelQuestion.questionObject.postValue(newQuestion)
-        sharedViewModelRandomUser.randomUserObject.postValue(currentUser)
+//            val tagRef = db.collection("tags").document(tag[0] + tag[1].toString())
+//            batch.set(tagRef, mapOf(tag to FieldValue.increment(1)), SetOptions.merge())
+//
+//            val usersInterestsRef = db.collection("interests").document(currentUser.uid)
+//            batch.update(usersInterestsRef, "interests_list", FieldValue.arrayUnion(tag))
 
+            interestsList.add(tag)
+        }
 
-        questionDoc.set(newQuestion).addOnSuccessListener {
+        batch.commit().addOnSuccessListener {
 
-            FirebaseFirestore.getInstance().collection("users").document(currentUser.uid)
-                .update("lang_list", FieldValue.arrayUnion(languageCode)).addOnSuccessListener {
-                    for (tag in tags) {
+            sharedViewModelInterests.interestList.postValue(interestsList)
+            sharedViewModelQuestion.questionObject.postValue(newQuestion)
+            sharedViewModelRandomUser.randomUserObject.postValue(currentUser)
+//
+//            val newQuestionJson = JSONObject()
+//                .put("objectID", questionDocRef.id)
+//                .put("title", title)
+//                .put("details", details)
+//                .put("langID", languageCode)
+//                .put("_tags", tags)
+//                .put("timestamp", timestamp)
+//                .put("answers", 0)
+//
+//            index.addObjectAsync(newQuestionJson, null)
 
-                        db.collection("tags").document(tag[0] + tag[1].toString()).get()
-                            .addOnSuccessListener {
-                                val doc = it.data
+            activity.subFm.popBackStack("adminsSearchFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            activity.subFm.beginTransaction().add(
+                R.id.feed_subcontents_frame_container,
+                activity.adminsOpenedQuestionFragment,
+                "adminsOpenedQuestionFragment"
+            ).addToBackStack("adminsOpenedQuestionFragment")
+                .commit()
+            activity.subActive = activity.adminsOpenedQuestionFragment
+            activity.adminsFragment.listenToQuestions()
+            activity.fm.beginTransaction().show(activity.adminsFragment).commit()
 
-                                db.collection("tags").document(tag[0] + tag[1].toString()).set(
-                                    mapOf(
-                                        tag to
-                                                if (doc != null) {
-                                                    if (doc[tag] == null) {
-                                                        1
-                                                    } else {
-                                                        doc[tag].toString().toInt() + 1
-                                                    }
-                                                } else {
-                                                    1
-                                                }
-                                    ), SetOptions.merge()
-                                ).addOnSuccessListener {
-                                    db.collection("interests").document(currentUser.uid)
-                                        .update("interests_list", FieldValue.arrayUnion(tag))
-                                }
-                            }
+            closeKeyboard(activity)
 
-                        interestsList.add(tag)
-                        sharedViewModelInterests.interestList.postValue(interestsList)
-                    }
+            val firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
+            firebaseAnalytics.logEvent("question_added", null)
 
-
-                    val newQuestionJson = JSONObject()
-                        .put("objectID", questionDoc.id)
-                        .put("title", title)
-                        .put("details", details)
-                        .put("langID", languageCode)
-                        .put("_tags", tags)
-                        .put("timestamp", timestamp)
-
-                    index.addObjectAsync(newQuestionJson, null)
-
-                    activity.subFm.beginTransaction().add(
-                        R.id.feed_subcontents_frame_container,
-                        activity.openedQuestionFragment,
-                        "openedQuestionFragment"
-                    ).addToBackStack("openedQuestionFragment")
-                        .commit()
-                    activity.subActive = activity.openedQuestionFragment
-
-//                            activity.fm.beginTransaction().detach(activity.boardFragment).commit()
-//                            activity.fm.beginTransaction().attach(activity.boardFragment).commit()
-                    activity.boardFragment.listenToQuestions()
-                    activity.fm.beginTransaction().show(activity.boardFragment).commit()
-//                    activity.boardFragment.scrollView.fullScroll(View.FOCUS_UP)
-
-                    questionTitle.text.clear()
-                    questionDetails.text.clear()
-                    questionChipGroup.removeAllViews()
-                    tagsList.clear()
-
-                    closeKeyboard(activity)
-
-                    val firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
-                    firebaseAnalytics.logEvent("question_added", null)
-                }
-
+            questionTitle.text.clear()
+            questionDetails.text.clear()
+            questionChipGroup.removeAllViews()
         }
     }
 

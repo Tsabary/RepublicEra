@@ -35,6 +35,7 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_new_question.*
 import org.json.JSONObject
+import java.util.*
 
 
 class NewQuestionFragment : Fragment(), BoardMethods {
@@ -138,7 +139,7 @@ class NewQuestionFragment : Fragment(), BoardMethods {
                         questionTitle.text.toString(),
                         questionDetails.text.toString(),
                         tagsList,
-                        System.currentTimeMillis(),
+                        Date(System.currentTimeMillis()),
                         currentUser
                     )
                 }
@@ -208,7 +209,7 @@ class NewQuestionFragment : Fragment(), BoardMethods {
 
         addTagButton.setOnClickListener {
 
-            if (questionTagsInput.text.isNotEmpty()) {
+            if (questionTagsInput.text.length > 1) {
 
                 var tagsMatchCount = 0
 
@@ -269,16 +270,17 @@ class NewQuestionFragment : Fragment(), BoardMethods {
         title: String,
         details: String,
         tags: MutableList<String>,
-        timestamp: Long,
+        timestamp: Date,
         currentUser: CommunityProfile
     ) {
 
         val activity = activity as MainActivity
 
-        val questionDoc = db.collection("questions").document()
+        val batch = FirebaseFirestore.getInstance().batch()
 
+        val questionDocRef = db.collection("questions").document()
         val newQuestion = Question(
-            questionDoc.id,
+            questionDocRef.id,
             title,
             details,
             languageCode,
@@ -291,82 +293,48 @@ class NewQuestionFragment : Fragment(), BoardMethods {
             timestamp,
             mapOf()
         )
+        batch.set(questionDocRef, newQuestion)
+
+//        val userLanguagesRef = FirebaseFirestore.getInstance().collection("users").document(currentUser.uid)
+//        batch.update(userLanguagesRef, "lang_list", FieldValue.arrayUnion(languageCode))
+
+        for (tag in tags) {
+//
+//            val tagRef = db.collection("tags").document(tag[0] + tag[1].toString())
+//            batch.set(tagRef, mapOf(tag to FieldValue.increment(1)), SetOptions.merge())
+//
+//            val usersInterestsRef = db.collection("interests").document(currentUser.uid)
+//            batch.update(usersInterestsRef, "interests_list", FieldValue.arrayUnion(tag))
+
+            interestsList.add(tag)
+        }
+
+        batch.commit().addOnSuccessListener {
+
+            sharedViewModelInterests.interestList.postValue(interestsList)
+            sharedViewModelQuestion.questionObject.postValue(newQuestion)
+            sharedViewModelRandomUser.randomUserObject.postValue(currentUser)
 
 
-        questionDoc.set(newQuestion).addOnSuccessListener {
+            activity.subFm.popBackStack("searchFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            activity.subFm.beginTransaction().add(
+                R.id.feed_subcontents_frame_container,
+                activity.openedQuestionFragment,
+                "openedQuestionFragment"
+            ).addToBackStack("openedQuestionFragment")
+                .commit()
+            activity.subActive = activity.openedQuestionFragment
+            activity.boardFragment.listenToQuestions()
+            activity.fm.beginTransaction().show(activity.boardFragment).commit()
 
-            FirebaseFirestore.getInstance().collection("users").document(currentUser.uid)
-                .update("lang_list", FieldValue.arrayUnion(languageCode)).addOnSuccessListener {
-                    for (tag in tags) {
+            closeKeyboard(activity)
 
-                        db.collection("tags").document(tag[0] + tag[1].toString()).get()
-                            .addOnSuccessListener {
-                                val doc = it.data
+            val firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
+            firebaseAnalytics.logEvent("question_added", null)
 
-                                db.collection("tags").document(tag[0] + tag[1].toString()).set(
-                                    mapOf(
-                                        tag to
-                                                if (doc != null) {
-                                                    if (doc[tag] == null) {
-                                                        1
-                                                    } else {
-                                                        doc[tag].toString().toInt() + 1
-                                                    }
-                                                } else {
-                                                    1
-                                                }
-                                    ), SetOptions.merge()
-                                ).addOnSuccessListener {
-                                    db.collection("interests").document(currentUser.uid)
-                                        .update("interests_list", FieldValue.arrayUnion(tag))
-                                }
-                            }
-
-                        interestsList.add(tag)
-                    }
-
-                    val newQuestionJson = JSONObject()
-                        .put("objectID", questionDoc.id)
-                        .put("title", title)
-                        .put("details", details)
-                        .put("langID", languageCode)
-                        .put("_tags", tags)
-                        .put("timestamp", timestamp)
-                        .put("answers", 0)
-
-                    index.addObjectAsync(newQuestionJson, null)
-
-                    activity.subFm.popBackStack("searchFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
-                    activity.subFm.beginTransaction().add(
-                        R.id.feed_subcontents_frame_container,
-                        activity.openedQuestionFragment,
-                        "openedQuestionFragment"
-                    ).addToBackStack("openedQuestionFragment")
-                        .commit()
-                    activity.subActive = activity.openedQuestionFragment
-                    activity.boardFragment.listenToQuestions()
-                    activity.fm.beginTransaction().show(activity.boardFragment).commit()
-//                    activity.boardFragment.scrollView.fullScroll(View.FOCUS_UP)
-
-
-
-                    sharedViewModelInterests.interestList.postValue(interestsList)
-                    sharedViewModelQuestion.questionObject.postValue(newQuestion)
-                    Log.d("areTags1", newQuestion.tags.toString())
-
-                    sharedViewModelRandomUser.randomUserObject.postValue(currentUser)
-
-                    closeKeyboard(activity)
-
-                    val firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
-                    firebaseAnalytics.logEvent("question_added", null)
-
-                    questionTitle.text.clear()
-                    questionDetails.text.clear()
-                    questionChipGroup.removeAllViews()
-
-                }
-
+            questionTitle.text.clear()
+            questionDetails.text.clear()
+            questionChipGroup.removeAllViews()
         }
     }
 

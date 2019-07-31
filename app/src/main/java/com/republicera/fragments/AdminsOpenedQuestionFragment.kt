@@ -22,6 +22,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.*
 import com.republicera.MainActivity
 import com.republicera.R
+import com.republicera.groupieAdapters.SingleAdminAnswer
 import com.republicera.groupieAdapters.SingleAnswer
 import com.republicera.interfaces.BoardMethods
 import com.republicera.models.Answer
@@ -39,7 +40,7 @@ import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
 
 
-class OpenedQuestionFragment : Fragment(), BoardMethods {
+class AdminsOpenedQuestionFragment : Fragment(), BoardMethods {
 
     lateinit var db: DocumentReference
 
@@ -62,7 +63,7 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
     private lateinit var buo: BranchUniversalObject
     private lateinit var lp: LinkProperties
 
-    val answersAdapter = GroupAdapter<ViewHolder>()
+    private val answersAdapter = GroupAdapter<ViewHolder>()
 
 
     private var isUpvoted = false
@@ -139,11 +140,11 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                 R.id.opened_question_menu_edit -> {
                     activity.subFm.beginTransaction().add(
                         R.id.feed_subcontents_frame_container,
-                        activity.editQuestionFragment,
-                        "editQuestionFragment"
-                    ).addToBackStack("editQuestionFragment")
+                        activity.adminsEditQuestionFragment,
+                        "adminsEditQuestionFragment"
+                    ).addToBackStack("adminsEditQuestionFragment")
                         .commit()
-                    activity.subActive = activity.editQuestionFragment
+                    activity.subActive = activity.adminsEditQuestionFragment
                     true
                 }
 
@@ -219,16 +220,15 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                 }
 
 
-
                 removeButton.setOnClickListener {
-                    db.collection("questions").document(question.id).delete()
-                        .addOnSuccessListener {
-                            activity.subFm.popBackStack("openedQuestionFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
-                            activity.switchVisibility(0)
-                            activity.boardFragment.listenToQuestions()
+                    db.collection("admins_questions").document(question.id).delete().addOnSuccessListener {
+                        activity.subFm.popBackStack("adminsOpenedQuestionFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
-                            firebaseAnalytics.logEvent("question_removed", null)
-                        }
+                        activity.switchVisibility(0)
+                        activity.adminsFragment.listenToQuestions()
+
+                        firebaseAnalytics.logEvent("question_removed", null)
+                    }
                 }
 
                 cancelButton.setOnClickListener {
@@ -305,7 +305,7 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                     isDownvoted -> {
                         votesCount.text = (votesCount.text.toString().toInt() + 1).toString()
 
-                        executeVoteQuestion(
+                        executeVoteAdminQuestion(
                             0,
                             questionObject.id,
                             currentUserObject.uid,
@@ -327,7 +327,7 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                     else -> {
                         votesCount.text = (votesCount.text.toString().toInt() + 1).toString()
 
-                        executeVoteQuestion(
+                        executeVoteAdminQuestion(
                             1,
                             questionObject.id,
                             currentUserObject.uid,
@@ -359,7 +359,7 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                     isUpvoted -> {
                         votesCount.text = (votesCount.text.toString().toInt() - 1).toString()
 
-                        executeVoteQuestion(
+                        executeVoteAdminQuestion(
                             0,
                             questionObject.id,
                             currentUserObject.uid,
@@ -380,7 +380,7 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                     else -> {
                         votesCount.text = (votesCount.text.toString().toInt() - 1).toString()
 
-                        executeVoteQuestion(
+                        executeVoteAdminQuestion(
                             -1,
                             questionObject.id,
                             currentUserObject.uid,
@@ -405,15 +405,19 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
 
         answerButton.setOnClickListener {
 
-            db.collection("answers").whereEqualTo("question_ID", questionObject.id)
+            db.collection("admins_answers").whereEqualTo("question_ID", questionObject.id)
                 .whereEqualTo("author_ID", currentUserObject.uid).get().addOnSuccessListener {
 
                     if (it.size() == 0) {
                         activity.subFm.beginTransaction()
-                            .add(R.id.feed_subcontents_frame_container, activity.answerFragment, "answerFragment")
-                            .addToBackStack("answerFragment")
+                            .add(
+                                R.id.feed_subcontents_frame_container,
+                                activity.adminsAnswerFragment,
+                                "adminsAnswerFragment"
+                            )
+                            .addToBackStack("adminsAnswerFragment")
                             .commit()
-                        activity.subActive = activity.answerFragment
+                        activity.subActive = activity.adminsAnswerFragment
                     } else {
                         Toast.makeText(
                             activity,
@@ -447,14 +451,14 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
     fun listenToAnswers() {
         answersAdapter.clear()
 
-        db.collection("answers").whereEqualTo("question_ID", questionObject.id)
+        db.collection("admins_answers").whereEqualTo("question_ID", questionObject.id)
             .orderBy("total_score", Query.Direction.DESCENDING).get()
             .addOnSuccessListener {
 
                 for (document in it) {
                     val answerObject = document.toObject(Answer::class.java)
                     answersAdapter.add(
-                        SingleAnswer(
+                        SingleAdminAnswer(
                             answerObject,
                             currentUserObject,
                             activity as MainActivity
@@ -468,7 +472,7 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
     private fun checkIfQuestionSaved(event: Int, activity: Activity) {
         val firebaseAnalytics = FirebaseAnalytics.getInstance(activity)
 
-        db.collection("saved_questions").document(currentUserObject.uid).get().addOnSuccessListener {
+        db.collection("admins_saved_questions").document(currentUserObject.uid).get().addOnSuccessListener {
 
             val docSnapshot = it.data
             val list = docSnapshot!!["saved_questions"] as List<String>
@@ -477,13 +481,13 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                 if (event == 0) {
                     menuSave.title = "Saved"
                 } else {
-                    db.collection("saved_questions").document(currentUserObject.uid)
+                    db.collection("admins_saved_questions").document(currentUserObject.uid)
                         .update("saved_questions", FieldValue.arrayRemove(questionObject.id)).addOnSuccessListener {
                             menuSave.title = "Save"
 
 
                             changeReputation(
-                                11,
+                                27,
                                 questionObject.id,
                                 questionObject.id,
                                 currentUserObject.uid,
@@ -504,7 +508,7 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                 if (event == 0) {
                     menuSave.title = "Save"
                 } else {
-                    db.collection("saved_questions").document(currentUserObject.uid)
+                    db.collection("admins_saved_questions").document(currentUserObject.uid)
                         .update("saved_questions", FieldValue.arrayUnion(questionObject.id))
                         .addOnSuccessListener {
                             menuSave.title = "Saved"
@@ -513,28 +517,31 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
 
                                 db.collection("interests").document(currentUserObject.uid)
                                     .update("interests_list", FieldValue.arrayUnion(tag))
+
+
                                 interestsList.add(tag)
                                 sharedViewModelInterests.interestList.postValue(interestsList)
                             }
-
-                            changeReputation(
-                                10,
-                                questionObject.id,
-                                questionObject.id,
-                                currentUserObject.uid,
-                                currentUserObject.name,
-                                currentUserObject.image,
-                                questionObject.author_ID,
-                                "questionsave",
-                                activity,
-                                currentCommunity.id
-                            )
-
-                            firebaseAnalytics.logEvent("question_saved", null)
-                            (activity as MainActivity).savedQuestionFragment.listenToQuestions()
                         }
+
+                    changeReputation(
+                        26,
+                        questionObject.id,
+                        questionObject.id,
+                        currentUserObject.uid,
+                        currentUserObject.name,
+                        currentUserObject.image,
+                        questionObject.author_ID,
+                        "questionsave",
+                        activity,
+                        currentCommunity.id
+                    )
+
+                    firebaseAnalytics.logEvent("question_saved", null)
+                    (activity as MainActivity).savedQuestionFragment.listenToQuestions()
                 }
             }
         }
     }
 }
+
