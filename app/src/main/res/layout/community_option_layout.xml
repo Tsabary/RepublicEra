@@ -41,7 +41,7 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         algolia:srcCompat="@drawable/share"
-                        android:id="@+id/imageButton"
+                        android:id="@+id/community_share"
                         algolia:layout_constraintTop_toTopOf="parent"
                         algolia:layout_constraintEnd_toEndOf="parent"
                         android:background="@android:color/transparent"

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         package="com.republicera">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -12,12 +11,17 @@
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
 
     <application
+            android:name="CustomApplicationClass"
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
+
+        <meta-data
+                android:name="com.google.android.gms.ads.AD_MANAGER_APP"
+                android:value="true"/>
 
         <activity android:name=".RegisterLoginActivity"
                   android:screenOrientation="portrait"
@@ -26,15 +30,54 @@
 
         <activity android:name=".MainActivity"
                   android:screenOrientation="portrait"
-                  android:windowSoftInputMode="stateHidden|adjustResize">
+                  android:windowSoftInputMode="stateHidden|adjustResize"
+                  android:launchMode="singleTask"
+                  android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+
+            <!-- Branch URI Scheme -->
+            <intent-filter>
+                <data android:scheme="republicera" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+
+            <!-- Branch App Links (optional) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="republicera.co" />
+                <data android:scheme="https" android:host="nidek-alternate.app.link" />
+            </intent-filter>
+
         </activity>
         <meta-data android:name="preloaded_fonts"
                    android:resource="@array/preloaded_fonts"/>
+
+
+        <!-- Branch init -->
+        <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_lfIxy9fnD31xryxeFXw6ofodwsdw31UW" />
+        <meta-data android:name="io.branch.sdk.BranchKey.test" android:value="key_test_mgLyF5ijvZZEFECjsYx3tlhhABlzXZ8o" />
+        <meta-data android:name="io.branch.sdk.TestMode" android:value="false" /> <!-- Set to true to use Branch_Test_Key -->
+
+        <!-- Branch install referrer tracking (optional) -->
+        <receiver android:name="io.branch.referral.InstallListener" android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+
+
+
+
+
+
     </application>
 
 </manifest>

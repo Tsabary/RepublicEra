@@ -29,6 +29,7 @@ import com.volcaniccoder.bottomify.BottomifyNavigationView
 import com.volcaniccoder.bottomify.OnNavigationItemChangeListener
 import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.Branch
+import io.branch.referral.BranchError
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.user_home_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -183,7 +184,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
     override fun onResume() {
         super.onResume()
-        branchInitSession()
+//        branchInitSession()
 
         if (uid == null) {
 
@@ -700,28 +701,44 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
     }
 
 
-    private fun branchInitSession() {
-        Branch.getInstance().initSession({ branchUniversalObject, _, error ->
-
-            if (error == null) {
-                if (branchUniversalObject != null) {
-
-                    when (branchUniversalObject.contentMetadata.customMetadata["type"]) {
-                        "community" -> collectCommunity(branchUniversalObject)
-                    }
-                }
-            } else {
-                println("branch definitely error" + error.message)
-            }
-        }, this.intent.data, this)
-    }
+//    private fun branchInitSession() {
+//        Branch.getInstance().initSession({ branchUniversalObject, _, error ->
+//
+//            if (error == null) {
+//                if (branchUniversalObject != null) {
+//
+//                    when (branchUniversalObject.contentMetadata.customMetadata["type"]) {
+//                        "community" -> collectCommunity(branchUniversalObject)
+//                    }
+//                }
+//            } else {
+//                println("branch definitely error" + error.message)
+//            }
+//        }, this.intent.data, this)
+//    }
 
 
     override fun onStart() {
         super.onStart()
-        branchInitSession()
+
+        // Branch init
+        Branch.getInstance().initSession({ referringParams, error ->
+            if (error == null) {
+                Log.e("BRANCH SDK", referringParams.toString())
+                // Retrieve deeplink keys from 'referringParams' and evaluate the values to determine where to route the user
+                // Check '+clicked_branch_link' before deciding whether to use your Branch routing logic
+            } else {
+                Log.e("BRANCH SDK", error.message)
+            }
+        }, this.intent.data, this)
+
     }
 
+    //this has to do with branch
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        this.intent = intent
+    }
 
     private fun navigateToBoard() {
         if (active != null) {

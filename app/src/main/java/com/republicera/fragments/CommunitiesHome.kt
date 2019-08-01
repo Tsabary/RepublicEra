@@ -263,7 +263,7 @@ class CommunitiesHome : Fragment() {
                     .addOnSuccessListener { documentSnapshot ->
                         val community = documentSnapshot.toObject(Community::class.java)
                         if (community != null) {
-                            communitiesRecyclerAdapter.add(SingleCommunityOption(community))
+                            communitiesRecyclerAdapter.add(SingleCommunityOption(community, activity as MainActivity))
                         }
                     }
             }
