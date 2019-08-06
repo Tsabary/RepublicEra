@@ -108,6 +108,45 @@ class SingleNotification(
                     .append(" liked your comment", Spans.font("roboto_medium"))
             }
 
+            16 -> {
+                Spanner()
+                    .append(notification.initiator_name)
+                    .append(" upvoted your question", Spans.font("roboto_medium"))
+            }
+
+            18 -> {
+                Spanner()
+                    .append(notification.initiator_name)
+                    .append(" upvoted your answer", Spans.font("roboto_medium"))
+            }
+
+            20 -> {
+
+                Spanner()
+                    .append("Someone")
+                    .append(" downvoted your question ", Spans.font("roboto_medium"))
+            }
+
+            22 -> {
+                Spanner()
+                    .append("Someone")
+                    .append(" downvoted your answer", Spans.font("roboto_medium"))
+            }
+
+            24 -> {
+
+                Spanner()
+                    .append(notification.initiator_name)
+                    .append(" answered your question", Spans.font("roboto_medium"))
+            }
+
+            26 -> {
+                Spanner()
+                    .append(notification.initiator_name)
+                    .append(" bookmarked your question", Spans.font("roboto_medium"))
+            }
+
+
             994 -> {
                 Spanner()
                     .append(notification.initiator_name)

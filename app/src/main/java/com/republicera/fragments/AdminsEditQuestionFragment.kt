@@ -141,34 +141,6 @@ class AdminsEditQuestionFragment : Fragment(), BoardMethods {
                                 )
                             ).addOnSuccessListener {
 
-//                                for (tag in question.tags) {
-//
-//                                    val tagRef = db.collection("tags")
-//                                        .document(tag[0] + tag[1].toString())
-//
-//                                    if (!tagsList.contains(tag)) {
-//                                        tagRef.update(tag, FieldValue.increment(-1))
-//                                    }
-//                                }
-
-//                                for (tag in tagsList) {
-//
-//                                    if (!question.tags.contains(tag)) {
-//                                        db.collection("tags")
-//                                            .document(tag[0] + tag[1].toString()).update(
-//                                                tag, FieldValue.increment(1)
-//                                            ).addOnSuccessListener {
-//                                                db.collection("interests")
-//                                                    .document(currentUser.uid)
-//                                                    .update("interests_list", FieldValue.arrayUnion(tag)).addOnSuccessListener {
-//                                                        interestsList.add(tag)
-//                                                        sharedViewModelInterests.interestList.postValue(interestsList)
-//                                                    }
-//                                            }
-//                                    }
-//                                }
-
-
                                 for (tag in tagsList) {
                                     interestsList.add(tag)
                                     sharedViewModelInterests.interestList.postValue(interestsList)
@@ -199,7 +171,7 @@ class AdminsEditQuestionFragment : Fragment(), BoardMethods {
                                     "adminsEditQuestionFragment",
                                     FragmentManager.POP_BACK_STACK_INCLUSIVE
                                 )
-                                activity.subActive = activity.openedQuestionFragment
+                                activity.subActive = activity.adminsOpenedQuestionFragment
                             }
                         }
                     }

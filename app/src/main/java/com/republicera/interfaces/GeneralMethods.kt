@@ -78,12 +78,6 @@ interface GeneralMethods {
             .whereEqualTo("specific_post_ID", specificPostId)
 
 
-
-        val receiverReputationCounter = db.collection("reputation_counter").document(receiverId)
-        val initiatorReputationCounter = db.collection("reputation_counter").document(receiverId)
-
-
-
         when (scenarioType) {
 
 
@@ -101,7 +95,7 @@ interface GeneralMethods {
                         0,
                         "board",
                         5,
-                        System.currentTimeMillis()
+                        FieldValue.serverTimestamp()
                     )
                 )
             }
@@ -133,7 +127,7 @@ interface GeneralMethods {
                         2,
                         "board",
                         10,
-                        System.currentTimeMillis()
+                        FieldValue.serverTimestamp()
                     )
                 )
             }
@@ -167,7 +161,7 @@ interface GeneralMethods {
                         4,
                         "board",
                         -2,
-                        System.currentTimeMillis()
+                        FieldValue.serverTimestamp()
                     )
                 ).addOnSuccessListener {
                     db.collection("reputation_events").document().set(
@@ -182,7 +176,7 @@ interface GeneralMethods {
                             4,
                             "board",
                             -1,
-                            System.currentTimeMillis()
+                            FieldValue.serverTimestamp()
                         )
                     )
                 }
@@ -225,7 +219,7 @@ interface GeneralMethods {
                         6,
                         "board",
                         -2,
-                        System.currentTimeMillis()
+                        FieldValue.serverTimestamp()
                     )
                 ).addOnSuccessListener {
                     db.collection("reputation_events").document().set(
@@ -240,7 +234,7 @@ interface GeneralMethods {
                             6,
                             "board",
                             -1,
-                            System.currentTimeMillis()
+                            FieldValue.serverTimestamp()
                         )
                     )
                 }
@@ -283,7 +277,7 @@ interface GeneralMethods {
                         8,
                         "board",
                         2,
-                        System.currentTimeMillis()
+                        FieldValue.serverTimestamp()
                     )
                 )
             }
@@ -315,7 +309,7 @@ interface GeneralMethods {
                         10,
                         "board",
                         5,
-                        System.currentTimeMillis()
+                        FieldValue.serverTimestamp()
                     )
                 )
             }
@@ -348,7 +342,7 @@ interface GeneralMethods {
                         12,
                         "shouts",
                         1,
-                        System.currentTimeMillis()
+                        FieldValue.serverTimestamp()
                     )
                 )
             }
@@ -381,7 +375,7 @@ interface GeneralMethods {
                         14,
                         "shouts",
                         1,
-                        System.currentTimeMillis()
+                        FieldValue.serverTimestamp()
                     )
                 )
             }
@@ -414,7 +408,7 @@ interface GeneralMethods {
                         16,
                         "admins_board",
                         5,
-                        System.currentTimeMillis()
+                        FieldValue.serverTimestamp()
                     )
                 )
             }
@@ -446,7 +440,7 @@ interface GeneralMethods {
                         18,
                         "admins_board",
                         10,
-                        System.currentTimeMillis()
+                        FieldValue.serverTimestamp()
                     )
                 )
             }
@@ -480,7 +474,7 @@ interface GeneralMethods {
                         20,
                         "admins_board",
                         -2,
-                        System.currentTimeMillis()
+                        FieldValue.serverTimestamp()
                     )
                 ).addOnSuccessListener {
                     db.collection("reputation_events").document().set(
@@ -495,7 +489,7 @@ interface GeneralMethods {
                             20,
                             "admins_board",
                             -1,
-                            System.currentTimeMillis()
+                            FieldValue.serverTimestamp()
                         )
                     )
                 }
@@ -538,7 +532,7 @@ interface GeneralMethods {
                         22,
                         "admins_board",
                         -2,
-                        System.currentTimeMillis()
+                        FieldValue.serverTimestamp()
                     )
                 ).addOnSuccessListener {
                     db.collection("reputation_events").document().set(
@@ -553,7 +547,7 @@ interface GeneralMethods {
                             22,
                             "admins_board",
                             -1,
-                            System.currentTimeMillis()
+                            FieldValue.serverTimestamp()
                         )
                     )
                 }
@@ -596,7 +590,7 @@ interface GeneralMethods {
                         24,
                         "admins_board",
                         2,
-                        System.currentTimeMillis()
+                        FieldValue.serverTimestamp()
                     )
                 )
             }
@@ -628,7 +622,7 @@ interface GeneralMethods {
                         26,
                         "admins_board",
                         5,
-                        System.currentTimeMillis()
+                        FieldValue.serverTimestamp()
                     )
                 )
             }

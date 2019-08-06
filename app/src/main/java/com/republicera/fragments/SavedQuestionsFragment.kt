@@ -22,8 +22,11 @@ import com.republicera.viewModels.QuestionViewModel
 import com.republicera.viewModels.RandomUserViewModel
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
+import kotlinx.android.synthetic.main.fragment_notifications.*
+import kotlinx.android.synthetic.main.fragment_saved_items.*
 import kotlinx.android.synthetic.main.toolbar_without_search.*
 import kotlinx.android.synthetic.main.fragment_saved_items.view.*
+import kotlinx.android.synthetic.main.fragment_saved_items.view.saved_items_swipe_refresh
 
 
 class SavedQuestionsFragment : Fragment() {
@@ -63,8 +66,12 @@ class SavedQuestionsFragment : Fragment() {
                 })
         }
 
+        saved_items_swipe_refresh.setOnRefreshListener {
+            listenToQuestions()
+            saved_items_swipe_refresh.isRefreshing = false
+        }
 
-        val questionsRecycler = view.saved_questions_recycler
+        val questionsRecycler = view.saved_items_recycler
 
         val questionRecyclerLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this.context)
         questionsRecycler.adapter = questionsRecyclerAdapter
@@ -74,7 +81,7 @@ class SavedQuestionsFragment : Fragment() {
         val boardNotificationsBadge = toolbar_without_search_notifications_badge
         val boardSavedQuestionIcon = toolbar_without_search_saved_icon
 
-        activity.shoutsNotificationsCount.observe(this, Observer {
+        activity.boardNotificationsCount.observe(this, Observer {
             it?.let { notCount ->
                 boardNotificationsBadge.setNumber(notCount)
             }

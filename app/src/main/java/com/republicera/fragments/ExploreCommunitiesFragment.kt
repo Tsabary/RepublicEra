@@ -76,8 +76,8 @@ class ExploreCommunitiesFragment : Fragment() {
                 val community = hitsView.get(position)
 
                 AlertDialog.Builder(context)
-                    .setTitle("Join tribe")
-                    .setMessage("Would you like to join the ${community["title"]} tribe?")
+                    .setTitle("Join Repblic")
+                    .setMessage("Would you like to join the ${community["title"]} republic?")
                     .setPositiveButton("Join") { _, _ ->
 
                         db.collection("communities").document(community["objectID"].toString()).get()
@@ -97,10 +97,6 @@ class ExploreCommunitiesFragment : Fragment() {
                                     editor.apply()
 
                                     activity.userHomeFrame.visibility = View.GONE
-                                    Log.d("checkk", "01101111010")
-
-                                } else {
-                                    Log.d("checkk", "121212121212121")
 
                                 }
                             }

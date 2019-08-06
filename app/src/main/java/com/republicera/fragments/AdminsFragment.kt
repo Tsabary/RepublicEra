@@ -96,7 +96,6 @@ class AdminsFragment : Fragment(), BoardMethods {
     private lateinit var boardFilterChipGroup: ChipGroup
     var searchedTagsList = mutableListOf<String>()
 
-    lateinit var index: com.algolia.search.saas.Index
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_board, container, false)
@@ -207,16 +206,9 @@ class AdminsFragment : Fragment(), BoardMethods {
             listenToReported()
         }
 
-        val applicationID = activity.getString(R.string.algolia_application_id)
-        val apiKey = activity.getString(R.string.algolia_api_key)
-
-        val client = Client(applicationID, apiKey)
-        index = client.getIndex("${currentCommunity.id}_questions")
-
-
         val notificationBadge = toolbar_with_search_notifications_badge
 
-        activity.quorumNotificationsCount.observe(this, Observer {
+        activity.adminNotificationsCount.observe(this, Observer {
             it?.let { notCount ->
                 notificationBadge.setNumber(notCount)
             }
@@ -256,17 +248,17 @@ class AdminsFragment : Fragment(), BoardMethods {
         val boardNotificationIcon = toolbar_with_search_notifications_icon
         val boardSavedQuestionIcon = toolbar_with_search_saved_icon
 
-//        notificationBadge.setOnClickListener {
-//            goToNotifications(activity)
-//        }
-//
-//        boardNotificationIcon.setOnClickListener {
-//            goToNotifications(activity)
-//        }
-//
-//        boardSavedQuestionIcon.setOnClickListener {
-//            goToSavedQuestions(activity)
-//        }
+        notificationBadge.setOnClickListener {
+            goToNotifications(activity)
+        }
+
+        boardNotificationIcon.setOnClickListener {
+            goToNotifications(activity)
+        }
+
+        boardSavedQuestionIcon.setOnClickListener {
+            goToSavedQuestions(activity)
+        }
 
         val constraintButton = constraintLayout_botton_check
 
@@ -367,7 +359,7 @@ class AdminsFragment : Fragment(), BoardMethods {
         val editor = sharedPref.edit()
 
         if (case == 0) {
-            layoutIcon.setImageResource(R.drawable.rows_layout)
+            layoutIcon.setImageResource(R.drawable.blocks_layout)
 
             layoutIcon.tag = "row_layout"
 
@@ -378,7 +370,7 @@ class AdminsFragment : Fragment(), BoardMethods {
 
             editor.putInt("last_layout", 0)
         } else {
-            layoutIcon.setImageResource(R.drawable.blocks_layout)
+            layoutIcon.setImageResource(R.drawable.rows_layout)
 
             layoutIcon.tag = "block_layout"
 
@@ -393,30 +385,32 @@ class AdminsFragment : Fragment(), BoardMethods {
 
     }
 
-    ///need to create admins equivelant
+    private fun goToSavedQuestions(activity: MainActivity) {
+        activity.subFm.beginTransaction().hide(activity.adminsNotificationsFragment)
+            .show(activity.adminsSavedQuestionsFragment).commit()
+        activity.subActive = activity.adminsSavedQuestionsFragment
+        activity.switchVisibility(1)
+        activity.isBoardNotificationsActive = true
+    }
 
-//    private fun goToSavedQuestions(activity: MainActivity) {
-//        activity.subFm.beginTransaction().hide(activity.boardNotificationsFragment)
-//            .show(activity.savedQuestionFragment).commit()
-//        activity.subActive = activity.savedQuestionFragment
-//        activity.switchVisibility(1)
-//        activity.isBoardNotificationsActive = true
-//    }
-//
-//    private fun goToNotifications(activity: MainActivity) {
-//        activity.subFm.beginTransaction().hide(activity.savedQuestionFragment)
-//            .show(activity.boardNotificationsFragment)
-//            .commit()
-//        activity.subActive = activity.boardNotificationsFragment
-//
-//        activity.switchVisibility(1)
-//        activity.isBoardNotificationsActive = true
-//    }
+    private fun goToNotifications(activity: MainActivity) {
+        activity.subFm.beginTransaction().hide(activity.adminsSavedQuestionsFragment)
+            .show(activity.adminsNotificationsFragment)
+            .commit()
+        activity.subActive = activity.adminsNotificationsFragment
+
+        activity.switchVisibility(1)
+        activity.isBoardNotificationsActive = true
+    }
 
     private fun openQuestion(author: String, activity: MainActivity) {
 
         activity.subFm.beginTransaction()
-            .add(R.id.feed_subcontents_frame_container, activity.adminsOpenedQuestionFragment, "adminsOpenedQuestionFragment")
+            .add(
+                R.id.feed_subcontents_frame_container,
+                activity.adminsOpenedQuestionFragment,
+                "adminsOpenedQuestionFragment"
+            )
             .addToBackStack("adminsOpenedQuestionFragment").commit()
 
         db.collection("profiles").document(author).get().addOnSuccessListener {
@@ -424,7 +418,7 @@ class AdminsFragment : Fragment(), BoardMethods {
 
             if (user != null) {
                 sharedViewModelRandomUser.randomUserObject.postValue(user)
-                activity.subActive = activity.openedQuestionFragment
+                activity.subActive = activity.adminsOpenedQuestionFragment
                 activity.isOpenedQuestionActive = true
                 activity.switchVisibility(1)
             }
@@ -596,6 +590,7 @@ class AdminsFragment : Fragment(), BoardMethods {
                 } else {
                     freshMessage.visibility = View.GONE
 
+                    var postsCount = 0
 
                     for (document in it) {
                         val questionObject = document.toObject(Question::class.java)
@@ -618,10 +613,30 @@ class AdminsFragment : Fragment(), BoardMethods {
                                             activity as MainActivity
                                         ))
                                     )
+
+                                    postsCount++
+
                                     break@singleQuestionLoop
                                 }
                             }
                         }
+                    }
+
+                    if (postsCount == 0) {
+                        val activity = activity as MainActivity
+                        activity.subFm.beginTransaction().add(
+                            R.id.feed_subcontents_frame_container,
+                            activity.editInterestsFragment,
+                            "editInterestsFragment"
+                        ).addToBackStack("editInterestsFragment")
+                            .commit()
+                        activity.subActive = activity.editInterestsFragment
+                        activity.switchVisibility(1)
+
+                        freshMessage.text = "Head to your profile and add more interests to populate your board"
+                        freshMessage.visibility = View.VISIBLE
+                    } else {
+                        freshMessage.visibility = View.GONE
                     }
 
                     questionsBlockLayoutAdapter.notifyDataSetChanged()
@@ -708,7 +723,6 @@ class AdminsFragment : Fragment(), BoardMethods {
     }
 
 
-
     fun listenToReported() {
 
         reportedPostsRecyclerAdapter.clear()
@@ -764,7 +778,8 @@ class AdminsFragment : Fragment(), BoardMethods {
                 if (reportedIsScrolling && countCheck && !reportedIsLastItemReached) {
                     reportedIsScrolling = false
 
-                    db.collection("reported_shouts").orderBy("timestamp", Query.Direction.ASCENDING).startAfter(reportedLastVisible)
+                    db.collection("reported_shouts").orderBy("timestamp", Query.Direction.ASCENDING)
+                        .startAfter(reportedLastVisible)
                         .limit(25).get()
                         .addOnSuccessListener { querySnapshot ->
 

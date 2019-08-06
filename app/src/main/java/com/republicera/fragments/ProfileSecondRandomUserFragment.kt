@@ -415,10 +415,10 @@ class ProfileSecondRandomUserFragment : Fragment(), ProfileMethods {
         val batch = FirebaseFirestore.getInstance().batch()
 
         val followedAccountsRef = db.collection("accounts_that_user_follows").document(currentUser.uid)
-        batch.update(followedAccountsRef, "accounts_list", FieldValue.arrayUnion(userProfile.uid))
+        batch.set(followedAccountsRef, mapOf("accounts_list" to FieldValue.arrayUnion(userProfile.uid)), SetOptions.merge())
 
         val accountsFollowingRef = db.collection("accounts_that_follow_user").document(userProfile.uid)
-        batch.update(accountsFollowingRef, "accounts_list", FieldValue.arrayUnion(currentUser.uid))
+        batch.set(accountsFollowingRef, mapOf("accounts_list" to FieldValue.arrayUnion(currentUser.uid)), SetOptions.merge())
 
         batch.commit().addOnSuccessListener {
 

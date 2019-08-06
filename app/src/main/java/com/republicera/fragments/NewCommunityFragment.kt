@@ -24,8 +24,6 @@ import org.json.JSONObject
 
 class NewCommunityFragment : Fragment() {
 
-    private lateinit var index: com.algolia.search.saas.Index
-
     private lateinit var communityViewModel: CurrentCommunityViewModel
 
     var topLevelUser: User? = null
@@ -54,13 +52,6 @@ class NewCommunityFragment : Fragment() {
             communityViewModel = ViewModelProviders.of(it).get(CurrentCommunityViewModel::class.java)
 
         }
-
-        val applicationID = activity.getString(R.string.algolia_application_id)
-        val apiKey = activity.getString(R.string.algolia_api_key)
-
-        val client = Client(applicationID, apiKey)
-        index = client.getIndex("communities")
-
 
         val titleInput = new_community_title_input
         val descriptionInput = new_community_description_input

@@ -4,7 +4,6 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 
-@Parcelize
 class ReportedShout(
     val id: String,
     val author_ID: String,
@@ -15,6 +14,6 @@ class ReportedShout(
     val timestamp: Date,
     val keeps: MutableList<String>,
     val removes: MutableList<String>
-) : Parcelable {
+) {
     constructor() : this("", "", "", "", "", listOf(), Date(), mutableListOf(), mutableListOf())
 }

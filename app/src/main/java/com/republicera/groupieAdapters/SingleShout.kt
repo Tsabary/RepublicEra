@@ -321,7 +321,7 @@ class SingleShout(val shout: Shout, val currentUser: CommunityProfile, val activ
                         menuSave.title = "Saved"
                     } else {
                         db.collection("saved_shouts").document(currentProfile.uid)
-                            .update("saved_shouts", FieldValue.arrayRemove(shout.id)).addOnSuccessListener {
+                            .set(mapOf("saved_shouts" to FieldValue.arrayRemove(shout.id)), SetOptions.merge()).addOnSuccessListener {
                                 menuSave.title = "Save"
 
                                 firebaseAnalytics.logEvent("shout_unsaved", null)
@@ -334,7 +334,7 @@ class SingleShout(val shout: Shout, val currentUser: CommunityProfile, val activ
                         menuSave.title = "Save"
                     } else {
                         db.collection("saved_shouts").document(currentProfile.uid)
-                            .update("saved_shouts", FieldValue.arrayUnion(shout.id))
+                            .set(mapOf("saved_shouts" to FieldValue.arrayUnion(shout.id)), SetOptions.merge())
                             .addOnSuccessListener {
                                 menuSave.title = "Saved"
 
@@ -342,6 +342,17 @@ class SingleShout(val shout: Shout, val currentUser: CommunityProfile, val activ
                                 (activity as MainActivity).savedQuestionFragment.listenToQuestions()
                             }
                     }
+                }
+            } else {
+                if (event == 1) {
+                    db.collection("saved_shouts").document(currentProfile.uid)
+                        .set(mapOf("saved_shouts" to FieldValue.arrayUnion(shout.id)), SetOptions.merge())
+                        .addOnSuccessListener {
+                            menuSave.title = "Saved"
+
+                            firebaseAnalytics.logEvent("shout_saved", null)
+                            (activity as MainActivity).savedQuestionFragment.listenToQuestions()
+                        }
                 }
             }
         }

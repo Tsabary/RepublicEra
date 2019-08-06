@@ -36,7 +36,7 @@ class AdminsAnswerFragment : Fragment(), BoardMethods {
 
     lateinit var db: DocumentReference
 
-    private lateinit var sharedViewModelAnswerImages: AnswerImagesViewModel
+//    private lateinit var sharedViewModelAnswerImages: AnswerImagesViewModel
 
     private lateinit var currentCommunity: Community
 
@@ -69,7 +69,7 @@ class AdminsAnswerFragment : Fragment(), BoardMethods {
                     db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity.id)
                 })
 
-            sharedViewModelAnswerImages = ViewModelProviders.of(it).get(AnswerImagesViewModel::class.java)
+//            sharedViewModelAnswerImages = ViewModelProviders.of(it).get(AnswerImagesViewModel::class.java)
 
 
             ViewModelProviders.of(it).get(QuestionViewModel::class.java).questionObject.observe(
@@ -78,7 +78,7 @@ class AdminsAnswerFragment : Fragment(), BoardMethods {
                         question = questionObject
                         questionTitle.text = question.title
 
-                        sharedViewModelAnswerImages.imageList.postValue(mutableListOf())
+//                        sharedViewModelAnswerImages.imageList.postValue(mutableListOf())
                         answerContent.text.clear()
                     }
                 })

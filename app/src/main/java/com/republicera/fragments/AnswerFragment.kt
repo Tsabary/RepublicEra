@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.republicera.MainActivity
@@ -95,7 +96,7 @@ class AnswerFragment : Fragment(), BoardMethods {
             if (answer_content.text.length > 15) {
                 postAnswer(
                     answerContent.text.toString(),
-                    Date(System.currentTimeMillis()),
+                    Date(),
                     activity
                 )
             } else {

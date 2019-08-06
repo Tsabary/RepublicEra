@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,7 +33,7 @@ import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_edit_interests.*
 
 class EditInterestsFragment : Fragment() {
-    lateinit var db : DocumentReference
+    lateinit var db: DocumentReference
 
     lateinit var currentUser: CommunityProfile
     lateinit var sharedViewModelTags: TagsViewModel
@@ -58,9 +59,12 @@ class EditInterestsFragment : Fragment() {
         val activity = activity as MainActivity
         chipGroup = edit_interests_chipgroup
 
+        val save = edit_interests_save
+
         activity.let {
             sharedViewModelTags = ViewModelProviders.of(it).get(TagsViewModel::class.java)
-            currentUser = ViewModelProviders.of(it).get(CurrentCommunityProfileViewModel::class.java).currentCommunityProfileObject
+            currentUser = ViewModelProviders.of(it).get(CurrentCommunityProfileViewModel::class.java)
+                .currentCommunityProfileObject
             sharedViewModelInterests = ViewModelProviders.of(it).get(InterestsViewModel::class.java)
 
             ViewModelProviders.of(it).get(CurrentCommunityViewModel::class.java).currentCommunity.observe(
@@ -82,7 +86,12 @@ class EditInterestsFragment : Fragment() {
         tagSuggestionRecycler.adapter = tagsFilteredAdapter
         tagSuggestionRecycler.layoutManager = LinearLayoutManager(this.context)
 
-
+        save.setOnClickListener {
+            saveInterests()
+            activity.boardFragment.listenToQuestions()
+            activity.subFm.popBackStack("editInterestsFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            activity.switchVisibility(0)
+        }
 
 
         searchInput.addTextChangedListener(object : TextWatcher {
@@ -146,8 +155,12 @@ class EditInterestsFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
+        saveInterests()
+    }
 
+    private fun saveInterests() {
         db.collection("interests").document(currentUser.uid).set(mapOf("interests_list" to interestsList))
+
 
     }
 
@@ -160,7 +173,6 @@ class EditInterestsFragment : Fragment() {
             onTagSelected(tag)
         }
     }
-
 
 
     private fun onTagSelected(selectedTag: String) {

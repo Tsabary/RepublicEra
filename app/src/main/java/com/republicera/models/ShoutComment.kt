@@ -1,5 +1,6 @@
 package com.republicera.models
 
+import com.google.firebase.firestore.FieldValue
 import java.util.*
 
 class ShoutComment(

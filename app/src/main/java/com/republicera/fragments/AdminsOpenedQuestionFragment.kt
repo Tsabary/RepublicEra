@@ -153,35 +153,6 @@ class AdminsOpenedQuestionFragment : Fragment(), BoardMethods {
                     true
                 }
 
-
-/*
-                R.id.opened_question_share -> {
-
-
-                    val ss = ShareSheetStyle(activity, "Check this out!", "Get Dere and start collecting destinations")
-                        .setCopyUrlStyle(resources.getDrawable(android.R.drawable.ic_menu_send), "Copy", "Added to clipboard")
-                        .setMoreOptionStyle(resources.getDrawable(android.R.drawable.ic_menu_search), "Show more")
-                        .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK)
-                        .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK_MESSENGER)
-                        .addPreferredSharingOption(SharingHelper.SHARE_WITH.WHATS_APP)
-                        .addPreferredSharingOption(SharingHelper.SHARE_WITH.TWITTER)
-                        .setAsFullWidthStyle(true)
-                        .setSharingTitle("Share With")
-
-                    buo.showShareSheet(activity, lp, ss, object : Branch.BranchLinkShareListener {
-                        override fun onShareLinkDialogLaunched() {}
-                        override fun onShareLinkDialogDismissed() {}
-                        override fun onLinkShareResponse(sharedLink: String, sharedChannel: String, error: BranchError) {}
-                        override fun onChannelSelected(channelName: String) {
-                            firebaseAnalytics.logEvent("question_shared_$channelName", null)
-                        }
-                    })
-
-
-                    true
-                }
-
-*/
                 else -> {
                     true
                 }
@@ -251,21 +222,6 @@ class AdminsOpenedQuestionFragment : Fragment(), BoardMethods {
                         }
                     }
                 }
-
-                buo = BranchUniversalObject()
-                    .setCanonicalIdentifier(question.id)
-                    .setTitle(question.title)
-                    .setContentDescription("")
-                    .setContentImageUrl("https://img1.10bestmedia.com/Image/Photos/352450/GettyImages-913753556_55_660x440.jpg")
-                    .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-                    .setLocalIndexMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-                    .setContentMetadata(ContentMetadata().addCustomMetadata("type", "question"))
-                    .setContentMetadata(ContentMetadata().addCustomMetadata("community", currentCommunity.id))
-
-                lp = LinkProperties()
-                    .setFeature("sharing")
-                    .setCampaign("content 123 launch")
-                    .setStage("new user")
             }
         }
         )
@@ -475,41 +431,77 @@ class AdminsOpenedQuestionFragment : Fragment(), BoardMethods {
         db.collection("admins_saved_questions").document(currentUserObject.uid).get().addOnSuccessListener {
 
             val docSnapshot = it.data
-            val list = docSnapshot!!["saved_questions"] as List<String>
+            if(docSnapshot != null){
+                val list = docSnapshot["saved_questions"] as List<String>
 
-            if (list.contains(questionObject.id)) {
-                if (event == 0) {
-                    menuSave.title = "Saved"
+                if (list.contains(questionObject.id)) {
+                    if (event == 0) {
+                        menuSave.title = "Saved"
+                    } else {
+                        db.collection("admins_saved_questions").document(currentUserObject.uid)
+                            .update("saved_questions", FieldValue.arrayRemove(questionObject.id)).addOnSuccessListener {
+                                menuSave.title = "Save"
+
+
+                                changeReputation(
+                                    27,
+                                    questionObject.id,
+                                    questionObject.id,
+                                    currentUserObject.uid,
+                                    currentUserObject.name,
+                                    currentUserObject.image,
+                                    questionObject.author_ID,
+                                    "questionsave",
+                                    activity,
+                                    currentCommunity.id
+                                )
+
+                                firebaseAnalytics.logEvent("question_unsaved", null)
+                                (activity as MainActivity).savedQuestionFragment.listenToQuestions()
+                            }
+                    }
+
                 } else {
-                    db.collection("admins_saved_questions").document(currentUserObject.uid)
-                        .update("saved_questions", FieldValue.arrayRemove(questionObject.id)).addOnSuccessListener {
-                            menuSave.title = "Save"
+                    if (event == 0) {
+                        menuSave.title = "Save"
+                    } else {
+                        db.collection("admins_saved_questions").document(currentUserObject.uid)
+                            .set(mapOf("saved_questions" to FieldValue.arrayUnion(questionObject.id)))
+                            .addOnSuccessListener {
+                                menuSave.title = "Saved"
+
+                                for (tag in questionObject.tags) {
+
+                                    db.collection("interests").document(currentUserObject.uid)
+                                        .update("interests_list", FieldValue.arrayUnion(tag))
 
 
-                            changeReputation(
-                                27,
-                                questionObject.id,
-                                questionObject.id,
-                                currentUserObject.uid,
-                                currentUserObject.name,
-                                currentUserObject.image,
-                                questionObject.author_ID,
-                                "questionsave",
-                                activity,
-                                currentCommunity.id
-                            )
+                                    interestsList.add(tag)
+                                    sharedViewModelInterests.interestList.postValue(interestsList)
+                                }
+                            }
 
-                            firebaseAnalytics.logEvent("question_unsaved", null)
-                            (activity as MainActivity).savedQuestionFragment.listenToQuestions()
-                        }
+                        changeReputation(
+                            26,
+                            questionObject.id,
+                            questionObject.id,
+                            currentUserObject.uid,
+                            currentUserObject.name,
+                            currentUserObject.image,
+                            questionObject.author_ID,
+                            "questionsave",
+                            activity,
+                            currentCommunity.id
+                        )
+
+                        firebaseAnalytics.logEvent("question_saved", null)
+                        (activity as MainActivity).savedQuestionFragment.listenToQuestions()
+                    }
                 }
-
             } else {
-                if (event == 0) {
-                    menuSave.title = "Save"
-                } else {
+                if(event == 1){
                     db.collection("admins_saved_questions").document(currentUserObject.uid)
-                        .update("saved_questions", FieldValue.arrayUnion(questionObject.id))
+                        .set(mapOf("saved_questions" to FieldValue.arrayUnion(questionObject.id)))
                         .addOnSuccessListener {
                             menuSave.title = "Saved"
 
@@ -541,6 +533,7 @@ class AdminsOpenedQuestionFragment : Fragment(), BoardMethods {
                     (activity as MainActivity).savedQuestionFragment.listenToQuestions()
                 }
             }
+
         }
     }
 }

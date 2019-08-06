@@ -4,17 +4,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.google.firebase.FirebaseApp
-import com.republicera.fragments.NewRegisterFragment
 import com.republicera.fragments.RegisterFragment
-import com.republicera.pagerAdapters.RegisterLoginPagerAdapter
-import kotlinx.android.synthetic.main.activity_register_login.*
 
 class RegisterLoginActivity : AppCompatActivity() {
 
     val fm = supportFragmentManager
     var active: Fragment? = null
 
-    lateinit var registerFragment: NewRegisterFragment
+    lateinit var registerFragment: RegisterFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +19,7 @@ class RegisterLoginActivity : AppCompatActivity() {
 
         FirebaseApp.initializeApp(this)
 
-        registerFragment = NewRegisterFragment()
+        registerFragment = RegisterFragment()
         fm.beginTransaction()
             .add(R.id.register_login_frame_container, registerFragment, "registerFragment")
             .addToBackStack("registerFragment")

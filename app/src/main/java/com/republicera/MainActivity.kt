@@ -13,10 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.algolia.search.saas.Client
-import com.github.nisrulz.sensey.Sensey
 import com.google.firebase.FirebaseApp
-import com.google.firebase.Timestamp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
@@ -29,15 +26,11 @@ import com.volcaniccoder.bottomify.BottomifyNavigationView
 import com.volcaniccoder.bottomify.OnNavigationItemChangeListener
 import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.Branch
-import io.branch.referral.BranchError
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.user_home_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.subcontents_main.*
-import org.json.JSONArray
-import org.json.JSONObject
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), GeneralMethods {
 
@@ -54,6 +47,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
     lateinit var lastCommunity: String
 
+    private lateinit var bottomNavigationAdmin: BottomifyNavigationView
     lateinit var bottomNavigation: BottomifyNavigationView
 
     lateinit var mainFrame: FrameLayout
@@ -94,7 +88,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
     lateinit var answerFragment: AnswerFragment
     lateinit var newQuestionFragment: NewQuestionFragment
     lateinit var editProfileFragment: EditProfileFragment
-    lateinit var websiteViewFragment: WebsiteViewFragment
+    //    lateinit var websiteViewFragment: WebsiteViewFragment
     lateinit var editQuestionFragment: EditQuestionFragment
     lateinit var editAnswerFragment: EditAnswerFragment
     lateinit var editInterestsFragment: EditInterestsFragment
@@ -108,6 +102,8 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
     lateinit var adminsEditAnswerFragment: AdminsEditAnswerFragment
     lateinit var adminsOpenedQuestionFragment: AdminsOpenedQuestionFragment
     lateinit var adminsEditQuestionFragment: AdminsEditQuestionFragment
+    lateinit var adminsSavedQuestionsFragment: AdminsSavedQuestionsFragment
+    lateinit var adminsNotificationsFragment: AdminNotificationsFragment
 
 
     lateinit var communitiesHomeFragment: CommunitiesHome
@@ -120,7 +116,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
     var boardNotificationsCount = MutableLiveData<Int>()
     var shoutsNotificationsCount = MutableLiveData<Int>()
-    var quorumNotificationsCount = MutableLiveData<Int>()
+    var adminNotificationsCount = MutableLiveData<Int>()
 
     var isOpenedQuestionActive = false
     var isEditAnswerActive = false
@@ -142,7 +138,8 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         mainFrame = feed_frame_container
         userHomeFrame = user_home_frame_container
 
-        bottomNavigation = main_activity_bottom_nav
+        bottomNavigationAdmin = main_activity_bottom_nav_admin
+        bottomNavigation = main_activity_bottom_nav_not_admin
 
         communitiesHomeFragment = CommunitiesHome()
         exploreCommunitiesFragment = ExploreCommunitiesFragment()
@@ -258,6 +255,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
         db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity!!.id)
         main_activity_changing_community_splash_screen.visibility = View.VISIBLE
+        bottomNavigationAdmin.isClickable = false
         bottomNavigation.isClickable = false
         fetchCurrentProfile(uid!!)
     }
@@ -319,13 +317,31 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
     private fun setupBottomNav() {
 
-        bottomNavigation.setOnNavigationItemChangedListener(object : OnNavigationItemChangeListener {
+        if(currentCommunity!!.admins.contains(currentProfile.uid)){
+            bottomNavigationAdmin.visibility = View.VISIBLE
+            bottomNavigation.visibility = View.GONE
+        } else {
+            bottomNavigationAdmin.visibility = View.GONE
+            bottomNavigation.visibility = View.VISIBLE
+        }
+
+        bottomNavigationAdmin.setOnNavigationItemChangedListener(object : OnNavigationItemChangeListener {
             override fun onNavigationItemChanged(navigationItem: BottomifyNavigationView.NavigationItem) {
                 when (navigationItem.position) {
                     0 -> navigateToBoard()
                     1 -> navigateToShouts()
                     2 -> navigateToQuorum()
                     3 -> navigateToProfile()
+                }
+            }
+        })
+
+        bottomNavigation.setOnNavigationItemChangedListener(object : OnNavigationItemChangeListener {
+            override fun onNavigationItemChanged(navigationItem: BottomifyNavigationView.NavigationItem) {
+                when (navigationItem.position) {
+                    0 -> navigateToBoard()
+                    1 -> navigateToShouts()
+                    2 -> navigateToProfile()
                 }
             }
         })
@@ -455,6 +471,8 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         adminsEditAnswerFragment = AdminsEditAnswerFragment()
         adminsOpenedQuestionFragment = AdminsOpenedQuestionFragment()
         adminsEditQuestionFragment = AdminsEditQuestionFragment()
+        adminsSavedQuestionsFragment = AdminsSavedQuestionsFragment()
+        adminsNotificationsFragment = AdminNotificationsFragment()
 
         subFm.beginTransaction()
             .add(R.id.feed_subcontents_frame_container, boardNotificationsFragment, "boardNotificationsFragment")
@@ -470,13 +488,20 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             .add(R.id.feed_subcontents_frame_container, savedShoutsFragment, "savedShoutsFragment")
             .hide(savedShoutsFragment).commitAllowingStateLoss()
 
+        subFm.beginTransaction()
+            .add(R.id.feed_subcontents_frame_container, adminsNotificationsFragment, "adminsNotificationsFragment")
+            .hide(adminsNotificationsFragment).commitAllowingStateLoss()
+        subFm.beginTransaction()
+            .add(R.id.feed_subcontents_frame_container, adminsSavedQuestionsFragment, "adminsSavedQuestionsFragment")
+            .hide(adminsSavedQuestionsFragment).commitAllowingStateLoss()
+
         allowUserInteraction()
     }
 
 
     private fun allowUserInteraction() {
         main_activity_changing_community_splash_screen.visibility = View.GONE
-        bottomNavigation.isClickable = true
+        bottomNavigationAdmin.isClickable = true
         sharedPref = getSharedPreferences(getString(R.string.package_name), Context.MODE_PRIVATE)
         val lastFeed = sharedPref.getString("last_feed", "board")!!
         if (lastFeed == "board") {
@@ -505,8 +530,8 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             subFm.popBackStack()
         }
 
-        subFm.beginTransaction().hide(boardNotificationsFragment).hide(shoutsNotificationsFragment)
-            .hide(savedQuestionFragment).hide(savedShoutsFragment).commit()
+        subFm.beginTransaction().hide(boardNotificationsFragment).hide(shoutsNotificationsFragment).hide(adminsNotificationsFragment)
+            .hide(savedQuestionFragment).hide(savedShoutsFragment).hide(adminsSavedQuestionsFragment).commit()
 
     }
 
@@ -672,6 +697,45 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                         subFm.popBackStack("editLanguagePreferencesFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                         switchVisibility(0)
                     }
+
+
+                    adminsNewQuestionFragment -> {
+                        adminsNewQuestionFragment.questionTitle.text.clear()
+                        subFm.popBackStack("adminsNewQuestionFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        subActive = adminsSearchFragment
+                    }
+
+                    adminsSearchFragment -> {
+                        subFm.popBackStack("adminsSearchFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        switchVisibility(0)
+                    }
+
+                    adminsAnswerFragment -> {
+                        subFm.popBackStack("adminsAnswerFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        subActive = adminsOpenedQuestionFragment
+                    }
+                    adminsEditAnswerFragment -> {
+                        subFm.popBackStack("adminsEditAnswerFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        subActive =adminsOpenedQuestionFragment
+                    }
+                    adminsOpenedQuestionFragment -> {
+                        subFm.popBackStack("adminsOpenedQuestionFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        switchVisibility(0)
+                    }
+                    adminsEditQuestionFragment -> {
+                        subFm.popBackStack("adminsEditQuestionFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        subActive = adminsOpenedQuestionFragment
+                    }
+
+                    adminsNotificationsFragment -> {
+                        subFm.beginTransaction().hide(adminsNotificationsFragment).commit()
+                        switchVisibility(0)
+                    }
+
+                    adminsSavedQuestionsFragment -> {
+                        subFm.beginTransaction().hide(adminsSavedQuestionsFragment).commit()
+                        switchVisibility(0)
+                    }
                 }
 
             }
@@ -718,20 +782,34 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 //    }
 
 
-    override fun onStart() {
-        super.onStart()
+    private fun branchInitSession() {
+        Log.d("branch my testtttt", "init")
 
         // Branch init
         Branch.getInstance().initSession({ referringParams, error ->
             if (error == null) {
-                Log.e("BRANCH SDK", referringParams.toString())
-                // Retrieve deeplink keys from 'referringParams' and evaluate the values to determine where to route the user
-                // Check '+clicked_branch_link' before deciding whether to use your Branch routing logic
+                Log.d("branch my testtttt", referringParams.toString())
+
+                if (referringParams != null) {
+                    if (referringParams.has("type")) {
+                        when (referringParams.getString("type")) {
+                            "community" -> collectCommunity(referringParams.getString("\$canonical_identifier"))
+                        }
+                    }
+
+                }
             } else {
+                Log.d("branch my testtttt", "error")
+
                 Log.e("BRANCH SDK", error.message)
             }
         }, this.intent.data, this)
+    }
 
+
+    override fun onStart() {
+        super.onStart()
+        branchInitSession()
     }
 
     //this has to do with branch
@@ -749,7 +827,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             val editor = sharedPref.edit()
             editor.putString("last_feed", "board")
             editor.apply()
-//            bottomNavigation.setActiveNavigationIndex(0)
+//            bottomNavigationAdmin.setActiveNavigationIndex(0)
         }
     }
 
@@ -762,7 +840,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             val editor = sharedPref.edit()
             editor.putString("last_feed", "shouts")
             editor.apply()
-//            bottomNavigation.setActiveNavigationIndex(1)
+//            bottomNavigationAdmin.setActiveNavigationIndex(1)
         }
     }
 
@@ -786,14 +864,25 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         }
     }
 
-    private fun collectCommunity(branchUniversalObject: BranchUniversalObject) {
+    private fun collectCommunity(communityID: String) {
 
-        val communityId = branchUniversalObject.canonicalIdentifier
 
-        db.collection("communities").document(communityId).get().addOnSuccessListener {
+        topLevelDB.collection("communities").document(communityID).get().addOnSuccessListener {
             val community = it.toObject(Community::class.java)
             if (community != null) {
+
+                topLevelUser!!.communities_list.add(communityID)
+                currentTopLevelUserViewModel.currentUserObject.postValue(topLevelUser)
                 currentCommunityViewModel.currentCommunity.postValue(community)
+
+                val sharedPref =
+                    getSharedPreferences(getString(R.string.package_name), Context.MODE_PRIVATE)
+
+                val editor = sharedPref.edit()
+                editor.putString("last_community", communityID)
+                editor.apply()
+
+                userHomeFrame.visibility = View.GONE
             }
         }
     }

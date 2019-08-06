@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -101,10 +102,8 @@ class ShoutsFragment : Fragment(), GeneralMethods {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_shouts, container, false)
-    }
+    ): View? = inflater.inflate(R.layout.fragment_shouts, container, false)
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -126,14 +125,8 @@ class ShoutsFragment : Fragment(), GeneralMethods {
                 Observer { communityName ->
                     currentCommunity = communityName
                     db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity.id)
-                    if (currentCommunity.admins.size < currentCommunity.members.toDouble() / 5 && !currentCommunity.admins.contains(
-                            currentUser.uid
-                        )
-                    ) {
-                        joinQuorumContainer.visibility = View.VISIBLE
-                    } else {
-                        joinQuorumContainer.visibility = View.GONE
-                    }
+
+
                 })
         }
 
@@ -145,24 +138,42 @@ class ShoutsFragment : Fragment(), GeneralMethods {
             switchRecyclers()
         }
 
+        Log.d("checckk", "just before")
+
+        FirebaseFirestore.getInstance().collection("elections_settings").document("settings").get()
+            .addOnSuccessListener {
+                val settingsDoc = it.data
+                if (settingsDoc != null) {
+                    if (settingsDoc["open"] == true) {
+                        joinQuorumContainer.visibility = View.VISIBLE
+                    } else {
+                        joinQuorumContainer.visibility = View.GONE
+                    }
+                }
+            }
+
         val joinQuorum = shouts_join_quorum
         joinQuorum.setOnClickListener {
 
 
             AlertDialog.Builder(context)
-                .setTitle("Join Quorum")
-                .setMessage("Quorums are the governments of our communities")
+                .setTitle("Join admin board")
+                .setMessage("Admins are elected based on their reputation, and serve as moderators for the following week. Results are announced on Monday.")
 
                 // Specifying a listener allows you to take an action before dismissing the dialog.
                 // The dialog is automatically dismissed when a dialog button is clicked.
-                .setPositiveButton("Join") { _, _ ->
-                    FirebaseFirestore.getInstance().collection("communities").document(currentCommunity.id).update(
-                        "admins", FieldValue.arrayUnion(currentUser.uid)
-                    ).addOnSuccessListener {
-                        joinQuorumContainer.visibility = View.GONE
-                        currentCommunity.admins.add(currentUser.uid)
-                        currentCommunityViewModel.currentCommunity.postValue(currentCommunity)
-                    }
+                .setPositiveButton("Apply") { _, _ ->
+                    FirebaseFirestore.getInstance().collection("elections_candidates").document(currentCommunity.id)
+                        .set(
+                            mapOf("list" to FieldValue.arrayUnion(currentUser.uid)), SetOptions.merge()
+                        )
+                        .addOnSuccessListener {
+                            joinQuorumContainer.visibility = View.GONE
+                            Toast.makeText(activity, "Your name has been added to the list", Toast.LENGTH_SHORT).show()
+
+//                            currentCommunity.admins.add(currentUser.uid)
+//                            currentCommunityViewModel.currentCommunity.postValue(currentCommunity)
+                        }
                 }
                 .show()
         }
@@ -291,7 +302,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
 
 
         val path =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + File.separator + "Dere"
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + File.separator + "republic_era"
 
         val imageFile: File = File.createTempFile("ImageFile", "temporary")
 
@@ -539,7 +550,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
 
             freshMessageFollowing.visibility = View.GONE
 
-            if(shoutsAllAdapter.itemCount == 0){
+            if (shoutsAllAdapter.itemCount == 0) {
                 freshMessageAll.visibility = View.VISIBLE
             } else {
                 freshMessageAll.visibility = View.GONE
@@ -552,7 +563,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
 
             freshMessageAll.visibility = View.GONE
 
-            if(shoutsFollowingAdapter.itemCount == 0){
+            if (shoutsFollowingAdapter.itemCount == 0) {
                 freshMessageFollowing.visibility = View.VISIBLE
             } else {
                 freshMessageFollowing.visibility = View.VISIBLE

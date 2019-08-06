@@ -85,9 +85,8 @@ class BoardFragment : Fragment(), BoardMethods {
     var searchIsLastItemReached = false
 
     private lateinit var boardFilterChipGroup: ChipGroup
-    var searchedTagsList = mutableListOf<String>()
+    private var searchedTagsList = mutableListOf<String>()
 
-    lateinit var index: com.algolia.search.saas.Index
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_board, container, false)
@@ -205,12 +204,6 @@ class BoardFragment : Fragment(), BoardMethods {
             editor.apply()
             listenToQuestions()
         }
-
-        val applicationID = (activity as MainActivity).getString(R.string.algolia_application_id)
-        val apiKey = (activity as MainActivity).getString(R.string.algolia_api_key)
-
-        val client = Client(applicationID, apiKey)
-        index = client.getIndex("${currentCommunity.id}_questions")
 
 
         val notificationBadge = toolbar_with_search_notifications_badge
@@ -600,6 +593,7 @@ class BoardFragment : Fragment(), BoardMethods {
                 } else {
                     freshMessage.visibility = View.GONE
 
+                    var postsCount = 0
 
                     for (document in it) {
                         val questionObject = document.toObject(Question::class.java)
@@ -622,10 +616,30 @@ class BoardFragment : Fragment(), BoardMethods {
                                             activity as MainActivity
                                         ))
                                     )
+
+                                    postsCount++
+
                                     break@singleQuestionLoop
                                 }
                             }
                         }
+                    }
+
+                    if (postsCount ==0){
+                        val activity = activity as MainActivity
+                        activity.subFm.beginTransaction().add(
+                            R.id.feed_subcontents_frame_container,
+                            activity.editInterestsFragment,
+                            "editInterestsFragment"
+                        ).addToBackStack("editInterestsFragment")
+                            .commit()
+                        activity.subActive = activity.editInterestsFragment
+                        activity.switchVisibility(1)
+
+                        freshMessage.text = "Head to your profile and add more interests to populate your board"
+                        freshMessage.visibility = View.VISIBLE
+                    } else {
+                        freshMessage.visibility = View.GONE
                     }
 
                     questionsBlockLayoutAdapter.notifyDataSetChanged()

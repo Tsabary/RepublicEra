@@ -15,10 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.*
 import com.republicera.MainActivity
 import com.republicera.R
 import com.republicera.groupieAdapters.SingleBoardRow
@@ -387,10 +384,10 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
         val batch = FirebaseFirestore.getInstance().batch()
 
         val followedAccountsRef = db.collection("accounts_that_user_follows").document(currentUser.uid)
-        batch.update(followedAccountsRef, "accounts_list", FieldValue.arrayRemove(userProfile.uid))
+        batch.set(followedAccountsRef, mapOf("accounts_list" to FieldValue.arrayRemove(userProfile.uid)), SetOptions.merge())
 
         val accountsFollowingRef = db.collection("accounts_that_follow_user").document(userProfile.uid)
-        batch.update(accountsFollowingRef, "accounts_list", FieldValue.arrayRemove(currentUser.uid))
+        batch.set(accountsFollowingRef, mapOf("accounts_list" to FieldValue.arrayRemove(currentUser.uid)), SetOptions.merge())
 
         batch.commit().addOnSuccessListener {
 
@@ -411,10 +408,10 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
         val batch = FirebaseFirestore.getInstance().batch()
 
         val followedAccountsRef = db.collection("accounts_that_user_follows").document(currentUser.uid)
-        batch.update(followedAccountsRef, "accounts_list", FieldValue.arrayUnion(userProfile.uid))
+        batch.set(followedAccountsRef, mapOf("accounts_list" to FieldValue.arrayUnion(userProfile.uid)), SetOptions.merge())
 
         val accountsFollowingRef = db.collection("accounts_that_follow_user").document(userProfile.uid)
-        batch.update(accountsFollowingRef, "accounts_list", FieldValue.arrayUnion(currentUser.uid))
+        batch.set(accountsFollowingRef, mapOf("accounts_list" to FieldValue.arrayUnion(currentUser.uid)), SetOptions.merge())
 
         batch.commit().addOnSuccessListener {
 

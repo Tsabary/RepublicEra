@@ -94,11 +94,11 @@ class AdminsEditAnswerFragment : Fragment(), BoardMethods {
                         ).addOnSuccessListener {
 
                             activity.subFm.popBackStack(
-                                "editAnswerFragment",
+                                "adminsEditAnswerFragment",
                                 FragmentManager.POP_BACK_STACK_INCLUSIVE
                             )
-                            activity.openedQuestionFragment.listenToAnswers()
-                            activity.subActive = activity.openedQuestionFragment
+                            activity.adminsOpenedQuestionFragment.listenToAnswers()
+                            activity.subActive = activity.adminsOpenedQuestionFragment
                         }
                     } else {
                         Toast.makeText(this.context, "Your answer is too short, please elaborate", Toast.LENGTH_SHORT)

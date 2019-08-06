@@ -1,5 +1,7 @@
 package com.republicera.models
 
+import com.google.firebase.firestore.FieldValue
+
 class ReputationScore(
     val receiver_ID: String,
     val initiator_ID: String,
@@ -11,7 +13,7 @@ class ReputationScore(
     val scenario_type: Int,
     val collection: String,
     val points: Int,
-    val timestamp: Long
+    val timestamp: FieldValue
 ) {
     constructor() : this(
         "",
@@ -24,6 +26,6 @@ class ReputationScore(
         0,
         "",
         0,
-        0
+        FieldValue.serverTimestamp()
     )
 }

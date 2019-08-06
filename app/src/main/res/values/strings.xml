@@ -129,7 +129,6 @@
     <string name="describe_the_republic_briefly">Describe the republic briefly</string>
 
     <string name="algolia_application_id">2SZX6FMBCT</string>
-    <string name="algolia_api_key">6a59bfb7a85933f72c42457e8d4f0eb3</string>
     <string name="algolia_search_key">a989bfb76ce9c9de7bf125b09913d7c5</string>
     <string name="details">Details</string>
     <string name="question">Question</string>

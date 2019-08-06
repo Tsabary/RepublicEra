@@ -15,16 +15,17 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.republicera.MainActivity
 
 import com.republicera.R
+import com.republicera.interfaces.GeneralMethods
 import com.republicera.models.User
 import com.republicera.viewModels.CurrentCommunityViewModel
 import com.republicera.viewModels.CurrentUserViewModel
 import kotlinx.android.synthetic.main.fragment_edit_basic_info.*
 
-class EditBasicInfoFragment : Fragment() {
+class EditBasicInfoFragment : Fragment(), GeneralMethods {
 
     val db = FirebaseFirestore.getInstance()
 
-    lateinit var currentUser : User
+    lateinit var currentUser: User
     lateinit var currentUserViewModel: CurrentUserViewModel
 
     override fun onCreateView(
@@ -44,7 +45,7 @@ class EditBasicInfoFragment : Fragment() {
 
         val activity = activity as MainActivity
 
-        activity.let{
+        activity.let {
             currentUserViewModel = ViewModelProviders.of(it).get(CurrentUserViewModel::class.java)
             currentUserViewModel.currentUserObject.observe(activity, Observer { user ->
                 currentUser = user
@@ -63,8 +64,24 @@ class EditBasicInfoFragment : Fragment() {
         saveButton.setOnClickListener {
             val firstName = firstNameInput.text.toString().trim()
             val lastName = lastNameInput.text.toString().trim()
-            db.collection("users").document(currentUser.uid).update(mapOf("first_name" to firstName, "last_name" to lastName)).addOnSuccessListener {
+            db.collection("users").document(currentUser.uid)
+                .update(mapOf("first_name" to firstName, "last_name" to lastName)).addOnSuccessListener {
                 activity.userFm.popBackStack("editBasicInfoFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
+                val newUser = User(
+                    currentUser.uid,
+                    firstName,
+                    lastName,
+                    currentUser.communities_list,
+                    currentUser.lang_list,
+                    currentUser.birth_day,
+                    currentUser.reputation,
+                    currentUser.join_date,
+                    currentUser.last_activity
+                )
+
+                    currentUserViewModel.currentUserObject.postValue(newUser)
+                    closeKeyboard(activity)
             }
         }
     }

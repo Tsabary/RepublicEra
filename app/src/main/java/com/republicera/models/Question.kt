@@ -1,10 +1,11 @@
 package com.republicera.models
 
 import android.os.Parcelable
+import com.google.firebase.firestore.FieldValue
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 
-@Parcelize
+
 class Question(
     val id: String,
     val title: String,
@@ -18,6 +19,19 @@ class Question(
     val answers: Int,
     val last_interaction: Date,
     val score_items: Map<String, Int>
-) : Parcelable {
-    constructor() : this("", "", "", "", mutableListOf<String>(), Date(), "", "", "", 0, Date(), mapOf())
+) {
+    constructor() : this(
+        "",
+        "",
+        "",
+        "",
+        mutableListOf<String>(),
+        Date(),
+        "",
+        "",
+        "",
+        0,
+        Date(),
+        mapOf()
+    )
 }

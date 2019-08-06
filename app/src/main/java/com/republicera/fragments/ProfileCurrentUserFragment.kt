@@ -183,20 +183,20 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
             } else {
                 tagline.visibility = View.GONE
             }
-
-            buo = BranchUniversalObject()
-                .setCanonicalIdentifier(userProfile.uid)
-                .setTitle("Get Dere and join traveler communities")
-                .setContentDescription("")
-                .setContentImageUrl(userProfile.image)
-                .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-                .setLocalIndexMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-                .setContentMetadata(ContentMetadata().addCustomMetadata("type", "user"))
-
-            lp = LinkProperties()
-                .setFeature("inviting")
-                .setCampaign("content 123 launch")
-                .setStage("new user")
+//
+//            buo = BranchUniversalObject()
+//                .setCanonicalIdentifier(userProfile.uid)
+//                .setTitle("Get Dere and join traveler communities")
+//                .setContentDescription("")
+//                .setContentImageUrl(userProfile.image)
+//                .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
+//                .setLocalIndexMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
+//                .setContentMetadata(ContentMetadata().addCustomMetadata("type", "user"))
+//
+//            lp = LinkProperties()
+//                .setFeature("inviting")
+//                .setCampaign("content 123 launch")
+//                .setStage("new user")
 
         }
 

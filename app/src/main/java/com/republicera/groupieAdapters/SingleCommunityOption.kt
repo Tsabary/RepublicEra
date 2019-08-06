@@ -49,6 +49,7 @@ class SingleCommunityOption(val community: Community, val activity : MainActivit
 
         lp = LinkProperties()
 
+        buo.listOnGoogleSearch(viewHolder.root.context)
 
         share.setOnClickListener {
             val ss = ShareSheetStyle(activity, "Republic invite", "Join me in this republic.")

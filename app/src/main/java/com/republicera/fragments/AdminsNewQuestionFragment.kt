@@ -50,8 +50,6 @@ class AdminsNewQuestionFragment : Fragment(), BoardMethods {
 
     private lateinit var currentCommunity: Community
 
-    lateinit var index: com.algolia.search.saas.Index
-
     val tagsFilteredAdapter = GroupAdapter<ViewHolder>()
     lateinit var questionChipGroup: ChipGroup
     private var tagsList: MutableList<String> = mutableListOf()
@@ -93,12 +91,6 @@ class AdminsNewQuestionFragment : Fragment(), BoardMethods {
         }
 
         val languageIdentifier = FirebaseNaturalLanguage.getInstance().languageIdentification
-
-        val applicationID = activity.getString(R.string.algolia_application_id)
-        val apiKey = activity.getString(R.string.algolia_api_key)
-
-        val client = Client(applicationID, apiKey)
-        index = client.getIndex("${currentCommunity.id}_admins_questions")
 
         questionTitle = new_question_title
         questionTitle.requestFocus()
@@ -276,9 +268,8 @@ class AdminsNewQuestionFragment : Fragment(), BoardMethods {
 
         val activity = activity as MainActivity
 
-        val batch = FirebaseFirestore.getInstance().batch()
-
         val questionDocRef = db.collection("admins_questions").document()
+
         val newQuestion = Question(
             questionDocRef.id,
             title,
@@ -293,38 +284,14 @@ class AdminsNewQuestionFragment : Fragment(), BoardMethods {
             timestamp,
             mapOf()
         )
-        batch.set(questionDocRef, newQuestion)
-//
-//        val userLanguagesRef = FirebaseFirestore.getInstance().collection("users").document(currentUser.uid)
-//        batch.update(userLanguagesRef, "lang_list", FieldValue.arrayUnion(languageCode))
-
-        for (tag in tags) {
-
-//            val tagRef = db.collection("tags").document(tag[0] + tag[1].toString())
-//            batch.set(tagRef, mapOf(tag to FieldValue.increment(1)), SetOptions.merge())
-//
-//            val usersInterestsRef = db.collection("interests").document(currentUser.uid)
-//            batch.update(usersInterestsRef, "interests_list", FieldValue.arrayUnion(tag))
-
-            interestsList.add(tag)
-        }
-
-        batch.commit().addOnSuccessListener {
+        questionDocRef.set(newQuestion).addOnSuccessListener {
+            for (tag in tags) {
+                interestsList.add(tag)
+            }
 
             sharedViewModelInterests.interestList.postValue(interestsList)
             sharedViewModelQuestion.questionObject.postValue(newQuestion)
             sharedViewModelRandomUser.randomUserObject.postValue(currentUser)
-//
-//            val newQuestionJson = JSONObject()
-//                .put("objectID", questionDocRef.id)
-//                .put("title", title)
-//                .put("details", details)
-//                .put("langID", languageCode)
-//                .put("_tags", tags)
-//                .put("timestamp", timestamp)
-//                .put("answers", 0)
-//
-//            index.addObjectAsync(newQuestionJson, null)
 
             activity.subFm.popBackStack("adminsSearchFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
             activity.subFm.beginTransaction().add(

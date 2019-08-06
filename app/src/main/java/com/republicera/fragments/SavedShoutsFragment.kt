@@ -64,8 +64,12 @@ class SavedShoutsFragment : Fragment() {
                 })
         }
 
+        saved_items_swipe_refresh.setOnRefreshListener {
+            listenToShouts()
+            saved_items_swipe_refresh.isRefreshing = false
+        }
 
-        val shoutsRecycler = saved_questions_recycler
+        val shoutsRecycler = saved_items_recycler
 
         val shoutsRecyclerLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this.context)
         shoutsRecycler.adapter = shoutsRecyclerAdapter

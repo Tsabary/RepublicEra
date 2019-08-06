@@ -89,7 +89,7 @@ class EditAnswerFragment : Fragment(), BoardMethods {
 //                            answer.total_score
 //                        )
 
-                        db.collection("answers").document(answer.id).update(
+                        db.collection("admins_answers").document(answer.id).update(
                             mapOf("content" to content.text.toString())
                         ).addOnSuccessListener {
 
@@ -97,8 +97,8 @@ class EditAnswerFragment : Fragment(), BoardMethods {
                                 "editAnswerFragment",
                                 FragmentManager.POP_BACK_STACK_INCLUSIVE
                             )
-                            activity.openedQuestionFragment.listenToAnswers()
-                            activity.subActive = activity.openedQuestionFragment
+                            activity.adminsOpenedQuestionFragment.listenToAnswers()
+                            activity.subActive = activity.adminsOpenedQuestionFragment
                         }
                     } else {
                         Toast.makeText(this.context, "Your answer is too short, please elaborate", Toast.LENGTH_SHORT)

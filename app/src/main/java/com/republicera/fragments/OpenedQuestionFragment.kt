@@ -471,41 +471,75 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
         db.collection("saved_questions").document(currentUserObject.uid).get().addOnSuccessListener {
 
             val docSnapshot = it.data
-            val list = docSnapshot!!["saved_questions"] as List<String>
+            if(docSnapshot != null){
+                val list = docSnapshot["saved_questions"] as List<String>
 
-            if (list.contains(questionObject.id)) {
-                if (event == 0) {
-                    menuSave.title = "Saved"
+                if (list.contains(questionObject.id)) {
+                    if (event == 0) {
+                        menuSave.title = "Saved"
+                    } else {
+                        db.collection("saved_questions").document(currentUserObject.uid)
+                            .set(mapOf("saved_questions" to FieldValue.arrayRemove(questionObject.id)), SetOptions.merge()).addOnSuccessListener {
+                                menuSave.title = "Save"
+
+
+                                changeReputation(
+                                    11,
+                                    questionObject.id,
+                                    questionObject.id,
+                                    currentUserObject.uid,
+                                    currentUserObject.name,
+                                    currentUserObject.image,
+                                    questionObject.author_ID,
+                                    "questionsave",
+                                    activity,
+                                    currentCommunity.id
+                                )
+
+                                firebaseAnalytics.logEvent("question_unsaved", null)
+                                (activity as MainActivity).savedQuestionFragment.listenToQuestions()
+                            }
+                    }
+
                 } else {
-                    db.collection("saved_questions").document(currentUserObject.uid)
-                        .update("saved_questions", FieldValue.arrayRemove(questionObject.id)).addOnSuccessListener {
-                            menuSave.title = "Save"
+                    if (event == 0) {
+                        menuSave.title = "Save"
+                    } else {
+                        db.collection("saved_questions").document(currentUserObject.uid)
+                            .set(mapOf("saved_questions" to FieldValue.arrayUnion(questionObject.id)), SetOptions.merge())
+                            .addOnSuccessListener {
+                                menuSave.title = "Saved"
 
+                                for (tag in questionObject.tags) {
 
-                            changeReputation(
-                                11,
-                                questionObject.id,
-                                questionObject.id,
-                                currentUserObject.uid,
-                                currentUserObject.name,
-                                currentUserObject.image,
-                                questionObject.author_ID,
-                                "questionsave",
-                                activity,
-                                currentCommunity.id
-                            )
+                                    db.collection("interests").document(currentUserObject.uid)
+                                        .update("interests_list", FieldValue.arrayUnion(tag))
+                                    interestsList.add(tag)
+                                    sharedViewModelInterests.interestList.postValue(interestsList)
+                                }
 
-                            firebaseAnalytics.logEvent("question_unsaved", null)
-                            (activity as MainActivity).savedQuestionFragment.listenToQuestions()
-                        }
+                                changeReputation(
+                                    10,
+                                    questionObject.id,
+                                    questionObject.id,
+                                    currentUserObject.uid,
+                                    currentUserObject.name,
+                                    currentUserObject.image,
+                                    questionObject.author_ID,
+                                    "questionsave",
+                                    activity,
+                                    currentCommunity.id
+                                )
+
+                                firebaseAnalytics.logEvent("question_saved", null)
+                                (activity as MainActivity).savedQuestionFragment.listenToQuestions()
+                            }
+                    }
                 }
-
             } else {
-                if (event == 0) {
-                    menuSave.title = "Save"
-                } else {
+                if (event == 1) {
                     db.collection("saved_questions").document(currentUserObject.uid)
-                        .update("saved_questions", FieldValue.arrayUnion(questionObject.id))
+                        .set(mapOf("saved_questions" to FieldValue.arrayUnion(questionObject.id)), SetOptions.merge())
                         .addOnSuccessListener {
                             menuSave.title = "Saved"
 
@@ -535,6 +569,7 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                         }
                 }
             }
+
         }
     }
 }
