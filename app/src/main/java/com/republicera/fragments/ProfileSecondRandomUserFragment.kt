@@ -117,7 +117,6 @@ class ProfileSecondRandomUserFragment : Fragment(), ProfileMethods {
         val profileReputation = profile_ru_reputation_count
         profileFollowersCount = profile_ru_followers_count
         profileAnswers = profile_ru_answers_count
-        val profileFollowers = profile_ru_answers_count
         followButton = profile_ru_follow_button
 
         profileGalleryShouts.adapter = galleryShoutsAdapter
@@ -157,13 +156,8 @@ class ProfileSecondRandomUserFragment : Fragment(), ProfileMethods {
 
                 profileName.text = it.name
                 profileReputation.text = numberCalculation(it.reputation)
+                profileFollowersCount.text = numberCalculation(userProfile.followers)
 
-                profileFollowersCount.text =
-                    if (userProfile.followers > 0) {
-                        numberCalculation(userProfile.followers)
-                    } else {
-                        "0"
-                    }
 
                 if (it.tag_line.isNotEmpty()) {
                     profileTagLine.visibility = View.VISIBLE
@@ -177,18 +171,6 @@ class ProfileSecondRandomUserFragment : Fragment(), ProfileMethods {
                 listenToAnswers()
                 listenToContactDetails()
 
-                db.collection("accounts_following").document(userProfile.uid).get()
-                    .addOnSuccessListener { documentSnapshot ->
-                        val doc = documentSnapshot.data
-                        if (doc != null) {
-                            val accountsList = doc["accounts_list"] as MutableList<String>
-                            profileFollowers.text = if (accountsList.isNullOrEmpty()) {
-                                "0"
-                            } else {
-                                numberCalculation(accountsList.size.toLong())
-                            }
-                        }
-                    }
 
 
                 if (followedAccountsList.contains(userProfile.uid)) {
@@ -400,8 +382,11 @@ class ProfileSecondRandomUserFragment : Fragment(), ProfileMethods {
 
             followButton.tag = "notFollowed"
 
-            profileFollowersCount.text = numberCalculation(userProfile.followers - 1)
-
+            profileFollowersCount.text = if (userProfile.followers > 0) {
+                numberCalculation(userProfile.followers - 1)
+            } else {
+                "0"
+            }
             notFollowedButton(followButton, activity as MainActivity)
 
             followedAccountsList.remove(userProfile.uid)

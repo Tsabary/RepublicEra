@@ -623,15 +623,15 @@ class AdminsFragment : Fragment(), BoardMethods {
                     }
 
                     if (postsCount == 0) {
-                        val activity = activity as MainActivity
-                        activity.subFm.beginTransaction().add(
-                            R.id.feed_subcontents_frame_container,
-                            activity.editInterestsFragment,
-                            "editInterestsFragment"
-                        ).addToBackStack("editInterestsFragment")
-                            .commit()
-                        activity.subActive = activity.editInterestsFragment
-                        activity.switchVisibility(1)
+//                        val activity = activity as MainActivity
+//                        activity.subFm.beginTransaction().add(
+//                            R.id.feed_subcontents_frame_container,
+//                            activity.editInterestsFragment,
+//                            "editInterestsFragment"
+//                        ).addToBackStack("editInterestsFragment")
+//                            .commit()
+//                        activity.subActive = activity.editInterestsFragment
+//                        activity.switchVisibility(1)
 
                         freshMessage.text = "Head to your profile and add more interests to populate your board"
                         freshMessage.visibility = View.VISIBLE

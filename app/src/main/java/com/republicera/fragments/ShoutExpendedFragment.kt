@@ -150,10 +150,15 @@ class ShoutExpendedFragment : Fragment(), ShoutsMethods {
                         likeCount,
                         likeButton,
                         shout.author_ID,
-                        TextView(this.context!!),
                         activity,
                         currentCommunity.id
                     )
+
+                    if (shout.likes.contains(currentProfile.uid)) {
+                        shout.likes.remove(currentProfile.uid)
+                    } else {
+                        shout.likes.add(currentProfile.uid)
+                    }
                 }
 
                 commentPost.setOnClickListener {
@@ -164,6 +169,8 @@ class ShoutExpendedFragment : Fragment(), ShoutsMethods {
                         val comment = ShoutComment(
                             commentDocRef.id,
                             currentProfile.uid,
+                            currentProfile.name,
+                            currentProfile.image,
                             commentInput.text.toString(),
                             Date(System.currentTimeMillis()),
                             shout.id,

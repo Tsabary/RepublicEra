@@ -79,7 +79,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-                android:text="This is a fresh republic. Be a leader and start a debate."
+                android:text="This is a fresh republic.\n\nBe a leader and make the first post in English with the tag 'welcome' to greet new members into the community."
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/board_fresh_message"

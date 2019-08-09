@@ -625,7 +625,7 @@ class BoardFragment : Fragment(), BoardMethods {
                         }
                     }
 
-                    if (postsCount ==0){
+                    if (postsCount == 0 && it.size() > 0) {
                         val activity = activity as MainActivity
                         activity.subFm.beginTransaction().add(
                             R.id.feed_subcontents_frame_container,

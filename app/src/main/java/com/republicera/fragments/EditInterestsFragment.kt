@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -43,9 +42,12 @@ class EditInterestsFragment : Fragment() {
 
     var interestsList: MutableList<String> = mutableListOf()
 
-    lateinit var chipGroup: ChipGroup
+    lateinit var yourInterestsChipGroup: ChipGroup
+    lateinit var suggestionsChipGroup: ChipGroup
     val tagsFilteredAdapter = GroupAdapter<ViewHolder>()
     var tagsInChipGroup = mutableListOf<String>()
+
+    var allTags = mutableListOf<SingleTagForList>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,12 +59,15 @@ class EditInterestsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val activity = activity as MainActivity
-        chipGroup = edit_interests_chipgroup
+        yourInterestsChipGroup = edit_interests_your_interests_chipgroup
+        suggestionsChipGroup = edit_interests_suggestions_chipgroup
 
         val save = edit_interests_save
 
         activity.let {
             sharedViewModelTags = ViewModelProviders.of(it).get(TagsViewModel::class.java)
+            allTags = sharedViewModelTags.tagList
+
             currentUser = ViewModelProviders.of(it).get(CurrentCommunityProfileViewModel::class.java)
                 .currentCommunityProfileObject
             sharedViewModelInterests = ViewModelProviders.of(it).get(InterestsViewModel::class.java)
@@ -77,7 +82,7 @@ class EditInterestsFragment : Fragment() {
             sharedViewModelInterests.interestList.observe(activity, Observer { currentInterestsList ->
                 interestsList = currentInterestsList
                 tagsInChipGroup.clear()
-                chipGroup.removeAllViews()
+                yourInterestsChipGroup.removeAllViews()
             })
         }
 
@@ -105,12 +110,12 @@ class EditInterestsFragment : Fragment() {
                     tagSuggestionRecycler.visibility = View.VISIBLE
 
                     val relevantTags: List<SingleTagForList> =
-                        sharedViewModelTags.tagList.filter { it.tagString.contains(userInput) }
+                        allTags.filter { it.tagString.contains(userInput) }
 
                     for (t in relevantTags) {
                         var countTagMatches = 0
-                        for (i in 0 until chipGroup.childCount) {
-                            val chip = chipGroup.getChildAt(i) as Chip
+                        for (i in 0 until yourInterestsChipGroup.childCount) {
+                            val chip = yourInterestsChipGroup.getChildAt(i) as Chip
 
                             if (t.tagString == chip.text.toString()) {
                                 countTagMatches += 1
@@ -151,7 +156,10 @@ class EditInterestsFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         populateChipGroup()
+
+        populateSuggestions()
     }
+
 
     override fun onPause() {
         super.onPause()
@@ -161,10 +169,12 @@ class EditInterestsFragment : Fragment() {
     private fun saveInterests() {
         db.collection("interests").document(currentUser.uid).set(mapOf("interests_list" to interestsList))
 
-
     }
 
     private fun populateChipGroup() {
+        yourInterestsChipGroup.removeAllViews()
+        tagsInChipGroup.clear()
+
         for (interest in interestsList) {
             tagsInChipGroup.add(interest)
         }
@@ -174,6 +184,16 @@ class EditInterestsFragment : Fragment() {
         }
     }
 
+    private fun populateSuggestions() {
+        suggestionsChipGroup.removeAllViews()
+
+        allTags.sortWith(compareByDescending { it.tagCount })
+        for (tag in allTags) {
+            if (!interestsList.contains(tag.tagString)) {
+                onTagSelectedSuggestions(tag.tagString)
+            }
+        }
+    }
 
     private fun onTagSelected(selectedTag: String) {
         val chip = Chip(this.context)
@@ -186,16 +206,37 @@ class EditInterestsFragment : Fragment() {
         chip.setChipStrokeColorResource(R.color.gray500)
         chip.setCloseIconTintResource(R.color.gray500)
         chip.setTextAppearance(R.style.ChipSelectedStyle)
-        chipGroup.addView(chip)
-        chipGroup.visibility = View.VISIBLE
+        yourInterestsChipGroup.addView(chip)
+        yourInterestsChipGroup.visibility = View.VISIBLE
         chip.setOnCloseIconClickListener {
             tagsInChipGroup.remove(chip.text!!)
-            chipGroup.removeView(it)
+            yourInterestsChipGroup.removeView(it)
             interestsList.remove(selectedTag)
 
             val firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
             firebaseAnalytics.logEvent("interests_edited", null)
         }
+    }
+
+
+    private fun onTagSelectedSuggestions(selectedTag: String) {
+        val chip = Chip(this.context)
+        chip.text = selectedTag
+        chip.isCloseIconVisible = false
+        chip.isCheckable = false
+        chip.isClickable = false
+        chip.setChipBackgroundColorResource(R.color.mainColor600)
+        chip.setTextAppearance(R.style.SuggestionChipSelectedStyle)
+        suggestionsChipGroup.addView(chip)
+        suggestionsChipGroup.visibility = View.VISIBLE
+
+        chip.setOnClickListener {
+            tagsInChipGroup.add(selectedTag)
+            onTagSelected(selectedTag)
+            interestsList.add(selectedTag)
+            suggestionsChipGroup.removeView(it)
+        }
+
     }
 
 

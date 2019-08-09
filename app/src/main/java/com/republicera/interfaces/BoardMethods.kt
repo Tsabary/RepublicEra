@@ -22,7 +22,6 @@ interface BoardMethods : GeneralMethods {
         upvoteView: ImageButton,
         downvoteView: ImageButton,
         specificPostId: String,
-        userReputationView: TextView,
         activity: Activity,
         previousVote: Int,
         currentCommunity: String
@@ -438,11 +437,11 @@ interface BoardMethods : GeneralMethods {
             "af" -> "Afrikaans"
             "am" -> "Amharic"
             "ar" -> "Arabic"
-            "ar-Latn" -> "Arabic"
+//            "ar-Latn" -> "Arabic"
             "az" -> "Azerbaijani"
             "be" -> "Belarusian"
             "bg" -> "Bulgarian"
-            "bg-Latn" -> "Bulgarian"
+//            "bg-Latn" -> "Bulgarian"
             "bn" -> "Bengali"
             "bs" -> "Bosnian"
             "ca" -> "Catalan"
@@ -453,7 +452,7 @@ interface BoardMethods : GeneralMethods {
             "da" -> "Danish"
             "de" -> "German"
             "el" -> "Greek"
-            "el-Latn" -> "Greek"
+//            "el-Latn" -> "Greek"
             "en" -> "English"
             "eo" -> "Esperanto"
             "es" -> "Spanish"
@@ -471,7 +470,7 @@ interface BoardMethods : GeneralMethods {
             "ha" -> "Hausa"
             "haw" -> "Hawaiian"
             "hi" -> "Hindi"
-            "hi-Latn" -> "Hindi"
+//            "hi-Latn" -> "Hindi"
             "hmn" -> "Hmong"
             "hr" -> "Croatian"
             "ht" -> "Haitian"
@@ -483,7 +482,7 @@ interface BoardMethods : GeneralMethods {
             "it" -> "Italian"
             "iw" -> "Hebrew"
             "ja" -> "Japanese"
-            "ja-Latn" -> "Japanese"
+//            "ja-Latn" -> "Japanese"
             "jv" -> "Javanese"
             "ka" -> "Georgian"
             "kk" -> "Kazakh"
@@ -516,7 +515,7 @@ interface BoardMethods : GeneralMethods {
             "pt" -> "Portuguese"
             "ro" -> "Romanian"
             "ru" -> "Russian"
-            "ru-Latn" -> "Russian"
+//            "ru-Latn" -> "Russian"
             "sd" -> "Sindhi"
             "si" -> "Sinhala"
             "sk" -> "Slovak"
@@ -543,7 +542,7 @@ interface BoardMethods : GeneralMethods {
             "yi" -> "Yiddish"
             "yo" -> "Yoruba"
             "zh" -> "Chinese"
-            "zh-Latn" -> "Chinese"
+//            "zh-Latn" -> "Chinese"
             "zu" -> "Zulu"
             else -> "Please choose"
         }

@@ -54,6 +54,6 @@ class SingleBoardBlock(
         Glide.with(viewHolder.root.context).load(if(question.author_image.isNotEmpty()){question.author_image}else{R.drawable.user_profile})
             .into(viewHolder.itemView.board_block_author_image)
 
-        viewHolder.itemView.board_block_answers.text = question.answers.toString()
+        viewHolder.itemView.board_block_answers.text = "${question.answers} answers"
     }
 }

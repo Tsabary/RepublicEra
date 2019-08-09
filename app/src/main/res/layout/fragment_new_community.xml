@@ -130,30 +130,26 @@
                     android:id="@+id/radioGroup"
                     android:layout_marginStart="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="8dp">
-                <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                >
+                    android:layout_marginEnd="8dp"
+                    android:orientation="horizontal">
 
-                    <RadioButton
-                            android:text="Public"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/new_community_public"
-                            android:fontFamily="@font/roboto_medium"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"/>
-                    <RadioButton
-                            android:text="Closed"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/new_community_private"
-                            android:layout_weight="1"
-                            app:layout_constraintStart_toEndOf="@+id/new_community_public"
-                            android:layout_marginStart="16dp"
-                            app:layout_constraintTop_toTopOf="parent"/>
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                <RadioButton
+                        android:text="Public"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/new_community_public"
+                        android:fontFamily="@font/roboto_medium"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"/>
+                <RadioButton
+                        android:text="Closed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/new_community_private"
+                        android:layout_weight="1"
+                        app:layout_constraintStart_toEndOf="@+id/new_community_public"
+                        android:layout_marginStart="16dp"
+                        app:layout_constraintTop_toTopOf="parent"/>
             </RadioGroup>
 
 

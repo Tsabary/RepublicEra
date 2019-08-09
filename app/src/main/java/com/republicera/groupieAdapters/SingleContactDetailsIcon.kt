@@ -3,13 +3,13 @@ package com.republicera.groupieAdapters
 import android.app.Activity
 import com.bumptech.glide.Glide
 import com.republicera.R
-import com.republicera.interfaces.GeneralMethods
+import com.republicera.interfaces.ProfileMethods
 import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.contact_icon.view.*
 
 class SingleContactDetailsIcon(val case: Int, val data: String, val activity: Activity) : Item<ViewHolder>(),
-    GeneralMethods {
+    ProfileMethods {
 
     override fun getLayout(): Int = R.layout.contact_icon
 
@@ -18,7 +18,7 @@ class SingleContactDetailsIcon(val case: Int, val data: String, val activity: Ac
         Glide.with(viewHolder.root.context).load(loadIcon()).into(viewHolder.itemView.stax_icon)
 
         viewHolder.itemView.setOnClickListener {
-            onClickStak(case, data, activity)
+            onClickContactIcon(case, data, activity)
         }
     }
 

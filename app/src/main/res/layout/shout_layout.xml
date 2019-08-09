@@ -257,9 +257,9 @@
                 android:fontFamily="@font/roboto_medium"
                 android:textColor="@color/gray500"
                 app:layout_constraintStart_toEndOf="@+id/shout_current_user_photo"
-                android:layout_marginStart="16dp"
                 app:layout_constraintTop_toTopOf="@+id/shout_current_user_photo"
-                app:layout_constraintBottom_toBottomOf="@+id/shout_current_user_photo"/>
+                app:layout_constraintBottom_toBottomOf="@+id/shout_current_user_photo"
+                android:padding="16dp"/>
 
 
         <de.hdodenhof.circleimageview.CircleImageView

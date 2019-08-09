@@ -56,6 +56,7 @@ class NewCommunityFragment : Fragment() {
         val titleInput = new_community_title_input
         val descriptionInput = new_community_description_input
         val publicButton = new_community_public
+        val privateButton = new_community_private
         val startButton = new_community_start_button
 
         startButton.setOnClickListener {
@@ -81,19 +82,14 @@ class NewCommunityFragment : Fragment() {
                     communityDoc.set(newCommunity).addOnSuccessListener {
                         Toast.makeText(this.context, "Community started", Toast.LENGTH_SHORT).show()
 
-//                        val newCommunityJson = JSONObject()
-//                            .put("objectID", communityDoc.id)
-//                            .put("title", title)
-//                            .put("description", description)
-//                            .put("members", 0)
-//
-//                        index.addObjectAsync(newCommunityJson, null)
-//
                         communityViewModel.currentCommunity.postValue(newCommunity)
                         activity.userHomeFrame.visibility = View.GONE
+                        titleInput.text.clear()
+                        descriptionInput.text.clear()
+                        publicButton.isChecked = true
+                        privateButton.isChecked = false
                     }.addOnFailureListener {
                         Toast.makeText(this.context, "Community failed" + it.localizedMessage, Toast.LENGTH_SHORT).show()
-
                     }
                 } else {
                     Toast.makeText(this.context, "Community name is too short", Toast.LENGTH_SHORT).show()

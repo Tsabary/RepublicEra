@@ -316,7 +316,6 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                             upVote,
                             downVote,
                             questionObject.id,
-                            authorReputation,
                             activity,
                             -1,
                             currentCommunity.id
@@ -338,7 +337,6 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                             upVote,
                             downVote,
                             questionObject.id,
-                            authorReputation,
                             activity,
                             0,
                             currentCommunity.id
@@ -370,7 +368,6 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                             upVote,
                             downVote,
                             questionObject.id,
-                            authorReputation,
                             activity,
                             1,
                             currentCommunity.id
@@ -391,7 +388,6 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                             upVote,
                             downVote,
                             questionObject.id,
-                            authorReputation,
                             activity,
                             0,
                             currentCommunity.id

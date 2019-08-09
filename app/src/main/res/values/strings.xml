@@ -1,5 +1,15 @@
 <resources>
+    <string name="adMob_application_id">ca-app-pub-3582328763375520~1669417159</string>
+    <string name="adMob_shout_unit_id">ca-app-pub-3582328763375520/5698848420</string>
+    <string name="adMob_sample_unit_id">ca-app-pub-3940256099942544/2247696110</string>
+
+
+    <string name="algolia_application_id">2SZX6FMBCT</string>
+    <string name="algolia_search_key">a989bfb76ce9c9de7bf125b09913d7c5</string>
+
+    <string name="package_name">com.republicera</string>
     <string name="app_name">Republic Era</string>
+
     <string name="board">Board</string>
     <string name="profile">Profile</string>
     <string name="share">Share</string>
@@ -11,7 +21,7 @@
     <string name="default_notification_channel_id"
             translatable="false">republic_era_default_channel
     </string>
-    <string name="fcm_message">New activity on Reopublic Era</string>
+    <string name="fcm_message">New activity on Republic Era</string>
     <string name="edit_interests">Edit interests</string>
     <string name="register">Register</string>
     <string name="password">Password</string>
@@ -82,7 +92,7 @@
     <string name="post_question">Post Question</string>
 
     <string name="finish">Finish</string>
-    <string name="reputation">Reputation</string>
+    <string name="reputation">Credit</string>
     <string name="followers">Followers</string>
     <string name="profile_photo">profile photo</string>
 
@@ -109,6 +119,7 @@
     <string name="youtube_com_user">youtube.com/user/</string>
     <string name="snapchat_handle">Snapchat handle</string>
     <string name="snapchat_com_add">snapchat.com/add/</string>
+
     <string name="do_any_of_these_posts_solve_your_problem">Do any of these posts solve your problem?</string>
     <string name="ask">Ask a new question</string>
     <string name="what_would_you_like_to_know">What would you like to know?</string>
@@ -117,7 +128,6 @@
     <string name="shout">Shout</string>
     <string name="edit_contact_details">Edit contact details</string>
     <string name="language">Language</string>
-    <string name="package_name">com.republicera</string>
     <string name="please_check_your_spoken_languages">Please check your spoken languages</string>
     <string name="edit_language_preferences">Edit language preferences</string>
     <string name="current_community">Current Community:</string>
@@ -128,8 +138,7 @@
     <string name="report">Report</string>
     <string name="describe_the_republic_briefly">Describe the republic briefly</string>
 
-    <string name="algolia_application_id">2SZX6FMBCT</string>
-    <string name="algolia_search_key">a989bfb76ce9c9de7bf125b09913d7c5</string>
+
     <string name="details">Details</string>
     <string name="question">Question</string>
     <string name="can_you_add_information_that_would_help_others_answer_your_question">Can you add information that
@@ -140,8 +149,6 @@
     <string name="last_name">Last name</string>
     <string name="first_name">First name</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="edit_basic_information">Edit basic information</string>
     <string name="admins">Admins</string>
 

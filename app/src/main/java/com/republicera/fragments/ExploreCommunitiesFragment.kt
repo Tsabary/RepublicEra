@@ -1,7 +1,7 @@
 package com.republicera.fragments
 
 
-import android.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -75,8 +75,8 @@ class ExploreCommunitiesFragment : Fragment() {
             if (topLevelUser != null) {
                 val community = hitsView.get(position)
 
-                AlertDialog.Builder(context)
-                    .setTitle("Join Repblic")
+                AlertDialog.Builder(this.context!!, R.style.MyAlertDialogStyle)
+                    .setTitle("Join Republic")
                     .setMessage("Would you like to join the ${community["title"]} republic?")
                     .setPositiveButton("Join") { _, _ ->
 

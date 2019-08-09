@@ -1,6 +1,8 @@
 package com.republicera.interfaces
 
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import androidx.core.content.ContextCompat
 import android.widget.TextView
 import com.republicera.MainActivity
@@ -72,17 +74,86 @@ interface ProfileMethods : GeneralMethods {
     }
 
 
+
+    fun onClickContactIcon(case: Int, intentData: String, activity: Activity) {
+
+        /*
+cases:
+email = 0
+phone = 1
+whatsApp = 2
+twitter = 3
+instagram = 4
+website = 5
+linkedin = 6
+facebook = 7
+medium = 8
+youtube = 9
+snapchat = 10
+*/
+
+        when (case) {
+            0 -> {
+                val emailIntent = Intent(Intent.ACTION_SENDTO)
+                emailIntent.data = Uri.parse("mailto:$intentData")
+                activity.startActivity(emailIntent)
+            }
+            1 -> {
+                activity.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$intentData")))
+            }
+            2 -> {
+                val url = "https://api.whatsapp.com/send?phone=$intentData"
+                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }
+
+            3 -> {
+                val url = "https://www.twitter.com/$intentData"
+                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }
+
+            4 -> {
+                val url = "https://www.instagram.com/$intentData"
+                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }
+            5 -> {
+                val url = "https://$intentData"
+                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }
+            6 -> {
+                val url = "https://www.linkedin.com/in/$intentData"
+                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }
+            7 -> {
+                val url = "https://www.facebook.com/$intentData"
+                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }
+            8 -> {
+                val url = "https://medium.com/$intentData"
+                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }
+            9 -> {
+                val url = "https://www.youtube.com/user/$intentData"
+                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }
+            10 -> {
+                val url = "https://www.snapchat.com/$intentData"
+                activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }
+        }
+    }
+
+
     fun loadLanguageOptions(adapter: GroupAdapter<ViewHolder>, currentList: List<String>) {
         adapter.clear()
         val languagesList = listOf(
             Pair("af", "Afrikaans"),
             Pair("am", "Amharic"),
             Pair("ar", "Arabic"),
-            Pair("ar-Latn", "Arabic"),
+//            Pair("ar-Latn", "Arabic"),
             Pair("az", "Azerbaijani"),
             Pair("be", "Belarusian"),
             Pair("bg", "Bulgarian"),
-            Pair("bg-Latn", "Bulgarian"),
+//            Pair("bg-Latn", "Bulgarian"),
             Pair("bn", "Bengali"),
             Pair("bs", "Bosnian"),
             Pair("ca", "Catalan"),
@@ -93,7 +164,7 @@ interface ProfileMethods : GeneralMethods {
             Pair("da", "Danish"),
             Pair("de", "German"),
             Pair("el", "Greek"),
-            Pair("el-Latn", "Greek"),
+//            Pair("el-Latn", "Greek"),
             Pair("en", "English"),
             Pair("eo", "Esperanto"),
             Pair("es", "Spanish"),
@@ -111,7 +182,7 @@ interface ProfileMethods : GeneralMethods {
             Pair("ha", "Hausa"),
             Pair("haw", "Hawaiian"),
             Pair("hi", "Hindi"),
-            Pair("hi-Latn", "Hindi"),
+//            Pair("hi-Latn", "Hindi"),
             Pair("hmn", "Hmong"),
             Pair("hr", "Croatian"),
             Pair("ht", "Haitian"),
@@ -123,7 +194,7 @@ interface ProfileMethods : GeneralMethods {
             Pair("it", "Italian"),
             Pair("iw", "Hebrew"),
             Pair("ja", "Japanese"),
-            Pair("ja-Latn", "Japanese"),
+//            Pair("ja-Latn", "Japanese"),
             Pair("jv", "Javanese"),
             Pair("ka", "Georgian"),
             Pair("kk", "Kazakh"),
@@ -156,7 +227,7 @@ interface ProfileMethods : GeneralMethods {
             Pair("pt", "Portuguese"),
             Pair("ro", "Romanian"),
             Pair("ru", "Russian"),
-            Pair("ru-Latn", "Russian"),
+//            Pair("ru-Latn", "Russian"),
             Pair("sd", "Sindhi"),
             Pair("si", "Sinhala"),
             Pair("sk", "Slovak"),
@@ -183,7 +254,7 @@ interface ProfileMethods : GeneralMethods {
             Pair("yi", "Yiddish"),
             Pair("yo", "Yoruba"),
             Pair("zh", "Chinese"),
-            Pair("zh-Latn", "Chinese"),
+//            Pair("zh-Latn", "Chinese"),
             Pair("zu", "Zulu")
         )
 

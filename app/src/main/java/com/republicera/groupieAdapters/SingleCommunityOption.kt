@@ -41,7 +41,7 @@ class SingleCommunityOption(val community: Community, val activity : MainActivit
         buo = BranchUniversalObject()
             .setCanonicalIdentifier(community.id)
             .setTitle(community.title)
-            .setContentDescription("")
+            .setContentDescription(community.description)
 //            .setContentImageUrl("https://img1.10bestmedia.com/Image/Photos/352450/GettyImages-913753556_55_660x440.jpg")
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
             .setLocalIndexMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)

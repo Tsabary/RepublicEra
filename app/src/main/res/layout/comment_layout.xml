@@ -215,6 +215,7 @@
                 android:textColor="@color/gray500"
                 tools:text="6"
                 android:fontFamily="@font/roboto_medium"
-                android:textSize="15sp"/>
+                android:textSize="15sp"
+                android:visibility="gone"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

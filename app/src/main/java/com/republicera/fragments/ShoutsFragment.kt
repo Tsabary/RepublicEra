@@ -3,7 +3,7 @@ package com.republicera.fragments
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.*
 import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage
 import com.google.firebase.storage.FirebaseStorage
@@ -125,8 +126,6 @@ class ShoutsFragment : Fragment(), GeneralMethods {
                 Observer { communityName ->
                     currentCommunity = communityName
                     db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity.id)
-
-
                 })
         }
 
@@ -137,8 +136,6 @@ class ShoutsFragment : Fragment(), GeneralMethods {
         feedStateTitle.setOnClickListener {
             switchRecyclers()
         }
-
-        Log.d("checckk", "just before")
 
         FirebaseFirestore.getInstance().collection("elections_settings").document("settings").get()
             .addOnSuccessListener {
@@ -156,7 +153,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
         joinQuorum.setOnClickListener {
 
 
-            AlertDialog.Builder(context)
+            AlertDialog.Builder(this.context!!, R.style.MyAlertDialogStyle)
                 .setTitle("Join admin board")
                 .setMessage("Admins are elected based on their reputation, and serve as moderators for the following week. Results are announced on Monday.")
 
@@ -381,6 +378,9 @@ class ShoutsFragment : Fragment(), GeneralMethods {
                 selectedPhotoUri = null
 
                 freshMessageAll.visibility = View.GONE
+
+                val firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
+                firebaseAnalytics.logEvent("shout_added", null)
             }
         }
 

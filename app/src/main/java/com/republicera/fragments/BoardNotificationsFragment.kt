@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.firestore.DocumentReference
@@ -111,15 +112,15 @@ class BoardNotificationsFragment : Fragment() {
 
         notifications_mark_all_as_read.setOnClickListener {
 
-                db.collection("notifications").document(currentUser.uid).collection("board").whereEqualTo("seen", 0)
-                    .get()
-                    .addOnSuccessListener {
-                        for (doc in it) {
-                            doc.reference.update(mapOf("seen" to 1))
-                        }
-                        notificationsRecyclerAdapter.clear()
-                        listenToNotifications(currentUser)
+            db.collection("notifications").document(currentUser.uid).collection("board").whereEqualTo("seen", 0)
+                .get()
+                .addOnSuccessListener {
+                    for (doc in it) {
+                        doc.reference.update(mapOf("seen" to 1))
                     }
+                    notificationsRecyclerAdapter.clear()
+                    listenToNotifications(currentUser)
+                }
         }
 
         notificationsRecyclerAdapter.setOnItemClickListener { item, _ ->
@@ -155,6 +156,11 @@ class BoardNotificationsFragment : Fragment() {
                                     }
                             }
                         }
+                } else {
+                    db.collection("notifications").document(currentUser.uid).collection("board")
+                        .document(notification.notification_ID).update(mapOf("seen" to 1)).addOnSuccessListener {
+                            Toast.makeText(activity, "This post has been removed", Toast.LENGTH_LONG).show()
+                        }
                 }
             }
         }
@@ -168,26 +174,26 @@ class BoardNotificationsFragment : Fragment() {
 
         db.collection("notifications").document(currentUser.uid).collection("board")
             .orderBy("timestamp", Query.Direction.DESCENDING).get().addOnSuccessListener {
-            for (doc in it) {
-                val notification = doc.toObject(Notification::class.java)
+                for (doc in it) {
+                    val notification = doc.toObject(Notification::class.java)
 
-                notificationsRecyclerAdapter.add(
-                    SingleNotification(
-                        notification,
-                        activity,
-                        currentUser,
-                        doc.id
+                    notificationsRecyclerAdapter.add(
+                        SingleNotification(
+                            notification,
+                            activity,
+                            currentUser,
+                            doc.id
+                        )
                     )
-                )
 
-                var boardNotCount = 0
+                    var boardNotCount = 0
 
-                if (notification.seen == 0) {
-                    boardNotCount++
+                    if (notification.seen == 0) {
+                        boardNotCount++
+                    }
+                    activity.boardNotificationsCount.postValue(boardNotCount)
                 }
-                activity.boardNotificationsCount.postValue(boardNotCount)
             }
-        }
     }
 }
 

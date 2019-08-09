@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.firestore.DocumentReference
@@ -151,6 +152,11 @@ class ShoutsNotificationsFragment : Fragment() {
                                         activity.subActive = activity.shoutExpendedFragment
                                     }
                             }
+                        }
+                } else {
+                    db.collection("notifications").document(currentUser.uid).collection("shouts")
+                        .document(notification.notification_ID).update(mapOf("seen" to 1)).addOnSuccessListener {
+                            Toast.makeText(activity, "This post has been removed", Toast.LENGTH_LONG).show()
                         }
                 }
             }

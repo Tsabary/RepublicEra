@@ -35,6 +35,9 @@ class SingleShout(val shout: Shout, val currentUser: CommunityProfile, val activ
 
     lateinit var db: DocumentReference
 
+    val regularShoutType = 0
+    val adMobType = 1
+
     lateinit var currentProfile: CommunityProfile
 
     var shoutObject = shout
@@ -259,7 +262,6 @@ class SingleShout(val shout: Shout, val currentUser: CommunityProfile, val activ
                     likeCount,
                     likeButton,
                     shout.author_ID,
-                    TextView(viewHolder.root.context),
                     activity,
                     currentCommunity.id
                 )

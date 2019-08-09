@@ -81,6 +81,20 @@ class SingleComment(
 
         likeCount.text = numberCalculation(comment.likes.size.toLong())
 
+        likeCount.text = comment.likes.size.toString()
+
+        author.text = comment.author_name
+//        authorReputation.text = "(${user.reputation})"
+
+        Glide.with(viewHolder.root.context).load(
+            if (comment.author_image.isNotEmpty()) {
+                comment.author_image
+            } else {
+                R.drawable.user_profile
+            }
+        ).into(authorImage)
+
+
         if (comment.likes.contains(currentUser.uid)) {
             likeButton.setImageResource(R.drawable.heart_active)
             likeButton.tag = "liked"
@@ -89,7 +103,7 @@ class SingleComment(
             likeButton.tag = "notLiked"
         }
 
-        likeCount.text = comment.likes.size.toString()
+
 
         likeButton.setOnClickListener {
             if (currentUser.uid != comment.author_ID) {
@@ -122,16 +136,7 @@ class SingleComment(
             if (it != null) {
                 user = it.toObject(CommunityProfile::class.java)!!
 
-                author.text = user.name
-                authorReputation.text = "(${user.reputation})"
 
-                Glide.with(viewHolder.root.context).load(
-                    if (user.image.isNotEmpty()) {
-                        user.image
-                    } else {
-                        R.drawable.user_profile
-                    }
-                ).into(authorImage)
             }
 
         }
@@ -163,6 +168,8 @@ class SingleComment(
                         val newComment = ShoutComment(
                             comment.id,
                             comment.author_ID,
+                            comment.author_name,
+                            comment.author_image,
                             contentEditable.text.toString(),
                             comment.timestamp,
                             comment.shout_ID,

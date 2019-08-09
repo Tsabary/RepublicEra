@@ -48,7 +48,7 @@
                         android:fontFamily="@font/roboto_bold"
                         android:textSize="18sp"
                         android:textColor="@color/gray800"
-                        android:gravity="center_vertical"
+                        android:gravity="start|center_vertical"
                         tools:text="Cooking and Food"
                         algolia:attribute='@{"title"}'
                         algolia:layout_constraintStart_toStartOf="parent"

@@ -60,7 +60,7 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
     lateinit var profileGalleryAnswers: RecyclerView
 
     lateinit var profileAnswers: TextView
-    lateinit var profileFollowersCount : TextView
+    lateinit var profileFollowersCount: TextView
 
     private val galleryShoutsAdapter = GroupAdapter<ViewHolder>()
     private val galleryQuestionsAdapter = GroupAdapter<ViewHolder>()
@@ -85,7 +85,7 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
 
             followedAccountsViewModel =
                 ViewModelProviders.of(it).get(FollowedAccountsViewModel::class.java)
-            followedAccountsViewModel.followedAccounts.observe(activity, Observer { list->
+            followedAccountsViewModel.followedAccounts.observe(activity, Observer { list ->
                 followedAccountsList = list
             })
 
@@ -112,9 +112,8 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
         val profilePicture: ImageView = profile_ru_image
         val profileName: TextView = profile_ru_user_name
         val profileReputation = profile_ru_reputation_count
-         profileFollowersCount = profile_ru_followers_count
+        profileFollowersCount = profile_ru_followers_count
         profileAnswers = profile_ru_answers_count
-        val profileFollowers = profile_ru_answers_count
         followButton = profile_ru_follow_button
 
         profileGalleryShouts.adapter = galleryShoutsAdapter
@@ -153,13 +152,9 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
 
                 profileName.text = it.name
                 profileReputation.text = numberCalculation(it.reputation)
+                profileFollowersCount.text = numberCalculation(userProfile.followers)
 
-                profileFollowersCount.text =
-                    if (userProfile.followers > 0) {
-                        numberCalculation(userProfile.followers)
-                    } else {
-                        "0"
-                    }
+
                 if (it.tag_line.isNotEmpty()) {
                     profileTagLine.visibility = View.VISIBLE
                     profileTagLine.text = it.tag_line
@@ -172,18 +167,7 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
                 listenToAnswers()
                 listenToContactDetails()
 
-                db.collection("accounts_following").document(userProfile.uid).get()
-                    .addOnSuccessListener { documentSnapshot ->
-                        val doc = documentSnapshot.data
-                        if (doc != null) {
-                            val accountsList = doc["accounts_list"] as MutableList<String>
-                            profileFollowers.text = if (accountsList.isNullOrEmpty()) {
-                                "0"
-                            } else {
-                                numberCalculation(accountsList.size.toLong())
-                            }
-                        }
-                    }
+
 
                 if (followedAccountsList.contains(userProfile.uid)) {
                     followButton.tag = "followed"
@@ -384,16 +368,28 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
         val batch = FirebaseFirestore.getInstance().batch()
 
         val followedAccountsRef = db.collection("accounts_that_user_follows").document(currentUser.uid)
-        batch.set(followedAccountsRef, mapOf("accounts_list" to FieldValue.arrayRemove(userProfile.uid)), SetOptions.merge())
+        batch.set(
+            followedAccountsRef,
+            mapOf("accounts_list" to FieldValue.arrayRemove(userProfile.uid)),
+            SetOptions.merge()
+        )
 
         val accountsFollowingRef = db.collection("accounts_that_follow_user").document(userProfile.uid)
-        batch.set(accountsFollowingRef, mapOf("accounts_list" to FieldValue.arrayRemove(currentUser.uid)), SetOptions.merge())
+        batch.set(
+            accountsFollowingRef,
+            mapOf("accounts_list" to FieldValue.arrayRemove(currentUser.uid)),
+            SetOptions.merge()
+        )
 
         batch.commit().addOnSuccessListener {
 
             followButton.tag = "notFollowed"
 
-            profileFollowersCount.text = numberCalculation(userProfile.followers -1)
+            profileFollowersCount.text = if (userProfile.followers > 0) {
+                numberCalculation(userProfile.followers - 1)
+            } else {
+                "0"
+            }
 
             notFollowedButton(followButton, activity as MainActivity)
 
@@ -408,16 +404,24 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
         val batch = FirebaseFirestore.getInstance().batch()
 
         val followedAccountsRef = db.collection("accounts_that_user_follows").document(currentUser.uid)
-        batch.set(followedAccountsRef, mapOf("accounts_list" to FieldValue.arrayUnion(userProfile.uid)), SetOptions.merge())
+        batch.set(
+            followedAccountsRef,
+            mapOf("accounts_list" to FieldValue.arrayUnion(userProfile.uid)),
+            SetOptions.merge()
+        )
 
         val accountsFollowingRef = db.collection("accounts_that_follow_user").document(userProfile.uid)
-        batch.set(accountsFollowingRef, mapOf("accounts_list" to FieldValue.arrayUnion(currentUser.uid)), SetOptions.merge())
+        batch.set(
+            accountsFollowingRef,
+            mapOf("accounts_list" to FieldValue.arrayUnion(currentUser.uid)),
+            SetOptions.merge()
+        )
 
         batch.commit().addOnSuccessListener {
 
             followButton.tag = "followed"
 
-            profileFollowersCount.text = numberCalculation(userProfile.followers +1)
+            profileFollowersCount.text = numberCalculation(userProfile.followers + 1)
 
             followedButton(followButton, activity as MainActivity)
 

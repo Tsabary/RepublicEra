@@ -109,7 +109,7 @@ class NewQuestionFragment : Fragment(), BoardMethods {
                     "Question title is too short",
                     Toast.LENGTH_SHORT
                 ).show()
-                questionDetails.text.isEmpty() -> Toast.makeText(
+                questionDetails.text.isEmpty() || languageCode == "und" -> Toast.makeText(
                     this.context,
                     "Please give your question some more details",
                     Toast.LENGTH_SHORT

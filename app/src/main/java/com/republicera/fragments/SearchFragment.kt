@@ -69,6 +69,7 @@ class SearchFragment : Fragment() {
 
         askNewQuestionButton.setOnClickListener {
             activity.subFm.beginTransaction()
+//                .setCustomAnimations(R.anim.slide_in_up, R.anim.slide_in_down)
                 .add(R.id.feed_subcontents_frame_container, activity.newQuestionFragment, "newQuestionFragment")
                 .addToBackStack("newQuestionFragment").commit()
             activity.subActive = activity.newQuestionFragment

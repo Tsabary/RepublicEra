@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
@@ -134,6 +135,11 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        FirebaseApp.initializeApp(this)
+        MobileAds.initialize(this, "ca-app-pub-3582328763375520~1669417159")
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+
         subFrame = feed_subcontents_frame_container
         mainFrame = feed_frame_container
         userHomeFrame = user_home_frame_container
@@ -168,10 +174,6 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             userFm.popBackStack("chooseCommunityFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
             changeCommunity()
         })
-
-        FirebaseApp.initializeApp(this)
-        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
-
     }
 
     override fun onPause() {
@@ -181,7 +183,6 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
     override fun onResume() {
         super.onResume()
-//        branchInitSession()
 
         if (uid == null) {
 
@@ -216,7 +217,6 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                     userActive = communitiesHomeFragment
                     userHomeFrame.visibility = View.VISIBLE
                 }
-
             }
         }
     }
@@ -264,51 +264,47 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         db.collection("profiles").document(uid).get().addOnSuccessListener {
             val profile = it.toObject(CommunityProfile::class.java)
             if (profile != null) {
-                Log.d("checkProgress", "fetchCurrentProfile1")
                 currentProfile = profile
                 currentProfileViewModel.currentCommunityProfileObject = currentProfile
-
                 setupBottomNav()
             } else {
-                Log.d("checkProgress", "fetchCurrentProfile2")
 
-                topLevelDB.collection("users").document(uid).get().addOnSuccessListener { documentSnapshot ->
-                    val topLevelUser = documentSnapshot.toObject(User::class.java)
-                    if (topLevelUser != null) {
+//                topLevelDB.collection("users").document(uid).get().addOnSuccessListener { documentSnapshot ->
+//                    val topLevelUser = documentSnapshot.toObject(User::class.java)
+//
+//                }
 
-                        val currentTime = Date(System.currentTimeMillis())
-                        val newCommunityProfile =
-                            CommunityProfile(
-                                uid,
-                                topLevelUser.first_name + " " + topLevelUser.last_name,
-                                "",
-                                listOf(),
-                                "",
-                                0,
-                                0,
-                                0,
-                                0,
-                                0,
-                                currentTime,
-                                currentTime
-                            )
+                if (topLevelUser != null) {
 
-                        db.collection("profiles").document(uid).set(newCommunityProfile)
-                            .addOnSuccessListener {
-                                currentProfile = newCommunityProfile
-                                currentProfileViewModel.currentCommunityProfileObject =
-                                    currentProfile
+                    val currentTime = Date(System.currentTimeMillis())
+                    val newCommunityProfile =
+                        CommunityProfile(
+                            uid,
+                            topLevelUser!!.first_name + " " + topLevelUser!!.last_name,
+                            "",
+                            listOf(),
+                            "",
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            currentTime,
+                            currentTime
+                        )
 
-                                topLevelUser.communities_list.add(currentCommunity!!.id)
+                    db.collection("profiles").document(uid).set(newCommunityProfile)
+                        .addOnSuccessListener {
+                            currentProfile = newCommunityProfile
+                            currentProfileViewModel.currentCommunityProfileObject =
+                                currentProfile
 
-                                currentTopLevelUserViewModel.currentUserObject.postValue(topLevelUser)
+                            topLevelUser!!.communities_list.add(currentCommunity!!.id)
 
-                                Log.d("checkProgress", "fetchCurrentProfile3")
+                            currentTopLevelUserViewModel.currentUserObject.postValue(topLevelUser)
 
-                                setupBottomNav()
-
-                            }
-                    }
+                            setupBottomNav()
+                        }
                 }
             }
         }
@@ -317,7 +313,31 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
     private fun setupBottomNav() {
 
-        if(currentCommunity!!.admins.contains(currentProfile.uid)){
+        if (currentCommunity!!.admins.contains(currentProfile.uid) || currentCommunity!!.founder == currentProfile.uid) {
+
+            adminsFragment = AdminsFragment()
+            adminsNewQuestionFragment = AdminsNewQuestionFragment()
+            adminsSearchFragment = AdminsSearchFragment()
+            adminsAnswerFragment = AdminsAnswerFragment()
+            adminsEditAnswerFragment = AdminsEditAnswerFragment()
+            adminsOpenedQuestionFragment = AdminsOpenedQuestionFragment()
+            adminsEditQuestionFragment = AdminsEditQuestionFragment()
+            adminsSavedQuestionsFragment = AdminsSavedQuestionsFragment()
+            adminsNotificationsFragment = AdminNotificationsFragment()
+
+            fm.beginTransaction().add(R.id.feed_frame_container, adminsFragment, "adminsFragment")
+                .hide(adminsFragment).commitAllowingStateLoss()
+            subFm.beginTransaction()
+                .add(R.id.feed_subcontents_frame_container, adminsNotificationsFragment, "adminsNotificationsFragment")
+                .hide(adminsNotificationsFragment).commitAllowingStateLoss()
+            subFm.beginTransaction()
+                .add(
+                    R.id.feed_subcontents_frame_container,
+                    adminsSavedQuestionsFragment,
+                    "adminsSavedQuestionsFragment"
+                )
+                .hide(adminsSavedQuestionsFragment).commitAllowingStateLoss()
+
             bottomNavigationAdmin.visibility = View.VISIBLE
             bottomNavigation.visibility = View.GONE
         } else {
@@ -346,8 +366,6 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             }
         })
 
-        Log.d("checkProgress", "setupBottomNav")
-
         addTagsToViewModel()
     }
 
@@ -363,8 +381,6 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             tagsViewModel.tagList = tags
 
             createInterestList()
-            Log.d("checkProgress", "addTagsToViewModel")
-
         }
     }
 
@@ -418,19 +434,14 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                     followersViewModel.followers.postValue(accountsList)
                 }
                 addFragmentsToFragmentManagers()
-                Log.d("checkProgress", "createFollowersList")
-
             }
     }
 
 
     private fun addFragmentsToFragmentManagers() {
         //main container
-        Log.d("checkProgress", "addFragmentsToFragmentManagers")
-
         boardFragment = BoardFragment()
         shoutsFragment = ShoutsFragment()
-        adminsFragment = AdminsFragment()
         profileCurrentUserFragment = ProfileCurrentUserFragment()
 
 
@@ -440,8 +451,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         fm.beginTransaction().add(R.id.feed_frame_container, shoutsFragment, "shoutsFragment")
             .hide(shoutsFragment).commitAllowingStateLoss()
 
-        fm.beginTransaction().add(R.id.feed_frame_container, adminsFragment, "adminsFragment")
-            .hide(adminsFragment).commitAllowingStateLoss()
+
 
         fm.beginTransaction()
             .add(R.id.feed_frame_container, profileCurrentUserFragment, "profileCurrentUserFragment")
@@ -465,14 +475,8 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         searchFragment = SearchFragment()
         savedShoutsFragment = SavedShoutsFragment()
         shoutsNotificationsFragment = ShoutsNotificationsFragment()
-        adminsNewQuestionFragment = AdminsNewQuestionFragment()
-        adminsSearchFragment = AdminsSearchFragment()
-        adminsAnswerFragment = AdminsAnswerFragment()
-        adminsEditAnswerFragment = AdminsEditAnswerFragment()
-        adminsOpenedQuestionFragment = AdminsOpenedQuestionFragment()
-        adminsEditQuestionFragment = AdminsEditQuestionFragment()
-        adminsSavedQuestionsFragment = AdminsSavedQuestionsFragment()
-        adminsNotificationsFragment = AdminNotificationsFragment()
+
+
 
         subFm.beginTransaction()
             .add(R.id.feed_subcontents_frame_container, boardNotificationsFragment, "boardNotificationsFragment")
@@ -488,12 +492,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             .add(R.id.feed_subcontents_frame_container, savedShoutsFragment, "savedShoutsFragment")
             .hide(savedShoutsFragment).commitAllowingStateLoss()
 
-        subFm.beginTransaction()
-            .add(R.id.feed_subcontents_frame_container, adminsNotificationsFragment, "adminsNotificationsFragment")
-            .hide(adminsNotificationsFragment).commitAllowingStateLoss()
-        subFm.beginTransaction()
-            .add(R.id.feed_subcontents_frame_container, adminsSavedQuestionsFragment, "adminsSavedQuestionsFragment")
-            .hide(adminsSavedQuestionsFragment).commitAllowingStateLoss()
+
 
         allowUserInteraction()
     }
@@ -509,8 +508,6 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         } else {
             navigateToShouts()
         }
-        Log.d("checkProgress", "allowUserInteraction")
-
     }
 
     private fun resetFragments() {
@@ -530,8 +527,15 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             subFm.popBackStack()
         }
 
-        subFm.beginTransaction().hide(boardNotificationsFragment).hide(shoutsNotificationsFragment).hide(adminsNotificationsFragment)
-            .hide(savedQuestionFragment).hide(savedShoutsFragment).hide(adminsSavedQuestionsFragment).commit()
+        if (currentCommunity!!.admins.contains(currentProfile.uid) || currentCommunity!!.founder == currentProfile.uid) {
+            subFm.beginTransaction().hide(boardNotificationsFragment).hide(shoutsNotificationsFragment)
+                .hide(adminsNotificationsFragment)
+                .hide(savedQuestionFragment).hide(savedShoutsFragment).hide(adminsSavedQuestionsFragment).commit()
+        } else {
+            subFm.beginTransaction().hide(boardNotificationsFragment).hide(shoutsNotificationsFragment)
+                .hide(savedQuestionFragment).hide(savedShoutsFragment).commit()
+        }
+
 
     }
 
@@ -647,9 +651,9 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                     }
 
                     newQuestionFragment -> {
-                        newQuestionFragment.questionTitle.text.clear()
                         subFm.popBackStack("newQuestionFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                         subActive = searchFragment
+                        Log.d("whatfragment", "newQ")
                     }
 
                     editProfileFragment -> {
@@ -691,6 +695,8 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                     searchFragment -> {
                         subFm.popBackStack("searchFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                         switchVisibility(0)
+                        Log.d("whatfragment", "search")
+
                     }
 
                     editLanguagePreferencesFragment -> {
@@ -716,7 +722,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                     }
                     adminsEditAnswerFragment -> {
                         subFm.popBackStack("adminsEditAnswerFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
-                        subActive =adminsOpenedQuestionFragment
+                        subActive = adminsOpenedQuestionFragment
                     }
                     adminsOpenedQuestionFragment -> {
                         subFm.popBackStack("adminsOpenedQuestionFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
