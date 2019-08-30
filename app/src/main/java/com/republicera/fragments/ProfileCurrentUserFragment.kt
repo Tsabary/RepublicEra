@@ -109,7 +109,7 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
         val menuButton = profile_li_menu_button
         val popup = PopupMenu(this.context, menuButton)
         popup.inflate(R.menu.profile_navigation)
-        menuResign = popup.menu.getItem(2)
+        menuResign = popup.menu.getItem(1)
         menuButton.setOnClickListener {
             popup.show()
         }
@@ -221,17 +221,17 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
                 }
 
 
-                R.id.profile_edit_interests -> {
-                    activity.subFm.beginTransaction().add(
-                        R.id.feed_subcontents_frame_container,
-                        activity.editInterestsFragment,
-                        "editInterestsFragment"
-                    ).addToBackStack("editInterestsFragment")
-                        .commit()
-                    activity.subActive = activity.editInterestsFragment
-                    activity.switchVisibility(1)
-                    return@setOnMenuItemClickListener true
-                }
+//                R.id.profile_edit_interests -> {
+//                    activity.subFm.beginTransaction().add(
+//                        R.id.feed_subcontents_frame_container,
+//                        activity.editInterestsFragment,
+//                        "editInterestsFragment"
+//                    ).addToBackStack("editInterestsFragment")
+//                        .commit()
+//                    activity.subActive = activity.editInterestsFragment
+//                    activity.switchVisibility(1)
+//                    return@setOnMenuItemClickListener true
+//                }
 
                 R.id.profile_resign_admin -> {
 

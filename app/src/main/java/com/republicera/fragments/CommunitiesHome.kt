@@ -73,9 +73,9 @@ class CommunitiesHome : Fragment() {
 
         val exploreButton = communities_home_search
         val addButton = communities_home_add
-        val settingsButton = communities_home_settings
-        val popup = PopupMenu(this.context, settingsButton)
-        popup.inflate(R.menu.user_options)
+//        val settingsButton = communities_home_settings
+//        val popup = PopupMenu(this.context, settingsButton)
+//        popup.inflate(R.menu.user_options)
 
         activity.let {
             ViewModelProviders.of(activity).get(CurrentUserViewModel::class.java).currentUserObject.observe(
@@ -86,9 +86,9 @@ class CommunitiesHome : Fragment() {
 
                         populateCommunities()
 
-                        settingsButton.setOnClickListener {
-                            popup.show()
-                        }
+//                        settingsButton.setOnClickListener {
+//                            popup.show()
+//                        }
                     } else {
                         userName.text = "Welcome"
                     }
@@ -102,87 +102,82 @@ class CommunitiesHome : Fragment() {
                 })
         }
 
-
-
-
-
-
-
-        popup.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-
-                R.id.user_edit_contact_details -> {
-                    activity.userFm.beginTransaction().add(
-                        R.id.user_home_frame_container,
-                        activity.editContactDetailsFragment,
-                        "editContactDetailsFragment"
-                    ).addToBackStack("editContactDetailsFragment")
-                        .commit()
-                    activity.userActive = activity.editContactDetailsFragment
-                    true
-                }
-
-                R.id.user_edit_language_preferences -> {
-                    activity.userFm.beginTransaction().add(
-                        R.id.user_home_frame_container,
-                        activity.editLanguagePreferencesFragment,
-                        "editLanguagePreferencesFragment"
-                    ).addToBackStack("editLanguagePreferencesFragment")
-                        .commit()
-                    activity.userActive = activity.editLanguagePreferencesFragment
-                    true
-                }
-
-                R.id.user_edit_basic_info -> {
-                    activity.userFm.beginTransaction().add(
-                        R.id.user_home_frame_container,
-                        activity.editBasicInfoFragment,
-                        "editBasicInfoFragment"
-                    ).addToBackStack("editBasicInfoFragment")
-                        .commit()
-                    activity.userActive = activity.editBasicInfoFragment
-                    true
-                }
-
-                R.id.user_logout -> {
-
-                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(getString(R.string.default_web_client_id))
-                        .requestEmail()
-                        .build();
-
-                    val uid = FirebaseAuth.getInstance().uid
-                    FirebaseMessaging.getInstance().unsubscribeFromTopic(uid).addOnSuccessListener {
-                        FirebaseAuth.getInstance().signOut()
-                        GoogleSignIn.getClient(activity, gso).signOut().addOnSuccessListener {
-
-                            val sharedPref =
-                                activity.getSharedPreferences(
-                                    activity.getString(R.string.package_name),
-                                    Context.MODE_PRIVATE
-                                )
-
-
-                            val editor = sharedPref.edit()
-                            editor.putString("last_community", "default")
-                            editor.putString("last_language", "en")
-                            editor.putInt("last_layout", 0)
-                            editor.putString("last_feed", "board")
-                            editor.apply()
-
-                            val intent = Intent(this.context, RegisterLoginActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            startActivity(intent)
-                        }
-                    }
-                    true
-                }
-
-                else -> {
-                    true
-                }
-            }
-        }
+//
+//        popup.setOnMenuItemClickListener { item ->
+//            when (item.itemId) {
+//
+//                R.id.user_edit_contact_details -> {
+//                    activity.userFm.beginTransaction().add(
+//                        R.id.user_home_frame_container,
+//                        activity.editContactDetailsFragment,
+//                        "editContactDetailsFragment"
+//                    ).addToBackStack("editContactDetailsFragment")
+//                        .commit()
+//                    activity.userActive = activity.editContactDetailsFragment
+//                    true
+//                }
+//
+//                R.id.user_edit_language_preferences -> {
+//                    activity.userFm.beginTransaction().add(
+//                        R.id.user_home_frame_container,
+//                        activity.editLanguagePreferencesFragment,
+//                        "editLanguagePreferencesFragment"
+//                    ).addToBackStack("editLanguagePreferencesFragment")
+//                        .commit()
+//                    activity.userActive = activity.editLanguagePreferencesFragment
+//                    true
+//                }
+//
+//                R.id.user_edit_basic_info -> {
+//                    activity.userFm.beginTransaction().add(
+//                        R.id.user_home_frame_container,
+//                        activity.editBasicInfoFragment,
+//                        "editBasicInfoFragment"
+//                    ).addToBackStack("editBasicInfoFragment")
+//                        .commit()
+//                    activity.userActive = activity.editBasicInfoFragment
+//                    true
+//                }
+//
+//                R.id.user_logout -> {
+//
+//                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                        .requestIdToken(getString(R.string.default_web_client_id))
+//                        .requestEmail()
+//                        .build();
+//
+//                    val uid = FirebaseAuth.getInstance().uid
+//                    FirebaseMessaging.getInstance().unsubscribeFromTopic(uid).addOnSuccessListener {
+//                        FirebaseAuth.getInstance().signOut()
+//                        GoogleSignIn.getClient(activity, gso).signOut().addOnSuccessListener {
+//
+//                            val sharedPref =
+//                                activity.getSharedPreferences(
+//                                    activity.getString(R.string.package_name),
+//                                    Context.MODE_PRIVATE
+//                                )
+//
+//
+//                            val editor = sharedPref.edit()
+//                            editor.putString("last_community", "default")
+//                            editor.putString("last_language", "en")
+//                            editor.putInt("last_layout", 0)
+//                            editor.putString("last_feed", "board")
+//                            editor.apply()
+//
+//                            val intent = Intent(this.context, RegisterLoginActivity::class.java)
+//                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                            startActivity(intent)
+//                        }
+//                    }
+//                    true
+//                }
+//
+//                else -> {
+//                    true
+//                }
+//            }
+//        }
 
 
         if (topLevelUser != null) {

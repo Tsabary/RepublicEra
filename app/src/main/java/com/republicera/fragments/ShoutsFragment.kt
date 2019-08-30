@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -49,6 +48,7 @@ import java.io.File
 import java.util.*
 import com.republicera.R
 import kotlinx.android.synthetic.main.toolbar_with_search.*
+import kotlinx.android.synthetic.main.toolbar_without_search.*
 
 
 class ShoutsFragment : Fragment(), GeneralMethods {
@@ -149,7 +149,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
                 }
             }
 
-        val joinQuorum = shouts_join_quorum
+        val joinQuorum = shouts_join_elections
         joinQuorum.setOnClickListener {
 
 
@@ -175,12 +175,12 @@ class ShoutsFragment : Fragment(), GeneralMethods {
                 .show()
         }
 
-        val savedShoutsButton = toolbar_with_search_saved_icon
+        val savedShoutsButton = toolbar_without_search_saved_icon
         savedShoutsButton.setOnClickListener {
             goToSavedShouts(activity)
         }
 
-        val shoutsNotificationsIcon = toolbar_with_search_notifications_icon
+        val shoutsNotificationsIcon = toolbar_without_search_notifications_icon
         shoutsNotificationsIcon.setOnClickListener {
             goToNotifications(activity)
         }
@@ -213,7 +213,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
         shoutRemoveImage = shouts_bottom_sheet_remove_image
         shoutCard = shouts_bottom_sheet_card
         shoutImage = shouts_bottom_sheet_image
-        shoutInput = shouts_bottom_sheet_input
+        shoutInput = board_new_question_input
         shoutProgress = shouts_bottom_sheet_progress
 
         shoutInput.addTextChangedListener(object : TextWatcher {
@@ -265,13 +265,13 @@ class ShoutsFragment : Fragment(), GeneralMethods {
 
         switchRecyclers()
 
-        val notificationBadge = toolbar_with_search_notifications_badge
-
-        activity.shoutsNotificationsCount.observe(this, Observer {
-            it?.let { notCount ->
-                notificationBadge.setNumber(notCount)
-            }
-        })
+//        val notificationBadge = toolbar_with_search_notifications_badge
+//
+//        activity.shoutsNotificationsCount.observe(this, Observer {
+//            it?.let { notCount ->
+//                notificationBadge.setNumber(notCount)
+//            }
+//        })
     }
 
 

@@ -26,11 +26,6 @@ class RegisterLoginActivity : AppCompatActivity() {
             .commit()
         active = registerFragment
 
-
-//
-//        val viewPager = register_login_viewpager
-//        viewPager.adapter = RegisterLoginPagerAdapter(supportFragmentManager)
-//        val tabLayout = register_login_tablayout
-//        tabLayout.setupWithViewPager(viewPager)
     }
+
 }

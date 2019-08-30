@@ -72,6 +72,7 @@ class EditBasicInfoFragment : Fragment(), GeneralMethods {
                     currentUser.uid,
                     firstName,
                     lastName,
+                    currentUser.image,
                     currentUser.communities_list,
                     currentUser.lang_list,
                     currentUser.birth_day,

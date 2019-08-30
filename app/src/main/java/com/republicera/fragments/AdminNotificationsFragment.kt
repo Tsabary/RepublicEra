@@ -112,7 +112,7 @@ class AdminNotificationsFragment : Fragment() {
 
         notifications_mark_all_as_read.setOnClickListener {
 
-            db.collection("notifications").document(currentUser.uid).collection("admins_board").whereEqualTo("seen", 0)
+            db.collection("notifications").document(currentUser.uid).collection("admins").whereEqualTo("seen", 0)
                 .get()
                 .addOnSuccessListener {
                     for (doc in it) {
@@ -142,7 +142,7 @@ class AdminNotificationsFragment : Fragment() {
 
                                 if (user != null) {
                                     sharedViewModelRandomUser.randomUserObject.postValue(user)
-                                    db.collection("notifications").document(currentUser.uid).collection("admins_board")
+                                    db.collection("notifications").document(currentUser.uid).collection("admins")
                                         .document(notification.notification_ID).update(mapOf("seen" to 1))
                                         .addOnSuccessListener {
                                             activity.boardNotificationsFragment.listenToNotifications(currentUser)
@@ -158,7 +158,7 @@ class AdminNotificationsFragment : Fragment() {
                                 }
                             }
                     } else {
-                        db.collection("notifications").document(currentUser.uid).collection("admins_board")
+                        db.collection("notifications").document(currentUser.uid).collection("admins")
                             .document(notification.notification_ID).update(mapOf("seen" to 1)).addOnSuccessListener {
                                 Toast.makeText(activity, "This post has been removed", Toast.LENGTH_LONG).show()
                             }
@@ -173,7 +173,7 @@ class AdminNotificationsFragment : Fragment() {
 
         notificationsRecyclerAdapter.clear()
 
-        db.collection("notifications").document(currentUser.uid).collection("admins_board")
+        db.collection("notifications").document(currentUser.uid).collection("admins")
             .orderBy("timestamp", Query.Direction.DESCENDING).get().addOnSuccessListener {
                 for (doc in it) {
                     val notification = doc.toObject(Notification::class.java)

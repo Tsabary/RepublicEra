@@ -20,7 +20,7 @@ android {
         applicationId "com.republicera"
         minSdkVersion 23
         targetSdkVersion 28
-        versionCode 7
+        versionCode 8
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         android.defaultConfig.vectorDrawables.useSupportLibrary = true
@@ -68,10 +68,13 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:17.0.0'
 
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0-beta02'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.1.0-beta02'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.2.0-alpha01'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.2.0-alpha01'
     implementation 'com.google.android.material:material:1.1.0-alpha09'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta01'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta02'
+
+    implementation "com.mikepenz:materialdrawer:7.0.0-rc05"
+    implementation "com.mikepenz:materialdrawer-nav:7.0.0-rc05"
 
     implementation 'androidx.viewpager:viewpager:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'

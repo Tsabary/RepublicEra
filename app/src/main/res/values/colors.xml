@@ -34,10 +34,12 @@
     <color name="mainColor800">#6a1b9a</color>
     <color name="mainColor900">#4a148c</color>
 
-    <color name="cancel_red">#FF6666</color>
+    <color name="newPurple">#280867</color>
+    <color name="newTeal">#15FFC7</color>
 
-    <color name="star_yellow">#ED8A19</color>
-    <color name="privacy_background">#BFffffff</color>
+    <color name="star_yellow">#FFC515</color>
+
+
 
     <color name="main_green">#12FF9C</color>
     <color name="black">#000000</color>
@@ -47,9 +49,6 @@
     <color name="grayBlue">#F0F0F5</color>
 
     <color name="pink500">#ffe91e63</color>
-
-
-    <color name="ucrop_color_widget_background" tools:override="true">#000000</color>
 
 
 </resources>

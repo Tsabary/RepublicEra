@@ -22,11 +22,18 @@
 
     <item
             app:showAsAction="ifRoom"
-            android:id="@+id/destination_quorum"
+            android:id="@+id/destination_admins"
             android:icon="@drawable/quorum"
             android:title="@string/admins"
             />
 
+
+    <item
+            app:showAsAction="ifRoom"
+            android:id="@+id/destination_notifications"
+            android:icon="@drawable/notification_bell"
+            android:title="@string/notifications"
+    />
 
     <item
             app:showAsAction="ifRoom"

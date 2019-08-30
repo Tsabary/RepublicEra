@@ -75,34 +75,34 @@ class AdminsSavedQuestionsFragment : Fragment() {
         questionsRecycler.adapter = questionsRecyclerAdapter
         questionsRecycler.layoutManager = questionRecyclerLayoutManager
 
-        val adminsNotificationIcon = toolbar_without_search_notifications_icon
-        val adminsNotificationsBadge = toolbar_without_search_notifications_badge
-        val adminsSavedQuestionIcon = toolbar_without_search_saved_icon
-
-        activity.adminNotificationsCount.observe(this, Observer {
-            it?.let { notCount ->
-                adminsNotificationsBadge.setNumber(notCount)
-            }
-        })
-
-        adminsNotificationIcon.setOnClickListener {
-            activity.subFm.beginTransaction().hide(activity.adminsSavedQuestionsFragment)
-                .show(activity.adminsNotificationsFragment)
-                .commit()
-            activity.subActive = activity.adminsNotificationsFragment
-        }
-
-        adminsNotificationsBadge.setOnClickListener {
-            activity.subFm.beginTransaction().hide(activity.adminsSavedQuestionsFragment)
-                .show(activity.adminsNotificationsFragment)
-                .commit()
-            activity.subActive = activity.adminsNotificationsFragment
-        }
-
-        adminsSavedQuestionIcon.setImageResource(R.drawable.bookmark_active)
-        adminsSavedQuestionIcon.setOnClickListener {
-            listenToQuestions()
-        }
+//        val adminsNotificationIcon = toolbar_without_search_notifications_icon
+//        val adminsNotificationsBadge = toolbar_without_search_notifications_badge
+//        val adminsSavedQuestionIcon = toolbar_without_search_saved_icon
+//
+//        activity.adminNotificationsCount.observe(this, Observer {
+//            it?.let { notCount ->
+//                adminsNotificationsBadge.setNumber(notCount)
+//            }
+//        })
+//
+//        adminsNotificationIcon.setOnClickListener {
+//            activity.subFm.beginTransaction().hide(activity.adminsSavedQuestionsFragment)
+//                .show(activity.adminsNotificationsFragment)
+//                .commit()
+//            activity.subActive = activity.adminsNotificationsFragment
+//        }
+//
+//        adminsNotificationsBadge.setOnClickListener {
+//            activity.subFm.beginTransaction().hide(activity.adminsSavedQuestionsFragment)
+//                .show(activity.adminsNotificationsFragment)
+//                .commit()
+//            activity.subActive = activity.adminsNotificationsFragment
+//        }
+//
+//        adminsSavedQuestionIcon.setImageResource(R.drawable.bookmark_active)
+//        adminsSavedQuestionIcon.setOnClickListener {
+//            listenToQuestions()
+//        }
 
         listenToQuestions()
 

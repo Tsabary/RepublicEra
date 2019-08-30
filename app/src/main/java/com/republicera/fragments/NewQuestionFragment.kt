@@ -3,7 +3,6 @@ package com.republicera.fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,14 +12,11 @@ import android.widget.Toast
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.algolia.search.saas.Client
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage
 import com.republicera.MainActivity
 import com.republicera.R
@@ -34,7 +30,6 @@ import com.republicera.viewModels.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_new_question.*
-import org.json.JSONObject
 import java.util.*
 
 
@@ -151,7 +146,7 @@ class NewQuestionFragment : Fragment(), BoardMethods {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 languageIdentifier.identifyLanguage(s.toString()).addOnSuccessListener {
-                    questionLanguage.text = setQuestionLanguage(it)
+                    questionLanguage.text = languageCodeToName(it)
                     languageCode = it
                 }
             }
@@ -304,7 +299,7 @@ class NewQuestionFragment : Fragment(), BoardMethods {
             ).addToBackStack("openedQuestionFragment")
                 .commit()
             activity.subActive = activity.openedQuestionFragment
-            activity.boardFragment.listenToQuestions()
+            activity.boardFragment.listenToQuestions(activity.boardFragment.currentLanguage)
             activity.fm.beginTransaction().show(activity.boardFragment).commit()
 
             closeKeyboard(activity)

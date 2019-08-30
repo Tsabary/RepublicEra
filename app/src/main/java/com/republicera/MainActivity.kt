@@ -49,7 +49,8 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
     lateinit var lastCommunity: String
 
     private lateinit var bottomNavigationAdmin: BottomifyNavigationView
-    lateinit var bottomNavigation: BottomifyNavigationView
+    lateinit var bottomNavigationStandard: BottomifyNavigationView
+    lateinit var bottomNavigation : BottomifyNavigationView
 
     lateinit var mainFrame: FrameLayout
     lateinit var subFrame: FrameLayout
@@ -78,6 +79,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
     lateinit var boardFragment: BoardFragment
     lateinit var shoutsFragment: ShoutsFragment
     lateinit var adminsFragment: AdminsFragment
+    lateinit var notificationsFragment : NotificationsFragment
     lateinit var profileCurrentUserFragment: ProfileCurrentUserFragment
 
 
@@ -145,7 +147,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         userHomeFrame = user_home_frame_container
 
         bottomNavigationAdmin = main_activity_bottom_nav_admin
-        bottomNavigation = main_activity_bottom_nav_not_admin
+        bottomNavigationStandard = main_activity_bottom_nav_not_admin
 
         communitiesHomeFragment = CommunitiesHome()
         exploreCommunitiesFragment = ExploreCommunitiesFragment()
@@ -256,7 +258,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity!!.id)
         main_activity_changing_community_splash_screen.visibility = View.VISIBLE
         bottomNavigationAdmin.isClickable = false
-        bottomNavigation.isClickable = false
+        bottomNavigationStandard.isClickable = false
         fetchCurrentProfile(uid!!)
     }
 
@@ -315,6 +317,8 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
         if (currentCommunity!!.admins.contains(currentProfile.uid) || currentCommunity!!.founder == currentProfile.uid) {
 
+            bottomNavigation = bottomNavigationAdmin
+
             adminsFragment = AdminsFragment()
             adminsNewQuestionFragment = AdminsNewQuestionFragment()
             adminsSearchFragment = AdminsSearchFragment()
@@ -339,10 +343,14 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                 .hide(adminsSavedQuestionsFragment).commitAllowingStateLoss()
 
             bottomNavigationAdmin.visibility = View.VISIBLE
-            bottomNavigation.visibility = View.GONE
+            bottomNavigationStandard.visibility = View.GONE
         } else {
+
+            bottomNavigation = bottomNavigationStandard
+
+
             bottomNavigationAdmin.visibility = View.GONE
-            bottomNavigation.visibility = View.VISIBLE
+            bottomNavigationStandard.visibility = View.VISIBLE
         }
 
         bottomNavigationAdmin.setOnNavigationItemChangedListener(object : OnNavigationItemChangeListener {
@@ -350,18 +358,20 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                 when (navigationItem.position) {
                     0 -> navigateToBoard()
                     1 -> navigateToShouts()
-                    2 -> navigateToQuorum()
-                    3 -> navigateToProfile()
+                    2 -> navigateToAdmins()
+                    3 -> navigateToNotifications()
+                    4 -> navigateToProfile()
                 }
             }
         })
 
-        bottomNavigation.setOnNavigationItemChangedListener(object : OnNavigationItemChangeListener {
+        bottomNavigationStandard.setOnNavigationItemChangedListener(object : OnNavigationItemChangeListener {
             override fun onNavigationItemChanged(navigationItem: BottomifyNavigationView.NavigationItem) {
                 when (navigationItem.position) {
                     0 -> navigateToBoard()
                     1 -> navigateToShouts()
-                    2 -> navigateToProfile()
+                    2 -> navigateToNotifications()
+                    3 -> navigateToProfile()
                 }
             }
         })
@@ -394,7 +404,6 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                 interestsViewModel.interestList.postValue(interestsList)
             }
             createFollowedAccountsList()
-            Log.d("checkProgress", "createInterestList")
         }
     }
 
@@ -412,11 +421,6 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                     followedAccountsViewModel.followedAccounts.postValue(accountsList)
                 }
                 createFollowersList()
-                Log.d("checkProgress", "createFollowedAccountsList2")
-
-            }.addOnFailureListener {
-                Log.d("checkProgress", "createFollowedAccountsList3" + it.localizedMessage)
-
             }
     }
 
@@ -442,6 +446,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         //main container
         boardFragment = BoardFragment()
         shoutsFragment = ShoutsFragment()
+        notificationsFragment = NotificationsFragment()
         profileCurrentUserFragment = ProfileCurrentUserFragment()
 
 
@@ -450,6 +455,9 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
         fm.beginTransaction().add(R.id.feed_frame_container, shoutsFragment, "shoutsFragment")
             .hide(shoutsFragment).commitAllowingStateLoss()
+
+        fm.beginTransaction().add(R.id.feed_frame_container, notificationsFragment, "notificationsFragment")
+            .hide(notificationsFragment).commitAllowingStateLoss()
 
 
 
@@ -478,20 +486,20 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
 
 
-        subFm.beginTransaction()
-            .add(R.id.feed_subcontents_frame_container, boardNotificationsFragment, "boardNotificationsFragment")
-            .hide(boardNotificationsFragment).commitAllowingStateLoss()
-        subFm.beginTransaction()
-            .add(R.id.feed_subcontents_frame_container, savedQuestionFragment, "savedQuestionFragment")
-            .hide(savedQuestionFragment).commitAllowingStateLoss()
-
-        subFm.beginTransaction()
-            .add(R.id.feed_subcontents_frame_container, shoutsNotificationsFragment, "shoutsNotificationsFragment")
-            .hide(shoutsNotificationsFragment).commitAllowingStateLoss()
-        subFm.beginTransaction()
-            .add(R.id.feed_subcontents_frame_container, savedShoutsFragment, "savedShoutsFragment")
-            .hide(savedShoutsFragment).commitAllowingStateLoss()
-
+//        subFm.beginTransaction()
+//            .add(R.id.feed_subcontents_frame_container, boardNotificationsFragment, "boardNotificationsFragment")
+//            .hide(boardNotificationsFragment).commitAllowingStateLoss()
+//        subFm.beginTransaction()
+//            .add(R.id.feed_subcontents_frame_container, savedQuestionFragment, "savedQuestionFragment")
+//            .hide(savedQuestionFragment).commitAllowingStateLoss()
+//
+//        subFm.beginTransaction()
+//            .add(R.id.feed_subcontents_frame_container, shoutsNotificationsFragment, "shoutsNotificationsFragment")
+//            .hide(shoutsNotificationsFragment).commitAllowingStateLoss()
+//        subFm.beginTransaction()
+//            .add(R.id.feed_subcontents_frame_container, savedShoutsFragment, "savedShoutsFragment")
+//            .hide(savedShoutsFragment).commitAllowingStateLoss()
+//
 
 
         allowUserInteraction()
@@ -504,9 +512,9 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         sharedPref = getSharedPreferences(getString(R.string.package_name), Context.MODE_PRIVATE)
         val lastFeed = sharedPref.getString("last_feed", "board")!!
         if (lastFeed == "board") {
-            navigateToBoard()
+            bottomNavigation.setActiveNavigationIndex(0)
         } else {
-            navigateToShouts()
+            bottomNavigation.setActiveNavigationIndex(1)
         }
     }
 
@@ -527,14 +535,14 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             subFm.popBackStack()
         }
 
-        if (currentCommunity!!.admins.contains(currentProfile.uid) || currentCommunity!!.founder == currentProfile.uid) {
-            subFm.beginTransaction().hide(boardNotificationsFragment).hide(shoutsNotificationsFragment)
-                .hide(adminsNotificationsFragment)
-                .hide(savedQuestionFragment).hide(savedShoutsFragment).hide(adminsSavedQuestionsFragment).commit()
-        } else {
-            subFm.beginTransaction().hide(boardNotificationsFragment).hide(shoutsNotificationsFragment)
-                .hide(savedQuestionFragment).hide(savedShoutsFragment).commit()
-        }
+//        if (currentCommunity!!.admins.contains(currentProfile.uid) || currentCommunity!!.founder == currentProfile.uid) {
+//            subFm.beginTransaction().hide(boardNotificationsFragment).hide(shoutsNotificationsFragment)
+//                .hide(adminsNotificationsFragment)
+//                .hide(savedQuestionFragment).hide(savedShoutsFragment).hide(adminsSavedQuestionsFragment).commit()
+//        } else {
+//            subFm.beginTransaction().hide(boardNotificationsFragment).hide(shoutsNotificationsFragment)
+//                .hide(savedQuestionFragment).hide(savedShoutsFragment).commit()
+//        }
 
 
     }
@@ -592,6 +600,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                     communitiesHomeFragment -> {
 
                         if (topLevelUser != null && currentCommunity != null) {
+                            userFm.popBackStack("communitiesHomeFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                             switchVisibility(0)
                         } else {
                             super.onBackPressed()
@@ -635,13 +644,25 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
                     boardNotificationsFragment -> {
                         isBoardNotificationsActive = false
-                        subFm.beginTransaction().hide(boardNotificationsFragment).commit()
+                        subFm.popBackStack("boardNotificationsFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
+//                        subFm.beginTransaction().hide(boardNotificationsFragment).commit()
                         switchVisibility(0)
                     }
 
                     savedQuestionFragment -> {
                         isBoardNotificationsActive = false
-                        subFm.beginTransaction().hide(savedQuestionFragment).commit()
+                        subFm.popBackStack("savedQuestionFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
+//                        subFm.beginTransaction().hide(savedQuestionFragment).commit()
+                        switchVisibility(0)
+                    }
+
+                    savedShoutsFragment -> {
+                        isBoardNotificationsActive = false
+                        subFm.popBackStack("savedShoutsFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
+//                        subFm.beginTransaction().hide(savedQuestionFragment).commit()
                         switchVisibility(0)
                     }
 
@@ -700,6 +721,11 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                     }
 
                     editLanguagePreferencesFragment -> {
+                        subFm.popBackStack("editLanguagePreferencesFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        switchVisibility(0)
+                    }
+
+                    editBasicInfoFragment -> {
                         subFm.popBackStack("editLanguagePreferencesFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                         switchVisibility(0)
                     }
@@ -824,7 +850,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         this.intent = intent
     }
 
-    private fun navigateToBoard() {
+    fun navigateToBoard() {
         if (active != null) {
             fm.beginTransaction().hide(active!!).show(boardFragment).commit()
             active = boardFragment
@@ -833,11 +859,10 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             val editor = sharedPref.edit()
             editor.putString("last_feed", "board")
             editor.apply()
-//            bottomNavigationAdmin.setActiveNavigationIndex(0)
         }
     }
 
-    private fun navigateToShouts() {
+    fun navigateToShouts() {
         if (active != null) {
             fm.beginTransaction().hide(active!!).show(shoutsFragment).commit()
             active = shoutsFragment
@@ -846,17 +871,24 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             val editor = sharedPref.edit()
             editor.putString("last_feed", "shouts")
             editor.apply()
-//            bottomNavigationAdmin.setActiveNavigationIndex(1)
         }
     }
 
 
-    private fun navigateToQuorum() {
+    private fun navigateToAdmins() {
         if (active != null) {
             fm.beginTransaction().hide(active!!).show(adminsFragment).commit()
             active = adminsFragment
             resetFragments()
-            profileCurrentUserFragment.scrollView.fullScroll(View.FOCUS_UP)
+        }
+    }
+
+
+    private fun navigateToNotifications() {
+        if (active != null) {
+            fm.beginTransaction().hide(active!!).show(notificationsFragment).commit()
+            active = notificationsFragment
+            resetFragments()
         }
     }
 
@@ -876,19 +908,20 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         topLevelDB.collection("communities").document(communityID).get().addOnSuccessListener {
             val community = it.toObject(Community::class.java)
             if (community != null) {
+                if (topLevelUser != null) {
+                    topLevelUser!!.communities_list.add(communityID)
+                    currentTopLevelUserViewModel.currentUserObject.postValue(topLevelUser)
+                    currentCommunityViewModel.currentCommunity.postValue(community)
 
-                topLevelUser!!.communities_list.add(communityID)
-                currentTopLevelUserViewModel.currentUserObject.postValue(topLevelUser)
-                currentCommunityViewModel.currentCommunity.postValue(community)
+                    val sharedPref =
+                        getSharedPreferences(getString(R.string.package_name), Context.MODE_PRIVATE)
 
-                val sharedPref =
-                    getSharedPreferences(getString(R.string.package_name), Context.MODE_PRIVATE)
+                    val editor = sharedPref.edit()
+                    editor.putString("last_community", communityID)
+                    editor.apply()
 
-                val editor = sharedPref.edit()
-                editor.putString("last_community", communityID)
-                editor.apply()
-
-                userHomeFrame.visibility = View.GONE
+                    userHomeFrame.visibility = View.GONE
+                }
             }
         }
     }

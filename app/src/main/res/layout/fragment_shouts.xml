@@ -6,18 +6,106 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".fragments.ShoutsFragment"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:clickable="true"
+        android:focusable="true">
 
 
-
-    <include
-            layout="@layout/toolbar_with_search"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/shouts_header_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
-            android:id="@+id/includeShoutsToolbar"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/gradient_background">
+
+        <include
+                layout="@layout/toolbar_without_search"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/includeShoutsToolbar"
+                android:visibility="gone"/>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/includeShoutsToolbar"
+                android:id="@+id/shouts_title_container"
+                android:visibility="gone">
+
+            <TextView
+                    android:text="Following"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/shouts_feed_title"
+                    android:fontFamily="@font/roboto_black"
+                    android:textColor="@color/white"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:clickable="false"
+                    android:padding="16dp"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/shouts_title_container"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:id="@+id/shouts_join_quorum_cotainer"
+        >
+
+            <TextView
+                    android:text="Admin elections are open"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView4"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:fontFamily="@font/roboto"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toStartOf="@+id/shouts_join_elections"
+                    android:padding="16dp"/>
+            <TextView
+                    android:text="Join"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/shouts_join_elections"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:fontFamily="@font/roboto_black"
+                    android:textColor="@color/white"
+                    app:layout_constraintVertical_bias="0.0"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:padding="16dp"/>
+            <TextView
+                    android:text="Dismiss"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/shouts_dismiss_elections"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:fontFamily="@font/roboto_black"
+                    android:textColor="@color/white"
+                    app:layout_constraintVertical_bias="0.0"
+                    app:layout_constraintEnd_toStartOf="@+id/shouts_join_elections"
+                    android:padding="16dp"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <TextView
             android:text='No one you follow has posted yet.\nClick "Following" to see all posts'
             android:layout_width="0dp"
@@ -29,7 +117,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/divider9"
-            app:layout_constraintTop_toBottomOf="@+id/shouts_join_quorum_cotainer"
+            app:layout_constraintTop_toBottomOf="@+id/shouts_header_container"
             android:gravity="center"
             android:layout_marginEnd="32dp"
             android:layout_marginStart="32dp"
@@ -45,68 +133,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/divider9"
-            app:layout_constraintTop_toBottomOf="@+id/shouts_join_quorum_cotainer"
+            app:layout_constraintTop_toBottomOf="@+id/shouts_header_container"
             android:gravity="center"
             android:layout_marginEnd="32dp"
             android:layout_marginStart="32dp"
             android:elevation="2dp"/>
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/includeShoutsToolbar"
-            android:id="@+id/shouts_title_container">
 
-        <TextView
-                android:text="Following"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/shouts_feed_title"
-                android:fontFamily="@font/roboto_bold"
-                android:textColor="@color/mainColor900"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:clickable="false"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/shouts_title_container"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:id="@+id/shouts_join_quorum_cotainer"
-    >
 
-        <TextView
-                android:text="Quorum seats available"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView4"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:fontFamily="@font/roboto_medium"
-                android:textColor="@color/gray500"
-                app:layout_constraintEnd_toStartOf="@+id/shouts_join_quorum"
-                android:padding="16dp"/>
-        <TextView
-                android:text="Join"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/shouts_join_quorum"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:fontFamily="@font/roboto_medium"
-                android:textColor="@color/mainColor400"
-                app:layout_constraintVertical_bias="0.0"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:padding="16dp"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
@@ -115,7 +150,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/divider9"
-            app:layout_constraintTop_toBottomOf="@+id/shouts_join_quorum_cotainer"
+            app:layout_constraintTop_toBottomOf="@+id/shouts_header_container"
     >
 
 
@@ -136,7 +171,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/divider9"
             android:id="@+id/shouts_all_swipe_refresh"
-            app:layout_constraintTop_toBottomOf="@+id/shouts_join_quorum_cotainer"
+            app:layout_constraintTop_toBottomOf="@+id/shouts_header_container"
             android:visibility="visible"
     >
 

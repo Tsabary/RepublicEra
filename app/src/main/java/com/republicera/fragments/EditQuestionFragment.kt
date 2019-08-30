@@ -4,7 +4,6 @@ package com.republicera.fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +15,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -214,7 +212,7 @@ class EditQuestionFragment : Fragment(), BoardMethods {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 languageIdentifier.identifyLanguage(s.toString()).addOnSuccessListener {
-                    questionLanguage.text = setQuestionLanguage(it)
+                    questionLanguage.text = languageCodeToName(it)
                     languageCode = it
                 }
             }

@@ -2,7 +2,10 @@ package com.republicera.fragments
 
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,28 +13,44 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
-import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.algolia.search.saas.Client
+import com.bumptech.glide.Glide
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.messaging.FirebaseMessaging
+import com.mikepenz.fastadapter.ISubItem
+import com.mikepenz.iconics.IconicsColor.Companion.colorRes
+import com.mikepenz.iconics.IconicsDrawable
+import com.mikepenz.iconics.IconicsSize.Companion.dp
+import com.mikepenz.materialdrawer.AccountHeaderBuilder
+import com.mikepenz.materialdrawer.Drawer
+import com.mikepenz.materialdrawer.DrawerBuilder
+import com.mikepenz.materialdrawer.interfaces.OnCheckedChangeListener
+import com.mikepenz.materialdrawer.model.*
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem
+import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader
+import com.mikepenz.materialdrawer.util.DrawerImageLoader
+import com.mikepenz.materialdrawer.util.DrawerUIUtils
 import com.republicera.MainActivity
 import com.republicera.R
+import com.republicera.RegisterLoginActivity
 import com.republicera.groupieAdapters.SingleBoardBlock
 import com.republicera.groupieAdapters.SingleBoardRow
+import com.republicera.groupieAdapters.SingleLanguageOptionBoard
 import com.republicera.groupieAdapters.SingleTagSuggestion
 import com.republicera.interfaces.BoardMethods
 import com.republicera.models.*
@@ -53,8 +72,9 @@ class BoardFragment : Fragment(), BoardMethods {
 
     val tagsFilteredAdapter = GroupAdapter<ViewHolder>()
     private val searchedQuestionsRecyclerAdapter = GroupAdapter<ViewHolder>()
-    private val questionsRowLayoutAdapter = GroupAdapter<ViewHolder>()
-    private val questionsBlockLayoutAdapter = GroupAdapter<ViewHolder>()
+    val questionsRowLayoutAdapter = GroupAdapter<ViewHolder>()
+    val questionsBlockLayoutAdapter = GroupAdapter<ViewHolder>()
+    private val languagePickerAdapter = GroupAdapter<ViewHolder>()
 
     private lateinit var questionRecyclerLayoutManager: LinearLayoutManager
 
@@ -68,9 +88,9 @@ class BoardFragment : Fragment(), BoardMethods {
     lateinit var questionSwipeRefresh: SwipeRefreshLayout
     lateinit var searchSwipeRefresh: SwipeRefreshLayout
 
-    private lateinit var questionsRecycler: RecyclerView
+    lateinit var questionsRecycler: RecyclerView
     private lateinit var searchedQuestionsRecycler: RecyclerView
-    lateinit var layoutIcon: ImageButton
+//    lateinit var layoutIcon: ImageButton
 
     var interestsList: List<String> = listOf()
 
@@ -87,6 +107,11 @@ class BoardFragment : Fragment(), BoardMethods {
     private lateinit var boardFilterChipGroup: ChipGroup
     private var searchedTagsList = mutableListOf<String>()
 
+    lateinit var result: Drawer
+    private lateinit var languageItems: MutableList<ISubItem<*>>
+
+//    lateinit var blockLayout: SecondaryDrawerItem
+//    lateinit var rowsLayout: SecondaryDrawerItem
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_board, container, false)
@@ -98,19 +123,22 @@ class BoardFragment : Fragment(), BoardMethods {
         firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
         val activity = activity as MainActivity
 
-        val title = board_community_title
+//        val title = board_community_title
+
 
         searchedQuestionsRecycler = board_search_question_feed
         val searchedQuestionRecyclerLayoutManager = LinearLayoutManager(this.context)
-//        searchedQuestionRecyclerLayoutManager.reverseLayout = true
         searchedQuestionsRecycler.adapter = searchedQuestionsRecyclerAdapter
         searchedQuestionsRecycler.layoutManager = searchedQuestionRecyclerLayoutManager
 
         questionsRecycler = board_question_feed
         questionsRecycler.adapter = questionsRowLayoutAdapter
         questionRecyclerLayoutManager = LinearLayoutManager(this.context)
-//        questionRecyclerLayoutManager.reverseLayout = true
         questionsRecycler.layoutManager = questionRecyclerLayoutManager
+
+        val languagePickerRecycler = board_languages_recycler
+        languagePickerRecycler.adapter = languagePickerAdapter
+        languagePickerRecycler.layoutManager = LinearLayoutManager(this.context!!)
 
         questionSwipeRefresh = board_questions_swipe_refresh
         searchSwipeRefresh = board_search_swipe_refresh
@@ -118,44 +146,77 @@ class BoardFragment : Fragment(), BoardMethods {
         val reportedSwipeRefresh = board_reported_swipe_refresh
 
 
-        layoutIcon = board_layout_icon
-        val spinner = board_language_spinner
+//        layoutIcon = board_layout_icon
+//        val spinner = board_language_spinner
+//        spinner.setOnClickListener {
+//            if (languagePickerRecycler.visibility == View.VISIBLE
+//            ) {
+//                languagePickerRecycler.visibility = View.GONE
+//            } else {
+//                languagePickerRecycler.visibility = View.VISIBLE
+//            }
+//        }
+
         freshMessage = board_fresh_message
 
         sharedPref = activity.getSharedPreferences(activity.getString(R.string.package_name), Context.MODE_PRIVATE)
         currentLanguage = sharedPref.getString("last_language", "en")!!
         currentLayout = sharedPref.getInt("last_layout", 0)
 
-        if (currentLayout == 0) {
-            layoutIcon.tag = "row_layout"
-        } else {
-            layoutIcon.tag = "board_layout"
-        }
+//        if (currentLayout == 0) {
+//            layoutIcon.tag = "row_layout"
+//        } else {
+//            layoutIcon.tag = "board_layout"
+//        }
+
         setLayout(currentLayout)
 
-        layoutIcon.setOnClickListener {
-            if (layoutIcon.tag == "row_layout") {
-                setLayout(1)
-            } else {
-                setLayout(0)
-            }
-        }
+//        layoutIcon.setOnClickListener {
+//            if (layoutIcon.tag == "row_layout") {
+//                setLayout(1)
+//            } else {
+//                setLayout(0)
+//            }
+//        }
+
+        languageItems = mutableListOf<ISubItem<*>>()
 
         activity.let {
             ViewModelProviders.of(it).get(CurrentUserViewModel::class.java).currentUserObject.observe(
                 activity,
                 Observer { user ->
                     topLevelUser = user
-                    val shortenedList = mutableListOf<String>()
 
-                    for (language in topLevelUser.lang_list) {
-                        shortenedList.add(setQuestionLanguage(language))
-
-                    }
-                    spinner.setItems(shortenedList)
-                    if (shortenedList.contains(setQuestionLanguage(currentLanguage))) {
-                        spinner.text = setQuestionLanguage(currentLanguage)
-                    }
+//                    var lanIdentifier: Long = 100
+//
+//                    for (language in topLevelUser.lang_list) {
+////                        languagePickerAdapter.add(SingleLanguageOptionBoard(languageCodeToName(language)))
+//
+//                        languageItems.add(
+//                            SecondaryDrawerItem().withIdentifier(lanIdentifier).withName(
+//                                languageCodeToName(language)
+//                            ).withOnDrawerItemClickListener(object : Drawer.OnDrawerItemClickListener {
+//                                override fun onItemClick(
+//                                    view: View?,
+//                                    position: Int,
+//                                    drawerItem: IDrawerItem<*>
+//                                ): Boolean {
+//                                    currentLanguage = language
+//                                    val editor = sharedPref.edit()
+//                                    editor.putString("last_language", currentLanguage)
+//                                    editor.apply()
+//                                    listenToQuestions()
+//
+//                                    return true
+//                                }
+//                            })
+//                        )
+//                        lanIdentifier++
+//                    }
+//                    spinner.setItems(shortenedList)
+//                    if (shortenedList.contains(languageCodeToName(currentLanguage))) {
+//                        spinner.text = languageCodeToName(currentLanguage)
+//                    }
                 })
 
             sharedViewModelRandomUser = ViewModelProviders.of(it).get(RandomUserViewModel::class.java)
@@ -172,47 +233,61 @@ class BoardFragment : Fragment(), BoardMethods {
                 Observer { communityName ->
                     currentCommunity = communityName
                     db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity.id)
-                    title.text = currentCommunity.title
-                    listenToQuestions()
+//                    title.text = currentCommunity.title
+                    listenToQuestions(currentLanguage)
                 })
         }
 
-        title.setOnClickListener {
-            if (activity.userHomeFrame.visibility != View.VISIBLE) {
-                if (activity.subActive == activity.searchFragment) {
-                    activity.subFm.popBackStack("searchFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
-                }
 
-                activity.userFm.beginTransaction()
-                    .add(
-                        R.id.user_home_frame_container,
-                        activity.communitiesHomeFragment,
-                        "communitiesHomeFragment"
-                    ).addToBackStack("communitiesHomeFragment")
-                    .commit()
-                activity.userActive = activity.communitiesHomeFragment
-                activity.switchVisibility(2)
 
+        DrawerImageLoader.init(object : AbstractDrawerImageLoader() {
+            override fun set(imageView: ImageView, uri: Uri, placeholder: Drawable, tag: String?) {
+                Glide.with(imageView.context).load(uri).placeholder(placeholder).into(imageView)
             }
-        }
 
+            override fun cancel(imageView: ImageView) {
+                Glide.with(imageView.context).clear(imageView)
+            }
 
-        spinner.setOnItemSelectedListener { _, position, _, _ ->
-            currentLanguage = topLevelUser.lang_list[position]
-            val editor = sharedPref.edit()
-            editor.putString("last_language", topLevelUser.lang_list[position])
-            editor.apply()
-            listenToQuestions()
-        }
-
-
-        val notificationBadge = toolbar_with_search_notifications_badge
-
-        activity.boardNotificationsCount.observe(this, Observer {
-            it?.let { notCount ->
-                notificationBadge.setNumber(notCount)
+            override fun placeholder(ctx: Context, tag: String?): Drawable {
+                //define different placeholders for different imageView targets
+                //default tags are accessible via the DrawerImageLoader.Tags
+                //custom ones can be checked via string. see the CustomUrlBasePrimaryDrawerItem LINE 111
+                return when (tag) {
+                    DrawerImageLoader.Tags.PROFILE.name -> DrawerUIUtils.getPlaceHolder(ctx)
+                    DrawerImageLoader.Tags.ACCOUNT_HEADER.name -> IconicsDrawable(ctx).iconText(" ").backgroundColor(
+                        colorRes(com.mikepenz.materialdrawer.R.color.primary)
+                    ).size(dp(56))
+                    "customUrlItem" -> IconicsDrawable(ctx).iconText(" ").backgroundColor(colorRes(R.color.md_red_500)).size(
+                        dp(56)
+                    )
+                    //we use the default one for
+                    //DrawerImageLoader.Tags.PROFILE_DRAWER_ITEM.name()
+                    else -> super.placeholder(ctx, tag)
+                }
             }
         })
+
+
+
+        setUpDrawerNav(activity, topLevelUser)
+
+        val menuIcon = toolbar_menu
+
+        menuIcon.setOnClickListener {
+            result.openDrawer()
+        }
+
+//        languagePickerAdapter.setOnItemClickListener { item, _ ->
+//            val language = item as SingleLanguageOptionBoard
+//            currentLanguage = languageNameToCode(language.language)
+//            val editor = sharedPref.edit()
+//            editor.putString("last_language", currentLanguage)
+//            editor.apply()
+//            listenToQuestions()
+//            languagePickerRecycler.visibility = View.GONE
+////            spinner.text = currentLanguage
+//        }
 
 
         recyclersVisibility(0)
@@ -232,7 +307,7 @@ class BoardFragment : Fragment(), BoardMethods {
         searchSwipeRefresh.visibility = View.GONE
 
         questionSwipeRefresh.setOnRefreshListener {
-            listenToQuestions()
+            listenToQuestions(currentLanguage)
             questionSwipeRefresh.isRefreshing = false
             questionSwipeRefresh.isEnabled = false
         }
@@ -245,23 +320,23 @@ class BoardFragment : Fragment(), BoardMethods {
         }
         searchSwipeRefresh.isEnabled = false
 
+//
+//        val boardNotificationIcon = toolbar_with_search_notifications_icon
+//        val boardSavedQuestionIcon = toolbar_menu
+//
+//        notificationBadge.setOnClickListener {
+//            goToNotifications(activity)
+//        }
+//
+//        boardNotificationIcon.setOnClickListener {
+//            goToNotifications(activity)
+//        }
+//
+//        boardSavedQuestionIcon.setOnClickListener {
+//            goToSavedQuestions(activity)
+//        }
 
-        val boardNotificationIcon = toolbar_with_search_notifications_icon
-        val boardSavedQuestionIcon = toolbar_with_search_saved_icon
-
-        notificationBadge.setOnClickListener {
-            goToNotifications(activity)
-        }
-
-        boardNotificationIcon.setOnClickListener {
-            goToNotifications(activity)
-        }
-
-        boardSavedQuestionIcon.setOnClickListener {
-            goToSavedQuestions(activity)
-        }
-
-        val constraintButton = constraintLayout_botton_check
+        val constraintButton = board_new_question_container
 
         constraintButton.setOnClickListener {
 
@@ -345,45 +420,33 @@ class BoardFragment : Fragment(), BoardMethods {
         }
     }
 
+
+
+
     private fun setLayout(case: Int) {
         val editor = sharedPref.edit()
 
         if (case == 0) {
-            layoutIcon.setImageResource(R.drawable.blocks_layout)
-            layoutIcon.tag = "row_layout"
+//            layoutIcon.setImageResource(R.drawable.blocks_layout)
+//            layoutIcon.tag = "row_layout"
             firebaseAnalytics.logEvent("board_row_layout", null)
             val position = questionRecyclerLayoutManager.findFirstCompletelyVisibleItemPosition()
             questionsRecycler.adapter = questionsRowLayoutAdapter
 
             editor.putInt("last_layout", 0)
         } else {
-            layoutIcon.setImageResource(R.drawable.rows_layout)
-            layoutIcon.tag = "block_layout"
+//            layoutIcon.setImageResource(R.drawable.rows_layout)
+//            layoutIcon.tag = "block_layout"
             firebaseAnalytics.logEvent("board_block_layout", null)
             val position = questionRecyclerLayoutManager.findFirstCompletelyVisibleItemPosition()
             questionsRecycler.adapter = questionsBlockLayoutAdapter
             editor.putInt("last_layout", 1)
         }
+
         editor.apply()
     }
 
-    private fun goToSavedQuestions(activity: MainActivity) {
-        activity.subFm.beginTransaction().hide(activity.boardNotificationsFragment)
-            .show(activity.savedQuestionFragment).commit()
-        activity.subActive = activity.savedQuestionFragment
-        activity.switchVisibility(1)
-        activity.isBoardNotificationsActive = true
-    }
 
-    private fun goToNotifications(activity: MainActivity) {
-        activity.subFm.beginTransaction().hide(activity.savedQuestionFragment)
-            .show(activity.boardNotificationsFragment)
-            .commit()
-        activity.subActive = activity.boardNotificationsFragment
-
-        activity.switchVisibility(1)
-        activity.isBoardNotificationsActive = true
-    }
 
     private fun openQuestion(author: String, activity: MainActivity) {
 
@@ -579,7 +642,7 @@ class BoardFragment : Fragment(), BoardMethods {
     }
 
 
-    fun listenToQuestions() {
+    fun listenToQuestions(currentLanguage : String) {
 
         questionsRowLayoutAdapter.clear()
         questionsBlockLayoutAdapter.clear()

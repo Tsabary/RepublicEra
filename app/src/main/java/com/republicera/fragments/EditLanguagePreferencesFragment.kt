@@ -75,6 +75,7 @@ class EditLanguagePreferencesFragment : Fragment(), ProfileMethods {
                         currentTopLevelUser.uid,
                         currentTopLevelUser.first_name,
                         currentTopLevelUser.last_name,
+                        currentTopLevelUser.image,
                         currentTopLevelUser.communities_list,
                         chosenLanguages,
                         currentTopLevelUser.birth_day,

@@ -9,10 +9,10 @@
     />
 
 
-    <item
-            android:id="@+id/profile_edit_interests"
-            android:title="@string/edit_interests"
-    />
+    <!--<item-->
+            <!--android:id="@+id/profile_edit_interests"-->
+            <!--android:title="@string/edit_interests"-->
+    <!--/>-->
 
     <item
             android:id="@+id/profile_resign_admin"

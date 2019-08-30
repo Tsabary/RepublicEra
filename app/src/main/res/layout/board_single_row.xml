@@ -11,8 +11,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/board_question"
-            app:layout_constraintStart_toEndOf="@+id/board_answers"
-            android:layout_marginStart="24dp"
+            app:layout_constraintStart_toEndOf="@+id/board_image"
             app:layout_constraintTop_toTopOf="parent"
             android:textSize="15sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -21,7 +20,8 @@
             android:textColor="@color/gray900"
             android:layout_marginTop="24dp"
             tools:text="Not able to succefully rum npm install comand on git bash"
-            android:fontFamily="@font/roboto_bold"/>
+            android:fontFamily="@font/roboto_bold"
+            android:layout_marginStart="24dp"/>
     <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -51,20 +51,33 @@
             tools:text="4 hours ago"
             android:fontFamily="@font/roboto"
             android:textSize="14sp"/>
-    <TextView
+
+    <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:id="@+id/board_answers"
-            android:gravity="center"
-            android:textColor="@color/mainColor700"
-            android:textAlignment="center"
-            android:textSize="18sp"
-            android:fontFamily="@font/roboto_bold"
-            android:layout_marginStart="16dp"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="24dp"
-            tools:text="4"/>
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="24dp"
+            android:id="@+id/board_image"
+            android:elevation="2dp"/>
+
+    <!--<TextView-->
+    <!--android:layout_width="40dp"-->
+    <!--android:layout_height="40dp"-->
+    <!--android:id="@+id/board_answers"-->
+    <!--android:gravity="center"-->
+    <!--android:textColor="@color/mainColor700"-->
+    <!--android:textAlignment="center"-->
+    <!--android:textSize="18sp"-->
+    <!--android:fontFamily="@font/roboto_bold"-->
+    <!--android:layout_marginStart="16dp"-->
+    <!--app:layout_constraintStart_toStartOf="parent"-->
+    <!--app:layout_constraintTop_toTopOf="parent"-->
+    <!--android:layout_marginTop="24dp"-->
+    <!--tools:text="4"/>-->
+
+
     <View
             android:id="@+id/divider7"
             android:layout_width="0dp"

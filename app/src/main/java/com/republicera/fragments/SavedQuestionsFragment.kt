@@ -31,7 +31,7 @@ import kotlinx.android.synthetic.main.fragment_saved_items.view.saved_items_swip
 
 class SavedQuestionsFragment : Fragment() {
 
-    lateinit var db : DocumentReference
+    lateinit var db: DocumentReference
 
     private val questionsRecyclerAdapter = GroupAdapter<ViewHolder>()
 
@@ -53,7 +53,8 @@ class SavedQuestionsFragment : Fragment() {
         val activity = activity as MainActivity
 
         activity.let {
-            currentProfile = ViewModelProviders.of(it).get(CurrentCommunityProfileViewModel::class.java).currentCommunityProfileObject
+            currentProfile = ViewModelProviders.of(it).get(CurrentCommunityProfileViewModel::class.java)
+                .currentCommunityProfileObject
             sharedViewModelRandomUser = ViewModelProviders.of(it).get(RandomUserViewModel::class.java)
 
             sharedViewModelForQuestion = ViewModelProviders.of(it).get(QuestionViewModel::class.java)
@@ -71,40 +72,53 @@ class SavedQuestionsFragment : Fragment() {
             saved_items_swipe_refresh.isRefreshing = false
         }
 
+        val backButton = saved_items_back_button
+
+        backButton.setOnClickListener {
+            activity.subFm.beginTransaction().hide(activity.savedQuestionFragment)
+                .commit()
+            activity.subActive = activity.boardFragment
+            activity.switchVisibility(0)
+
+        }
+
+        val title = saved_items_title
+        title.text = "Saved questions"
+
         val questionsRecycler = view.saved_items_recycler
 
         val questionRecyclerLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this.context)
         questionsRecycler.adapter = questionsRecyclerAdapter
         questionsRecycler.layoutManager = questionRecyclerLayoutManager
 
-        val boardNotificationIcon = toolbar_without_search_notifications_icon
-        val boardNotificationsBadge = toolbar_without_search_notifications_badge
-        val boardSavedQuestionIcon = toolbar_without_search_saved_icon
+//        val boardNotificationIcon = toolbar_without_search_notifications_icon
+//        val boardNotificationsBadge = toolbar_without_search_notifications_badge
+//        val boardSavedQuestionIcon = toolbar_without_search_saved_icon
 
-        activity.boardNotificationsCount.observe(this, Observer {
-            it?.let { notCount ->
-                boardNotificationsBadge.setNumber(notCount)
-            }
-        })
+//        activity.boardNotificationsCount.observe(this, Observer {
+//            it?.let { notCount ->
+//                boardNotificationsBadge.setNumber(notCount)
+//            }
+//        })
 
-        boardNotificationIcon.setOnClickListener {
-            activity.subFm.beginTransaction().hide(activity.savedQuestionFragment)
-                .show(activity.boardNotificationsFragment)
-                .commit()
-            activity.subActive = activity.boardNotificationsFragment
-        }
-
-        boardNotificationsBadge.setOnClickListener {
-            activity.subFm.beginTransaction().hide(activity.savedQuestionFragment)
-                .show(activity.boardNotificationsFragment)
-                .commit()
-            activity.subActive = activity.boardNotificationsFragment
-        }
-
-        boardSavedQuestionIcon.setImageResource(R.drawable.bookmark_active)
-        boardSavedQuestionIcon.setOnClickListener {
-            listenToQuestions()
-        }
+//        boardNotificationIcon.setOnClickListener {
+//            activity.subFm.beginTransaction().hide(activity.savedQuestionFragment)
+//                .show(activity.boardNotificationsFragment)
+//                .commit()
+//            activity.subActive = activity.boardNotificationsFragment
+//        }
+//
+//        boardNotificationsBadge.setOnClickListener {
+//            activity.subFm.beginTransaction().hide(activity.savedQuestionFragment)
+//                .show(activity.boardNotificationsFragment)
+//                .commit()
+//            activity.subActive = activity.boardNotificationsFragment
+//        }
+//
+//        boardSavedQuestionIcon.setImageResource(R.drawable.bookmark_active)
+//        boardSavedQuestionIcon.setOnClickListener {
+//            listenToQuestions()
+//        }
 
         listenToQuestions()
 
@@ -144,14 +158,19 @@ class SavedQuestionsFragment : Fragment() {
 
         db.collection("saved_questions").document(currentProfile.uid).get().addOnSuccessListener {
             val doc = it.data
-            if(doc != null){
+            if (doc != null) {
                 val list = doc["saved_questions"] as List<String>
 
-                for (question in list){
+                for (question in list) {
                     db.collection("questions").document(question).get().addOnSuccessListener {
                         val singleQuestionObjectFromDB = it.toObject(Question::class.java)
                         if (singleQuestionObjectFromDB != null) {
-                            questionsRecyclerAdapter.add(SingleBoardRow(singleQuestionObjectFromDB, activity as MainActivity))
+                            questionsRecyclerAdapter.add(
+                                SingleBoardRow(
+                                    singleQuestionObjectFromDB,
+                                    activity as MainActivity
+                                )
+                            )
                         }
                     }
                 }

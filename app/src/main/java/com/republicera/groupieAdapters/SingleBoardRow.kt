@@ -2,6 +2,7 @@ package com.republicera.groupieAdapters
 
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.bumptech.glide.Glide
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.republicera.MainActivity
@@ -44,6 +45,7 @@ class SingleBoardRow(
         viewHolder.itemView.board_question.text = question.title
         viewHolder.itemView.board_tags.text = question.tags.joinToString()
         viewHolder.itemView.board_timestamp.text = date
-        viewHolder.itemView.board_answers.text = question.answers.toString()
+//        viewHolder.itemView.board_answers.text = question.answers.toString()
+        Glide.with(activity).load(if(question.author_image.isNotEmpty()){question.author_image}else{R.drawable.user_profile}).into(viewHolder.itemView.board_image)
     }
 }

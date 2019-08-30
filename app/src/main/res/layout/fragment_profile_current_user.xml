@@ -42,19 +42,35 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
-            <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="112dp"
-                    android:layout_height="112dp"
-                    app:civ_border_color="@color/white"
-                    app:civ_border_width="2dp"
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/profile_li_image_container"
+                    android:layout_width="116dp"
+                    android:layout_height="116dp"
                     android:elevation="4dp"
-                    android:id="@+id/profile_li_image"
+                    android:background="@drawable/profile_photo_background"
                     app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginTop="32dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/profile_li_toolbar"
-                    android:src="@drawable/user_profile"
-            />
+>
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/profile_li_image"
+                        android:layout_width="112dp"
+                        android:layout_height="112dp"
+                        app:civ_border_color="@color/white"
+                        app:civ_border_width="2dp"
+                        android:src="@drawable/user_profile"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -63,9 +79,9 @@
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:layout_marginTop="32dp"
-                    app:layout_constraintTop_toBottomOf="@+id/profile_li_image"
-                    app:layout_constraintEnd_toEndOf="@+id/profile_li_image"
-                    app:layout_constraintStart_toStartOf="@+id/profile_li_image"
+                    app:layout_constraintTop_toBottomOf="@+id/profile_li_image_container"
+                    app:layout_constraintEnd_toEndOf="@+id/profile_li_image_container"
+                    app:layout_constraintStart_toStartOf="@+id/profile_li_image_container"
                     android:fontFamily="@font/montserrat_bold"
                     android:textColor="@color/gray800"/>
             <TextView

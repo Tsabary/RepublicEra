@@ -93,7 +93,7 @@ class EditInterestsFragment : Fragment() {
 
         save.setOnClickListener {
             saveInterests()
-            activity.boardFragment.listenToQuestions()
+            activity.boardFragment.listenToQuestions(activity.boardFragment.currentLanguage)
             activity.subFm.popBackStack("editInterestsFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
             activity.switchVisibility(0)
         }
@@ -225,6 +225,7 @@ class EditInterestsFragment : Fragment() {
         chip.isCloseIconVisible = false
         chip.isCheckable = false
         chip.isClickable = false
+
         chip.setChipBackgroundColorResource(R.color.mainColor600)
         chip.setTextAppearance(R.style.SuggestionChipSelectedStyle)
         suggestionsChipGroup.addView(chip)

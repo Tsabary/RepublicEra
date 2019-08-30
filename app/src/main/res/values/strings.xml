@@ -151,5 +151,13 @@
 
     <string name="edit_basic_information">Edit basic information</string>
     <string name="admins">Admins</string>
+    <string name="profile_photo_facebook_page">
+        <![CDATA[https://scontent-syd2-1.xx.fbcdn.net/v/t1.0-9/67736640_103632797661949_7839764724928479232_n.png?_nc_cat=105&_nc_oc=AQkIMQI4v_NIUU3J3fU9DBNbEAZbNP-ERqVcRuh8P3hh3xKs0CQuRqDA_Qbst4q8eog&_nc_ht=scontent-syd2-1.xx&oh=dee0c45fc23334ecb2eb8eac7e2eaf51&oe=5DDABAF8]]></string>
+    <string name="notifications">Notifications</string>
+    <string name="signup_upper">SIGNUP</string>
+    <string name="login_upper">LOGIN</string>
+    <string name="email_icon">email icon</string>
+    <string name="password_icon">password icon</string>
+    <string name="google_icon">google icon</string>
 
 </resources>

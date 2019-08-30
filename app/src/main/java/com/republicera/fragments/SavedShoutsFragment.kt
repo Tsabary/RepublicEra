@@ -64,6 +64,19 @@ class SavedShoutsFragment : Fragment() {
                 })
         }
 
+        val backButton = saved_items_back_button
+
+        backButton.setOnClickListener {
+            activity.subFm.beginTransaction().hide(activity.savedShoutsFragment)
+                .commit()
+            activity.subActive = activity.boardFragment
+            activity.switchVisibility(0)
+
+        }
+
+        val title = saved_items_title
+        title.text = "Saved shouts"
+
         saved_items_swipe_refresh.setOnRefreshListener {
             listenToShouts()
             saved_items_swipe_refresh.isRefreshing = false
@@ -75,36 +88,36 @@ class SavedShoutsFragment : Fragment() {
         shoutsRecycler.adapter = shoutsRecyclerAdapter
         shoutsRecycler.layoutManager = shoutsRecyclerLayoutManager
 
-        val shoutsNotificationIcon = toolbar_without_search_notifications_icon
-        val shoutsNotificationsBadge = toolbar_without_search_notifications_badge
-        val shoutsSavedShoutsIcon = toolbar_without_search_saved_icon
-
-        activity.shoutsNotificationsCount.observe(this, Observer {
-            it?.let { notCount ->
-                shoutsNotificationsBadge.setNumber(notCount)
-            }
-        })
-
-        shoutsSavedShoutsIcon.setImageResource(R.drawable.bookmark_active)
-
-        shoutsNotificationIcon.setOnClickListener {
-            activity.subFm.beginTransaction().hide(activity.savedShoutsFragment)
-                .show(activity.shoutsNotificationsFragment)
-                .commit()
-            activity.subActive = activity.shoutsNotificationsFragment
-        }
-
-        shoutsNotificationsBadge.setOnClickListener {
-            activity.subFm.beginTransaction().hide(activity.savedQuestionFragment)
-                .show(activity.boardNotificationsFragment)
-                .commit()
-            activity.subActive = activity.boardNotificationsFragment
-        }
-
-        shoutsSavedShoutsIcon.setImageResource(R.drawable.bookmark_active)
-        shoutsSavedShoutsIcon.setOnClickListener {
-            listenToShouts()
-        }
+//        val shoutsNotificationIcon = toolbar_without_search_notifications_icon
+//        val shoutsNotificationsBadge = toolbar_without_search_notifications_badge
+//        val shoutsSavedShoutsIcon = toolbar_without_search_saved_icon
+//
+//        activity.shoutsNotificationsCount.observe(this, Observer {
+//            it?.let { notCount ->
+//                shoutsNotificationsBadge.setNumber(notCount)
+//            }
+//        })
+//
+//        shoutsSavedShoutsIcon.setImageResource(R.drawable.bookmark_active)
+//
+//        shoutsNotificationIcon.setOnClickListener {
+//            activity.subFm.beginTransaction().hide(activity.savedShoutsFragment)
+//                .show(activity.shoutsNotificationsFragment)
+//                .commit()
+//            activity.subActive = activity.shoutsNotificationsFragment
+//        }
+//
+//        shoutsNotificationsBadge.setOnClickListener {
+//            activity.subFm.beginTransaction().hide(activity.savedQuestionFragment)
+//                .show(activity.boardNotificationsFragment)
+//                .commit()
+//            activity.subActive = activity.boardNotificationsFragment
+//        }
+//
+//        shoutsSavedShoutsIcon.setImageResource(R.drawable.bookmark_active)
+//        shoutsSavedShoutsIcon.setOnClickListener {
+//            listenToShouts()
+//        }
 
 
         shoutsRecyclerAdapter.setOnItemClickListener { item, _ ->

@@ -225,7 +225,7 @@ class OpenedQuestionFragment : Fragment(), BoardMethods {
                         .addOnSuccessListener {
                             activity.subFm.popBackStack("openedQuestionFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                             activity.switchVisibility(0)
-                            activity.boardFragment.listenToQuestions()
+                            activity.boardFragment.listenToQuestions(activity.boardFragment.currentLanguage)
 
                             firebaseAnalytics.logEvent("question_removed", null)
                         }

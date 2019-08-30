@@ -73,6 +73,7 @@ class NewCommunityFragment : Fragment() {
                             communityDoc.id,
                             title,
                             description,
+                            "",
                             0,
                             0,
                             publicButton.isChecked,

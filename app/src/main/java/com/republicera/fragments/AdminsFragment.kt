@@ -19,7 +19,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.algolia.search.saas.Client
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -29,10 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.republicera.MainActivity
 import com.republicera.R
-import com.republicera.groupieAdapters.SingleBoardBlock
-import com.republicera.groupieAdapters.SingleBoardRow
-import com.republicera.groupieAdapters.SingleReportedShout
-import com.republicera.groupieAdapters.SingleTagSuggestion
+import com.republicera.groupieAdapters.*
 import com.republicera.interfaces.BoardMethods
 import com.republicera.models.*
 import com.republicera.viewModels.*
@@ -56,6 +52,7 @@ class AdminsFragment : Fragment(), BoardMethods {
     private val reportedPostsRecyclerAdapter = GroupAdapter<ViewHolder>()
     private val questionsRowLayoutAdapter = GroupAdapter<ViewHolder>()
     private val questionsBlockLayoutAdapter = GroupAdapter<ViewHolder>()
+    private val languagePickerAdapter = GroupAdapter<ViewHolder>()
 
     private lateinit var questionRecyclerLayoutManager: LinearLayoutManager
 
@@ -128,6 +125,10 @@ class AdminsFragment : Fragment(), BoardMethods {
         reportedPostsRecycler.adapter = reportedPostsRecyclerAdapter
         reportedPostsRecycler.layoutManager = LinearLayoutManager(this.context)
 
+        val languagePickerRecycler = board_languages_recycler
+        languagePickerRecycler.adapter = languagePickerAdapter
+        languagePickerRecycler.layoutManager = LinearLayoutManager(this.context!!)
+
         sectionTitle = board_community_title
         sectionTitle.tag = "board"
         sectionTitle.text = "Admins board"
@@ -166,13 +167,12 @@ class AdminsFragment : Fragment(), BoardMethods {
                     val shortenedList = mutableListOf<String>()
 
                     for (language in topLevelUser.lang_list) {
-                        shortenedList.add(setQuestionLanguage(language))
-
+                        languagePickerAdapter.add(SingleLanguageOptionBoard(languageCodeToName(language)))
                     }
-                    spinner.setItems(shortenedList)
-                    if (shortenedList.contains(setQuestionLanguage(currentLanguage))) {
-                        spinner.text = setQuestionLanguage(currentLanguage)
-                    }
+//                    spinner.setItems(shortenedList)
+//                    if (shortenedList.contains(languageCodeToName(currentLanguage))) {
+//                        spinner.text = languageCodeToName(currentLanguage)
+//                    }
                 })
 
             sharedViewModelRandomUser = ViewModelProviders.of(it).get(RandomUserViewModel::class.java)
@@ -195,24 +195,34 @@ class AdminsFragment : Fragment(), BoardMethods {
         }
 
 
-
-
-        spinner.setOnItemSelectedListener { _, position, _, _ ->
-            currentLanguage = topLevelUser.lang_list[position]
+        languagePickerAdapter.setOnItemClickListener { item, _ ->
+            val language = item as SingleLanguageOptionBoard
+            currentLanguage = languageNameToCode(language.language)
             val editor = sharedPref.edit()
-            editor.putString("last_language", topLevelUser.lang_list[position])
+            editor.putString("last_language", currentLanguage)
             editor.apply()
             listenToQuestions()
-            listenToReported()
+            languagePickerRecycler.visibility = View.GONE
+            spinner.text = currentLanguage
+
         }
 
-        val notificationBadge = toolbar_with_search_notifications_badge
+//        spinner.setOnItemSelectedListener { _, position, _, _ ->
+//            currentLanguage = topLevelUser.lang_list[position]
+//            val editor = sharedPref.edit()
+//            editor.putString("last_language", topLevelUser.lang_list[position])
+//            editor.apply()
+//            listenToQuestions()
+//            listenToReported()
+//        }
 
-        activity.adminNotificationsCount.observe(this, Observer {
-            it?.let { notCount ->
-                notificationBadge.setNumber(notCount)
-            }
-        })
+//        val notificationBadge = toolbar_with_search_notifications_badge
+//
+//        activity.adminNotificationsCount.observe(this, Observer {
+//            it?.let { notCount ->
+//                notificationBadge.setNumber(notCount)
+//            }
+//        })
 
 
         recyclersVisibility(0)
@@ -245,22 +255,22 @@ class AdminsFragment : Fragment(), BoardMethods {
         }
 
 
-        val boardNotificationIcon = toolbar_with_search_notifications_icon
-        val boardSavedQuestionIcon = toolbar_with_search_saved_icon
+//        val boardNotificationIcon = toolbar_with_search_notifications_icon
+        val boardSavedQuestionIcon = toolbar_menu
 
-        notificationBadge.setOnClickListener {
-            goToNotifications(activity)
-        }
-
-        boardNotificationIcon.setOnClickListener {
-            goToNotifications(activity)
-        }
+//        notificationBadge.setOnClickListener {
+//            goToNotifications(activity)
+//        }
+//
+//        boardNotificationIcon.setOnClickListener {
+//            goToNotifications(activity)
+//        }
 
         boardSavedQuestionIcon.setOnClickListener {
             goToSavedQuestions(activity)
         }
 
-        val constraintButton = constraintLayout_botton_check
+        val constraintButton = board_new_question_container
 
         constraintButton.setOnClickListener {
             activity.subFm.beginTransaction()

@@ -69,6 +69,7 @@ class RegisterFragment : Fragment(), GeneralMethods {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val activity = activity as RegisterLoginActivity
 
         firebaseAuth = FirebaseAuth.getInstance()
 
@@ -76,6 +77,21 @@ class RegisterFragment : Fragment(), GeneralMethods {
         emailField = register_login_email
         passwordField = register_login_password
         submitButton = register_login_button
+
+        val signUpTitle = register_signup_title
+        val loginTitle = register_login_title
+
+        signUpTitle.setOnClickListener {
+            submitButton.text = "SIGNUP"
+            signUpTitle.setTextColor(ContextCompat.getColor(activity, R.color.gray800))
+            loginTitle.setTextColor(ContextCompat.getColor(activity, R.color.gray300))
+        }
+
+        loginTitle.setOnClickListener {
+            submitButton.text = "LOGIN"
+            signUpTitle.setTextColor(ContextCompat.getColor(activity, R.color.gray300))
+            loginTitle.setTextColor(ContextCompat.getColor(activity, R.color.gray800))
+        }
 
         val privacyPolicy = register_login_terms_and_privacy
 

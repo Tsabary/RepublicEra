@@ -10,6 +10,7 @@ class User(
     val uid: String,
     val first_name: String,
     val last_name: String,
+    val image : String,
     val communities_list: MutableList<String>,
     val lang_list: MutableList<String>,
     val birth_day: Date,
@@ -17,5 +18,5 @@ class User(
     val join_date: Date,
     val last_activity: Date
 ) {
-    constructor() : this("", "", "", mutableListOf(), mutableListOf(), Date(), 0, Date(), Date())
+    constructor() : this("", "","", "", mutableListOf(), mutableListOf(), Date(), 0, Date(), Date())
 }

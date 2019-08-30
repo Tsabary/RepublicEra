@@ -17,7 +17,14 @@
             android:id="@+id/destination_shouts"
             android:icon="@drawable/shout_line"
             android:title="@string/shouts"
-            />
+    />
+
+    <item
+            app:showAsAction="ifRoom"
+            android:id="@+id/destination_notifications"
+            android:icon="@drawable/notification_bell"
+            android:title="@string/notifications"
+    />
 
 
     <item

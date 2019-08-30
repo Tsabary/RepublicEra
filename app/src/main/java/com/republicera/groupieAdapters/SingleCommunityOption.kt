@@ -1,5 +1,6 @@
 package com.republicera.groupieAdapters
 
+import com.bumptech.glide.Glide
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.republicera.MainActivity
 import com.republicera.R
@@ -15,7 +16,7 @@ import io.branch.referral.util.LinkProperties
 import io.branch.referral.util.ShareSheetStyle
 import kotlinx.android.synthetic.main.community_option_layout.view.*
 
-class SingleCommunityOption(val community: Community, val activity : MainActivity) : Item<ViewHolder>() {
+class SingleCommunityOption(val community: Community, val activity: MainActivity) : Item<ViewHolder>() {
 
     private lateinit var buo: BranchUniversalObject
     private lateinit var lp: LinkProperties
@@ -31,18 +32,19 @@ class SingleCommunityOption(val community: Community, val activity : MainActivit
         val title = viewHolder.itemView.community_option_title
         val description = viewHolder.itemView.community_option_description
         val memberCount = viewHolder.itemView.community_option_members_count
-        val share= viewHolder.itemView.community_share
+        val share = viewHolder.itemView.community_option_share
+        val image = viewHolder.itemView.community_option_image
 
         title.text = community.title
         description.text = community.description
         memberCount.text = "${community.members}"
-
+        Glide.with(activity).load(community.image).into(image)
 
         buo = BranchUniversalObject()
             .setCanonicalIdentifier(community.id)
             .setTitle(community.title)
             .setContentDescription(community.description)
-//            .setContentImageUrl("https://img1.10bestmedia.com/Image/Photos/352450/GettyImages-913753556_55_660x440.jpg")
+            .setContentImageUrl(activity.getString(R.string.profile_photo_facebook_page))//this is just a bad temporary solution
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
             .setLocalIndexMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
             .setContentMetadata(ContentMetadata().addCustomMetadata("type", "community"))
@@ -53,7 +55,11 @@ class SingleCommunityOption(val community: Community, val activity : MainActivit
 
         share.setOnClickListener {
             val ss = ShareSheetStyle(activity, "Republic invite", "Join me in this republic.")
-                .setCopyUrlStyle(activity.resources.getDrawable(android.R.drawable.ic_menu_send), "Copy", "Added to clipboard")
+                .setCopyUrlStyle(
+                    activity.resources.getDrawable(android.R.drawable.ic_menu_send),
+                    "Copy",
+                    "Added to clipboard"
+                )
                 .setMoreOptionStyle(activity.resources.getDrawable(android.R.drawable.ic_menu_search), "Show more")
                 .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK)
                 .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK_MESSENGER)
