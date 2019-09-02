@@ -29,6 +29,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.*
 import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage
 import com.google.firebase.storage.FirebaseStorage
+import com.mikepenz.materialdrawer.Drawer
 import com.republicera.MainActivity
 import com.republicera.groupieAdapters.SingleShout
 import com.republicera.interfaces.GeneralMethods
@@ -47,7 +48,9 @@ import org.apache.commons.io.FileUtils
 import java.io.File
 import java.util.*
 import com.republicera.R
-import kotlinx.android.synthetic.main.toolbar_with_search.*
+import com.republicera.viewModels.CurrentUserViewModel
+import kotlinx.android.synthetic.main.toolbar_board.*
+import kotlinx.android.synthetic.main.toolbar_shouts.*
 import kotlinx.android.synthetic.main.toolbar_without_search.*
 
 
@@ -60,11 +63,13 @@ class ShoutsFragment : Fragment(), GeneralMethods {
     private lateinit var followersList: MutableList<String>
 
 
-    lateinit var currentUser: CommunityProfile
+    lateinit var currentProfile: CommunityProfile
     private lateinit var currentCommunity: Community
 
     private lateinit var freshMessageAll: TextView
+    private lateinit var freshMessageAll2: TextView
     private lateinit var freshMessageFollowing: TextView
+    private lateinit var freshMessageFollowing2: TextView
     private lateinit var feedStateTitle: TextView
 
     lateinit var allSwipeRefresh: SwipeRefreshLayout
@@ -95,6 +100,9 @@ class ShoutsFragment : Fragment(), GeneralMethods {
 
     var selectedPhotoUri: Uri? = null
 
+    lateinit var result: Drawer
+
+
     private val permissions = arrayOf(
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
         Manifest.permission.READ_EXTERNAL_STORAGE
@@ -113,7 +121,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
         val joinQuorumContainer = shouts_join_quorum_cotainer
 
         activity.let {
-            currentUser = ViewModelProviders.of(it).get(CurrentCommunityProfileViewModel::class.java)
+            currentProfile = ViewModelProviders.of(it).get(CurrentCommunityProfileViewModel::class.java)
                 .currentCommunityProfileObject
             followersViewModel = ViewModelProviders.of(it).get(FollowersViewModel::class.java)
             followersViewModel.followers.observe(activity, Observer { list ->
@@ -127,10 +135,39 @@ class ShoutsFragment : Fragment(), GeneralMethods {
                     currentCommunity = communityName
                     db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity.id)
                 })
+
+            ViewModelProviders.of(it).get(CurrentUserViewModel::class.java).currentUserObject.observe(
+                activity, Observer { user ->
+                    setUpDrawerNav(activity, user, currentProfile, 1)
+
+                    val menuIcon = toolbar_shouts_menu
+                    menuIcon.setOnClickListener {
+                        result.openDrawer()
+                    }
+                })
         }
 
         freshMessageAll = shouts_fresh_message
+        freshMessageAll2 = shouts_fresh_message2
         freshMessageFollowing = shouts_fresh_following_message
+        freshMessageFollowing2 = shouts_fresh_following_message2
+
+        val allTitle = toolbar_shouts_all
+        val followingTitle = toolbar_shouts_following
+
+        allTitle.setOnClickListener {
+            allTitle.setTextColor(ContextCompat.getColor(activity, R.color.gray800))
+            followingTitle.setTextColor(ContextCompat.getColor(activity, R.color.gray300))
+            switchRecyclers()
+        }
+
+
+        followingTitle.setOnClickListener {
+            followingTitle.setTextColor(ContextCompat.getColor(activity, R.color.gray800))
+            allTitle.setTextColor(ContextCompat.getColor(activity, R.color.gray300))
+            switchRecyclers()
+        }
+
         feedStateTitle = shouts_feed_title
         feedStateTitle.tag = "following"
         feedStateTitle.setOnClickListener {
@@ -152,7 +189,6 @@ class ShoutsFragment : Fragment(), GeneralMethods {
         val joinQuorum = shouts_join_elections
         joinQuorum.setOnClickListener {
 
-
             AlertDialog.Builder(this.context!!, R.style.MyAlertDialogStyle)
                 .setTitle("Join admin board")
                 .setMessage("Admins are elected based on their reputation, and serve as moderators for the following week. Results are announced on Monday.")
@@ -162,28 +198,28 @@ class ShoutsFragment : Fragment(), GeneralMethods {
                 .setPositiveButton("Apply") { _, _ ->
                     FirebaseFirestore.getInstance().collection("elections_candidates").document(currentCommunity.id)
                         .set(
-                            mapOf("list" to FieldValue.arrayUnion(currentUser.uid)), SetOptions.merge()
+                            mapOf("list" to FieldValue.arrayUnion(currentProfile.uid)), SetOptions.merge()
                         )
                         .addOnSuccessListener {
                             joinQuorumContainer.visibility = View.GONE
                             Toast.makeText(activity, "Your name has been added to the list", Toast.LENGTH_SHORT).show()
 
-//                            currentCommunity.admins.add(currentUser.uid)
+//                            currentCommunity.admins.add(currentProfile.uid)
 //                            currentCommunityViewModel.currentCommunity.postValue(currentCommunity)
                         }
                 }
                 .show()
         }
 
-        val savedShoutsButton = toolbar_without_search_saved_icon
-        savedShoutsButton.setOnClickListener {
-            goToSavedShouts(activity)
-        }
-
-        val shoutsNotificationsIcon = toolbar_without_search_notifications_icon
-        shoutsNotificationsIcon.setOnClickListener {
-            goToNotifications(activity)
-        }
+//        val savedShoutsButton = toolbar_without_search_saved_icon
+//        savedShoutsButton.setOnClickListener {
+//            goToSavedShouts(activity)
+//        }
+//
+//        val shoutsNotificationsIcon = toolbar_without_search_notifications_icon
+//        shoutsNotificationsIcon.setOnClickListener {
+//            goToNotifications(activity)
+//        }
 
         followingSwipeRefresh = shouts_following_swipe_refresh
         shoutsFollowingRecycler = shouts_following_recycler
@@ -253,7 +289,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
             } else {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
                 intent.type = "image/*"
-                startActivityForResult(intent, 1)
+                startActivityForResult(intent, 20)
             }
         }
 
@@ -276,9 +312,11 @@ class ShoutsFragment : Fragment(), GeneralMethods {
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Toast.makeText(activity, "shout photo", Toast.LENGTH_LONG).show()
+
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
+        if (requestCode == 20 && resultCode == Activity.RESULT_OK && data != null) {
 
             selectedPhotoUri = data.data
 
@@ -346,9 +384,9 @@ class ShoutsFragment : Fragment(), GeneralMethods {
 
             val shout = Shout(
                 shoutDoc.id,
-                currentUser.uid,
-                currentUser.name,
-                currentUser.image,
+                currentProfile.uid,
+                currentProfile.name,
+                currentProfile.image,
                 shoutInput.text.toString(),
                 if (image.isNotEmpty()) {
                     listOf(image)
@@ -366,7 +404,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
             )
 
             shoutDoc.set(shout).addOnSuccessListener {
-                shoutsAllAdapter.add(0, SingleShout(shout, currentUser, activity as MainActivity))
+                shoutsAllAdapter.add(0, SingleShout(shout, currentProfile, activity as MainActivity))
                 shoutInput.text.clear()
                 shoutInput.clearFocus()
                 closeKeyboard(activity as MainActivity)
@@ -378,6 +416,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
                 selectedPhotoUri = null
 
                 freshMessageAll.visibility = View.GONE
+                freshMessageAll2.visibility = View.GONE
 
                 val firebaseAnalytics = FirebaseAnalytics.getInstance(this.context!!)
                 firebaseAnalytics.logEvent("shout_added", null)
@@ -396,12 +435,13 @@ class ShoutsFragment : Fragment(), GeneralMethods {
                 if (it.size() != 0) {
                     for (oneShout in it) {
                         val shoutDoc = oneShout.toObject(Shout::class.java)
-                        shoutsAllAdapter.add(SingleShout(shoutDoc, currentUser, activity as MainActivity))
+                        shoutsAllAdapter.add(SingleShout(shoutDoc, currentProfile, activity as MainActivity))
                     }
                     shoutsAllAdapter.notifyDataSetChanged()
 
                     allLastVisible = it.documents[it.size() - 1]
                     freshMessageAll.visibility = View.GONE
+                    freshMessageAll2.visibility = View.GONE
                 }
             }
 
@@ -441,7 +481,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
                                     shoutsAllAdapter.add(
                                         SingleShout(
                                             shoutDoc,
-                                            currentUser,
+                                            currentProfile,
                                             activity as MainActivity
                                         )
                                     )
@@ -467,18 +507,19 @@ class ShoutsFragment : Fragment(), GeneralMethods {
     private fun listenToFollowingShouts() {
         shoutsFollowingAdapter.clear()
 
-        db.collection("shouts").whereArrayContains("xfollowers", currentUser.uid).whereEqualTo("visible", true)
+        db.collection("shouts").whereArrayContains("xfollowers", currentProfile.uid).whereEqualTo("visible", true)
             .orderBy("last_interaction", Query.Direction.DESCENDING).limit(25)
             .get().addOnSuccessListener {
                 if (it.size() != 0) {
                     for (oneShout in it) {
                         val shoutDoc = oneShout.toObject(Shout::class.java)
-                        shoutsFollowingAdapter.add(SingleShout(shoutDoc, currentUser, activity as MainActivity))
+                        shoutsFollowingAdapter.add(SingleShout(shoutDoc, currentProfile, activity as MainActivity))
                     }
                     shoutsFollowingAdapter.notifyDataSetChanged()
 
                     followingLastVisible = it.documents[it.size() - 1]
                     freshMessageFollowing.visibility = View.GONE
+                    freshMessageFollowing2.visibility = View.GONE
                 }
             }
 
@@ -506,7 +547,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
                 if (followingIsScrolling && countCheck && !followingIsLastItemReached) {
                     followingIsScrolling = false
 
-                    db.collection("shouts").whereArrayContains("xfollowers", currentUser.uid)
+                    db.collection("shouts").whereArrayContains("xfollowers", currentProfile.uid)
                         .whereEqualTo("visible", true)
                         .orderBy("last_interaction", Query.Direction.DESCENDING).startAfter(followingLastVisible)
                         .limit(25).get()
@@ -519,7 +560,7 @@ class ShoutsFragment : Fragment(), GeneralMethods {
                                     shoutsFollowingAdapter.add(
                                         SingleShout(
                                             shoutDoc,
-                                            currentUser,
+                                            currentProfile,
                                             activity as MainActivity
                                         )
                                     )
@@ -549,11 +590,14 @@ class ShoutsFragment : Fragment(), GeneralMethods {
             followingSwipeRefresh.visibility = View.GONE
 
             freshMessageFollowing.visibility = View.GONE
+            freshMessageFollowing2.visibility = View.GONE
 
             if (shoutsAllAdapter.itemCount == 0) {
                 freshMessageAll.visibility = View.VISIBLE
+                freshMessageAll2.visibility = View.VISIBLE
             } else {
                 freshMessageAll.visibility = View.GONE
+                freshMessageAll2.visibility = View.GONE
             }
         } else {
             feedStateTitle.tag = "following"
@@ -562,11 +606,14 @@ class ShoutsFragment : Fragment(), GeneralMethods {
             followingSwipeRefresh.visibility = View.VISIBLE
 
             freshMessageAll.visibility = View.GONE
+            freshMessageAll2.visibility = View.GONE
 
             if (shoutsFollowingAdapter.itemCount == 0) {
                 freshMessageFollowing.visibility = View.VISIBLE
+                freshMessageFollowing2.visibility = View.VISIBLE
             } else {
                 freshMessageFollowing.visibility = View.VISIBLE
+                freshMessageFollowing2.visibility = View.VISIBLE
             }
         }
     }

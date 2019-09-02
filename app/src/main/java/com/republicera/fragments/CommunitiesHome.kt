@@ -42,9 +42,10 @@ class CommunitiesHome : Fragment() {
     private lateinit var communityViewModel: CurrentCommunityViewModel
 
 
-    val communitiesRecyclerAdapter = GroupAdapter<ViewHolder>()
+    private val communitiesRecyclerAdapter = GroupAdapter<ViewHolder>()
 
     lateinit var emptyMessage: TextView
+    lateinit var emptyMessage2: TextView
     lateinit var yourRepublics: TextView
 
     override fun onCreateView(
@@ -60,6 +61,7 @@ class CommunitiesHome : Fragment() {
 
 
         emptyMessage = communities_home_empty_message
+        emptyMessage2 = communities_home_empty_message2
         yourRepublics = communities_home_your_communities
 
         val activity = activity as MainActivity
@@ -185,6 +187,7 @@ class CommunitiesHome : Fragment() {
         } else {
             userName.text = "Welcome"
             emptyMessage.visibility = View.VISIBLE
+            emptyMessage2.visibility = View.VISIBLE
             yourRepublics.visibility = View.GONE
         }
 
@@ -248,9 +251,11 @@ class CommunitiesHome : Fragment() {
         communitiesRecyclerAdapter.clear()
         if (topLevelUser!!.communities_list.isEmpty()) {
             emptyMessage.visibility = View.VISIBLE
+            emptyMessage2.visibility = View.VISIBLE
             yourRepublics.visibility = View.GONE
         } else {
             emptyMessage.visibility = View.GONE
+            emptyMessage2.visibility = View.GONE
             yourRepublics.visibility = View.VISIBLE
 
             for (communityPath in topLevelUser!!.communities_list) {

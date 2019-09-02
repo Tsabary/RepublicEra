@@ -21,7 +21,7 @@
             android:layout_marginTop="24dp"
             tools:text="Not able to succefully rum npm install comand on git bash"
             android:fontFamily="@font/roboto_bold"
-            android:layout_marginStart="24dp"/>
+            android:layout_marginStart="16dp"/>
     <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"

@@ -48,7 +48,7 @@ class RegisterFragment : Fragment(), GeneralMethods {
 
     private lateinit var firebaseAuth: FirebaseAuth
 
-    private val RC_SIGN_IN: Int = 1
+    private val RC_SIGN_IN: Int = 40
     lateinit var mGoogleSignInClient: GoogleSignInClient
     lateinit var mGoogleSignInOptions: GoogleSignInOptions
 
@@ -136,7 +136,7 @@ class RegisterFragment : Fragment(), GeneralMethods {
                         // Log and toast
                         val uid = FirebaseAuth.getInstance().uid
 
-                        FirebaseMessaging.getInstance().subscribeToTopic(uid).addOnSuccessListener {
+                        FirebaseMessaging.getInstance().subscribeToTopic(uid!!).addOnSuccessListener {
 
                             if (hasNoPermissions()) {
                                 requestPermission()
@@ -257,6 +257,7 @@ class RegisterFragment : Fragment(), GeneralMethods {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == RC_SIGN_IN) {
             val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {

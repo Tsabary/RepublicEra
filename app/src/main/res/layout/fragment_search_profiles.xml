@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:algolia="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
@@ -40,50 +39,22 @@
             android:layout_marginTop="24dp">
 
 
-        <TextView
-                android:text="@string/do_any_of_these_posts_solve_your_problem"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/search_message"
-                android:layout_marginTop="24dp"
-                algolia:layout_constraintTop_toTopOf="parent"
-                algolia:layout_constraintStart_toStartOf="parent"
-                algolia:layout_constraintEnd_toEndOf="parent"
-                android:textColor="@color/gray500"
-                android:fontFamily="@font/roboto_medium"
-                android:layout_marginStart="32dp"
-                android:layout_marginEnd="32dp"
-        />
-
         <com.algolia.instantsearch.ui.views.Hits
                 android:id="@+id/search_recycler"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 algolia:layout_constraintStart_toStartOf="parent"
                 algolia:layout_constraintEnd_toEndOf="parent"
-                algolia:layout_constraintTop_toBottomOf="@+id/search_message"
+                algolia:layout_constraintTop_toTopOf="parent"
                 android:layout_marginTop="24dp"
-                algolia:layout_constraintBottom_toTopOf="@+id/search_ask_button"
+                algolia:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginBottom="24dp"
-                algolia:itemLayout="@layout/question_hits_item"
+                algolia:itemLayout="@layout/member_profile_layout_algolia"
                 algolia:infiniteScroll="true"
                 algolia:autoHideKeyboard="false"
                 android:layout_marginEnd="24dp"
                 android:layout_marginStart="24dp"/>
 
-        <TextView
-                android:text="@string/ask"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/search_ask_button"
-                algolia:layout_constraintBottom_toBottomOf="parent"
-                algolia:layout_constraintEnd_toEndOf="parent"
-                android:textSize="18sp"
-                android:textColor="@color/gray700"
-                android:fontFamily="@font/montserrat_bold"
-                android:layout_marginBottom="24dp"
-                android:layout_marginEnd="32dp"
-        />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

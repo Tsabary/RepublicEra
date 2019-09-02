@@ -8,11 +8,25 @@
         android:background="@android:color/white"
         android:backgroundTint="@color/white">
 
+    <include
+            layout="@layout/toolbar_profile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/includeToolbar"
+            android:visibility="visible"/>
 
     <androidx.core.widget.NestedScrollView
+            android:id="@+id/profile_li_scrollview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/profile_li_scrollview">
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@+id/includeToolbar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -28,7 +42,8 @@
                     android:id="@+id/profile_li_toolbar"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent">
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:visibility="gone">
 
                 <ImageButton
                         android:layout_width="wrap_content"
@@ -44,71 +59,86 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/profile_li_image_container"
-                    android:layout_width="116dp"
-                    android:layout_height="116dp"
-                    android:elevation="4dp"
-                    android:background="@drawable/profile_photo_background"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginTop="32dp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:id="@+id/profile_li_header_container"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
                     app:layout_constraintTop_toBottomOf="@+id/profile_li_toolbar"
->
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/profile_li_image"
-                        android:layout_width="112dp"
-                        android:layout_height="112dp"
-                        app:civ_border_color="@color/white"
-                        app:civ_border_width="2dp"
-                        android:src="@drawable/user_profile"
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/profile_li_image_container"
+                        android:layout_width="116dp"
+                        android:layout_height="116dp"
+                        android:elevation="4dp"
+                        android:background="@drawable/profile_photo_background"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"/>
+                        android:layout_marginStart="24dp">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/profile_li_image"
+                            android:layout_width="112dp"
+                            android:layout_height="112dp"
+                            app:civ_border_color="@color/white"
+                            app:civ_border_width="2dp"
+                            android:src="@drawable/user_profile"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/profile_li_user_name"
+                        tools:text="User name"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toBottomOf="@+id/profile_li_image_container"
+                        android:fontFamily="@font/montserrat_bold"
+                        android:textColor="@color/gray800"
+                        app:layout_constraintStart_toEndOf="@+id/profile_li_image_container"
+                        android:layout_marginStart="24dp"
+                        app:layout_constraintTop_toTopOf="@+id/profile_li_image_container"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginEnd="32dp"
+                        app:layout_constraintHorizontal_bias="0.0"/>
+                <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/profile_li_tagline"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintTop_toBottomOf="@+id/profile_li_user_name"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginEnd="32dp"
+                        app:layout_constraintStart_toStartOf="@+id/profile_li_user_name"
+                        android:fontFamily="@font/roboto_medium"
+                        android:textColor="@color/gray500"
+                        tools:text="tagline"
+                        android:textAlignment="textStart"
+                        app:layout_constraintHorizontal_bias="0.0"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/profile_li_staks_recycler"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        app:layout_constraintStart_toStartOf="@+id/profile_li_tagline"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintTop_toBottomOf="@+id/profile_li_tagline"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginEnd="32dp"
+                        app:layout_constraintHorizontal_bias="0.0"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/profile_li_user_name"
-                    tools:text="User name"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="32dp"
-                    app:layout_constraintTop_toBottomOf="@+id/profile_li_image_container"
-                    app:layout_constraintEnd_toEndOf="@+id/profile_li_image_container"
-                    app:layout_constraintStart_toStartOf="@+id/profile_li_image_container"
-                    android:fontFamily="@font/montserrat_bold"
-                    android:textColor="@color/gray800"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/profile_li_tagline"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@+id/profile_li_user_name"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="48dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="48dp"
-                    android:fontFamily="@font/roboto_medium"
-                    android:textColor="@color/gray500"
-                    tools:text="tagline"
-                    android:textAlignment="center"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/profile_li_staks_recycler"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintTop_toBottomOf="@+id/profile_li_tagline"
-                    app:layout_constraintEnd_toEndOf="parent"
-            />
             <View
                     android:id="@+id/divider"
                     android:layout_width="0dp"
@@ -116,7 +146,7 @@
                     android:background="@color/gray100"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/profile_li_staks_recycler"
+                    app:layout_constraintTop_toBottomOf="@+id/profile_li_header_container"
                     android:layout_marginTop="32dp"/>
             <TextView
                     android:layout_width="wrap_content"
@@ -269,7 +299,9 @@
                     android:id="@+id/profile_li_gallery_shouts"
                     android:layout_marginBottom="72dp"
                     android:visibility="visible"
-                    android:layout_marginTop="32dp"/>
+                    android:layout_marginTop="16dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"/>
             <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

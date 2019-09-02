@@ -20,6 +20,8 @@
                 android:layout_marginBottom="16dp"
                 android:background="@color/white">
 
+
+
             <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -33,42 +35,41 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:id="@+id/community_option_title_and_share_container"
+                        android:id="@+id/community_option_algolia_title_and_share_container"
                         algolia:layout_constraintEnd_toEndOf="parent"
                         algolia:layout_constraintTop_toTopOf="parent"
                         android:layout_marginTop="32dp"
                         android:layout_marginEnd="32dp"
                         algolia:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginStart="32dp">
-
+                        android:layout_marginStart="8dp">
 
 
                     <de.hdodenhof.circleimageview.CircleImageView
                             android:layout_width="56dp"
                             android:layout_height="56dp"
-                            android:id="@+id/community_option_image"
+                            android:id="@+id/community_option_algolia_image"
                             android:elevation="2dp"
                             algolia:layout_constraintTop_toTopOf="parent"
                             algolia:layout_constraintStart_toStartOf="parent"
-                            algolia:layout_constraintBottom_toBottomOf="parent"/>
-
-
-
+                            algolia:layout_constraintBottom_toBottomOf="parent"
+                            android:layout_marginStart="24dp"
+                            android:visibility="gone"/>
 
 
                     <ImageButton
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             algolia:srcCompat="@drawable/menu"
-                            android:id="@+id/community_option_share"
-                            algolia:layout_constraintTop_toTopOf="@+id/community_option_title"
+                            android:id="@+id/community_option_algolia_share"
+                            algolia:layout_constraintTop_toTopOf="@+id/community_option_algolia_title"
                             algolia:layout_constraintEnd_toEndOf="parent"
                             android:background="@android:color/transparent"
                             android:scaleType="fitCenter"
                             android:padding="16dp"
-                            algolia:layout_constraintBottom_toBottomOf="@+id/community_option_title"/>
+                            algolia:layout_constraintBottom_toBottomOf="@+id/community_option_algolia_title"
+                            android:contentDescription="@string/image"/>
                     <TextView
-                            android:id="@+id/community_option_title"
+                            android:id="@+id/community_option_algolia_title"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/montserrat_bold"
@@ -76,20 +77,21 @@
                             android:textColor="@color/gray800"
                             android:gravity="start|center_vertical"
                             tools:text="Cooking"
+                            algolia:attribute='@{"title"}'
                             algolia:layout_constraintTop_toTopOf="parent"
                             android:layout_marginEnd="16dp"
-                            algolia:layout_constraintEnd_toStartOf="@+id/community_option_share"
+                            algolia:layout_constraintEnd_toStartOf="@+id/community_option_algolia_share"
                             algolia:layout_constraintBottom_toBottomOf="parent"
                             algolia:layout_constraintHorizontal_bias="0.0"
                             algolia:layout_constraintVertical_bias="0.0"
-                            algolia:layout_constraintStart_toEndOf="@+id/community_option_image"
+                            algolia:layout_constraintStart_toEndOf="@+id/community_option_algolia_image"
                             android:layout_marginStart="24dp"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
                 <TextView
-                        android:id="@+id/community_option_description"
+                        android:id="@+id/community_option_algolia_description"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto"
@@ -97,25 +99,27 @@
                         android:textColor="@color/gray800"
                         android:gravity="center_vertical"
                         tools:text="Cooking and Food"
+                        algolia:attribute='@{"description"}'
                         android:layout_marginTop="24dp"
-                        algolia:layout_constraintTop_toBottomOf="@id/community_option_title_and_share_container"
+                        algolia:layout_constraintTop_toBottomOf="@id/community_option_algolia_title_and_share_container"
                         android:layout_marginEnd="32dp"
                         algolia:layout_constraintEnd_toEndOf="parent"
-                        algolia:layout_constraintStart_toStartOf="@+id/community_option_title_and_share_container"/>
+                        algolia:layout_constraintStart_toStartOf="@+id/community_option_algolia_title_and_share_container"
+                        android:layout_marginStart="24dp"/>
                 <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/community_option_members_container"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center|center_horizontal|center_vertical"
-                        algolia:layout_constraintTop_toBottomOf="@+id/community_option_description"
+                        algolia:layout_constraintTop_toBottomOf="@+id/community_option_algolia_description"
                         android:layout_marginTop="16dp"
-                        algolia:layout_constraintStart_toStartOf="@+id/community_option_description"
+                        algolia:layout_constraintStart_toStartOf="@+id/community_option_algolia_description"
                         algolia:layout_constraintBottom_toBottomOf="parent"
                         android:layout_marginBottom="24dp"
                 >
 
                     <TextView
-                            android:id="@+id/community_option_members_count"
+                            android:id="@+id/community_option_algolia_members_count"
                             tools:text="34"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -127,6 +131,7 @@
                             algolia:layout_constraintHorizontal_bias="0.0"
                             algolia:layout_constraintEnd_toStartOf="@+id/textView3"
                             algolia:layout_constraintHorizontal_chainStyle="packed"
+                            algolia:attribute='@{"members"}'
                     />
                     <TextView
                             android:text="@string/members"
@@ -135,7 +140,7 @@
                             android:fontFamily="@font/roboto"
                             android:textColor="@color/gray500"
                             android:id="@+id/textView3"
-                            algolia:layout_constraintStart_toEndOf="@+id/community_option_members_count"
+                            algolia:layout_constraintStart_toEndOf="@+id/community_option_algolia_members_count"
                             algolia:layout_constraintHorizontal_bias="0.5"
                             algolia:layout_constraintEnd_toEndOf="parent"
                             algolia:layout_constraintTop_toTopOf="parent"/>

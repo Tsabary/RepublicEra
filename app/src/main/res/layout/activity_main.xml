@@ -29,80 +29,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/includeToolbar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:padding="16dp">
-
-        <ImageButton
-                android:src="@drawable/hamburger_menu"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:id="@+id/toolbar_menu"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:background="@android:color/transparent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintDimensionRatio="1:1"
-                android:scaleType="center"
-                android:contentDescription="@string/menu_icon"
-                android:layout_marginStart="8dp"/>
-
-
-        <EditText
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:ems="10"
-                android:id="@+id/toolbar_with_search_search_box"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:background="@drawable/button_curve_8_gray"
-                android:hint="@string/search_by_tag"
-                android:fontFamily="@font/roboto"
-                android:textSize="15sp"
-                app:layout_constraintStart_toEndOf="@+id/toolbar_with_search_filter_chipgroup"
-                android:layout_marginStart="8dp"
-                android:textColor="@color/gray700"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:layout_marginEnd="8dp"/>
-
-        <com.google.android.material.chip.ChipGroup
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                app:layout_constraintStart_toEndOf="@+id/toolbar_menu"
-                android:layout_marginStart="24dp"
-                android:id="@+id/toolbar_with_search_filter_chipgroup"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginTop="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginBottom="8dp"/>
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <!--<include-->
-            <!--android:id="@+id/includeToolbar"-->
-            <!--layout="@layout/toolbar"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="50dp"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintStart_toStartOf="parent"-->
-            <!--app:layout_constraintTop_toTopOf="parent"-->
-            <!--android:visibility="visible"/>-->
-
     <include
             layout="@layout/content_main"
             android:layout_width="0dp"
@@ -110,7 +36,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/main_activity_bottom_nav_container"
-            app:layout_constraintTop_toBottomOf="@+id/includeToolbar"/>
+            app:layout_constraintTop_toTopOf="parent"
+    />
 
     <include
             layout="@layout/subcontents_main"
@@ -119,7 +46,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/main_activity_bottom_nav_container"
-            app:layout_constraintTop_toBottomOf="@+id/includeToolbar"/>
+            app:layout_constraintTop_toTopOf="parent"
+    />
 
     <include
             layout="@layout/user_home_main"
@@ -128,63 +56,83 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/includeToolbar"/>
+            app:layout_constraintTop_toTopOf="parent"
+    />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/main_activity_bottom_nav_container"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:background="@color/white"
-            android:elevation="6dp">
+            android:elevation="6dp"
+            android:visibility="visible">
 
 
-        <com.volcaniccoder.bottomify.BottomifyNavigationView
+        <me.ibrahimsn.lib.NiceBottomBar
                 android:id="@+id/main_activity_bottom_nav_admin"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                app:menu="@menu/navigation_admin"
+                app:indicatorInterpolator="anticipateOvershoot"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:orientation="horizontal"
-                app:menu="@menu/navigation_admin"
-                app:active_color="@color/newPurple"
-                app:passive_color="@color/gray300"
-                app:pressed_color="@color/newPurple"
-                app:item_text_size="10sp"
-                app:item_padding="8dp"
-                app:animation_duration="300"
-                app:scale_percent="5"
+                app:layout_constraintBottom_toTopOf="@+id/main_activity_bottom_nav_not_admin"
                 android:visibility="gone"/>
 
-        <com.volcaniccoder.bottomify.BottomifyNavigationView
+        <me.ibrahimsn.lib.NiceBottomBar
                 android:id="@+id/main_activity_bottom_nav_not_admin"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                app:menu="@menu/navigation"
+                app:indicatorInterpolator="anticipateOvershoot"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:orientation="horizontal"
-                app:menu="@menu/navigation"
-                app:active_color="@color/newPurple"
-                app:passive_color="@color/gray300"
-                app:pressed_color="@color/newPurple"
-                app:item_text_size="10sp"
-                app:item_padding="8dp"
-                app:animation_duration="300"
-                app:scale_percent="5"
                 android:visibility="gone"/>
+
+
+        <!--<com.volcaniccoder.bottomify.BottomifyNavigationView-->
+        <!--android:id="@+id/main_activity_bottom_nav_admin"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@color/white"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--android:orientation="horizontal"-->
+        <!--app:menu="@menu/navigation_admin"-->
+        <!--app:active_color="@color/newPurple"-->
+        <!--app:passive_color="@color/gray300"-->
+        <!--app:pressed_color="@color/newPurple"-->
+        <!--app:item_text_size="10sp"-->
+        <!--app:item_padding="8dp"-->
+        <!--app:animation_duration="300"-->
+        <!--app:scale_percent="5"-->
+        <!--android:visibility="gone"/>-->
+
+
+        <!--<com.volcaniccoder.bottomify.BottomifyNavigationView-->
+        <!--android:id="@+id/main_activity_bottom_nav_not_admin"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@color/white"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--android:orientation="horizontal"-->
+        <!--app:menu="@menu/navigation"-->
+        <!--app:active_color="@color/newPurple"-->
+        <!--app:passive_color="@color/gray300"-->
+        <!--app:pressed_color="@color/newPurple"-->
+        <!--app:item_text_size="10sp"-->
+        <!--app:item_padding="8dp"-->
+        <!--app:animation_duration="300"-->
+        <!--app:scale_percent="5"-->
+        <!--android:visibility="gone"/>-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

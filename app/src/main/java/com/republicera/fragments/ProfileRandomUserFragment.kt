@@ -324,7 +324,15 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
                     contactDetailsIconsRecycler.visibility = View.VISIBLE
                 }
 
-                contactDetailsIconsRecycler.layoutManager = when (doc.size) {
+
+                var totalAmountOfFields = 0
+                for (field in userProfile.contact_info) {
+                    if (list.containsKey(field)) {
+                        totalAmountOfFields++
+                    }
+                }
+
+                contactDetailsIconsRecycler.layoutManager = when (totalAmountOfFields) {
                     1 -> GridLayoutManager(this.context, 1)
                     2 -> GridLayoutManager(this.context, 2)
                     3 -> GridLayoutManager(this.context, 3)
@@ -334,7 +342,7 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
 
                 }
 
-                for (field in list) {
+                for (field in userProfile.contact_info) {
 
                     /*
                     cases:
@@ -352,13 +360,16 @@ class ProfileRandomUserFragment : Fragment(), ProfileMethods {
                     snapchat = 11
                     */
 
-                    contactDetailsIconsAdapter.add(
-                        SingleContactDetailsIcon(
-                            field.value.getValue("case").toString().toInt(),
-                            field.value.getValue("info").toString(),
-                            activity as MainActivity
+                    if (list.containsKey(field)) {
+                        contactDetailsIconsAdapter.add(
+                            SingleContactDetailsIcon(
+                                list[field]?.getValue("case").toString().toInt(),
+                                list[field]?.getValue("info").toString(),
+                                activity as MainActivity
+                            )
                         )
-                    )
+                    }
+
                 }
             }
         }

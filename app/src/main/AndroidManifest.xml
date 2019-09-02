@@ -42,22 +42,22 @@
             </intent-filter>
 
 
-            <!-- Branch URI Scheme -->
-            <intent-filter>
-                <data android:scheme="republicera" />
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>
+            <!--&lt;!&ndash; Branch URI Scheme &ndash;&gt;-->
+            <!--<intent-filter>-->
+                <!--<data android:scheme="republicera" />-->
+                <!--<action android:name="android.intent.action.VIEW" />-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+                <!--<category android:name="android.intent.category.BROWSABLE" />-->
+            <!--</intent-filter>-->
 
-            <!-- Branch App Links (optional) -->
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="republicera.co" />
-                <data android:scheme="https" android:host="nidek-alternate.app.link" />
-            </intent-filter>
+            <!--&lt;!&ndash; Branch App Links (optional) &ndash;&gt;-->
+            <!--<intent-filter android:autoVerify="true">-->
+                <!--<action android:name="android.intent.action.VIEW" />-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+                <!--<category android:name="android.intent.category.BROWSABLE" />-->
+                <!--<data android:scheme="https" android:host="republicera.co" />-->
+                <!--<data android:scheme="https" android:host="nidek-alternate.app.link" />-->
+            <!--</intent-filter>-->
 
         </activity>
         <meta-data android:name="preloaded_fonts"

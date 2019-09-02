@@ -14,7 +14,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -57,8 +59,9 @@ import com.republicera.models.*
 import com.republicera.viewModels.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.toolbar_with_search.*
+import kotlinx.android.synthetic.main.toolbar_board.*
 import kotlinx.android.synthetic.main.fragment_board.*
+import kotlinx.android.synthetic.main.toolbar.*
 
 class BoardFragment : Fragment(), BoardMethods {
 
@@ -78,6 +81,7 @@ class BoardFragment : Fragment(), BoardMethods {
 
     private lateinit var questionRecyclerLayoutManager: LinearLayoutManager
 
+    lateinit var communityProfile: CommunityProfile
     lateinit var topLevelUser: User
     lateinit var sharedViewModelForQuestion: QuestionViewModel
     lateinit var sharedViewModelRandomUser: RandomUserViewModel
@@ -95,6 +99,7 @@ class BoardFragment : Fragment(), BoardMethods {
     var interestsList: List<String> = listOf()
 
     lateinit var freshMessage: TextView
+    lateinit var freshMessage2: TextView
 
     lateinit var boardLastVisible: DocumentSnapshot
     var boardIsScrolling = false
@@ -110,6 +115,9 @@ class BoardFragment : Fragment(), BoardMethods {
     lateinit var result: Drawer
     private lateinit var languageItems: MutableList<ISubItem<*>>
 
+    lateinit var boardSearchBox: EditText
+    lateinit var searchConstraint: ConstraintLayout
+
 //    lateinit var blockLayout: SecondaryDrawerItem
 //    lateinit var rowsLayout: SecondaryDrawerItem
 
@@ -124,7 +132,7 @@ class BoardFragment : Fragment(), BoardMethods {
         val activity = activity as MainActivity
 
 //        val title = board_community_title
-
+        searchConstraint = toolbar_board_container
 
         searchedQuestionsRecycler = board_search_question_feed
         val searchedQuestionRecyclerLayoutManager = LinearLayoutManager(this.context)
@@ -158,6 +166,7 @@ class BoardFragment : Fragment(), BoardMethods {
 //        }
 
         freshMessage = board_fresh_message
+        freshMessage2 = board_fresh_message2
 
         sharedPref = activity.getSharedPreferences(activity.getString(R.string.package_name), Context.MODE_PRIVATE)
         currentLanguage = sharedPref.getString("last_language", "en")!!
@@ -236,44 +245,18 @@ class BoardFragment : Fragment(), BoardMethods {
 //                    title.text = currentCommunity.title
                     listenToQuestions(currentLanguage)
                 })
+
+            communityProfile = ViewModelProviders.of(it).get(CurrentCommunityProfileViewModel::class.java)
+                .currentCommunityProfileObject
         }
 
 
 
-        DrawerImageLoader.init(object : AbstractDrawerImageLoader() {
-            override fun set(imageView: ImageView, uri: Uri, placeholder: Drawable, tag: String?) {
-                Glide.with(imageView.context).load(uri).placeholder(placeholder).into(imageView)
-            }
-
-            override fun cancel(imageView: ImageView) {
-                Glide.with(imageView.context).clear(imageView)
-            }
-
-            override fun placeholder(ctx: Context, tag: String?): Drawable {
-                //define different placeholders for different imageView targets
-                //default tags are accessible via the DrawerImageLoader.Tags
-                //custom ones can be checked via string. see the CustomUrlBasePrimaryDrawerItem LINE 111
-                return when (tag) {
-                    DrawerImageLoader.Tags.PROFILE.name -> DrawerUIUtils.getPlaceHolder(ctx)
-                    DrawerImageLoader.Tags.ACCOUNT_HEADER.name -> IconicsDrawable(ctx).iconText(" ").backgroundColor(
-                        colorRes(com.mikepenz.materialdrawer.R.color.primary)
-                    ).size(dp(56))
-                    "customUrlItem" -> IconicsDrawable(ctx).iconText(" ").backgroundColor(colorRes(R.color.md_red_500)).size(
-                        dp(56)
-                    )
-                    //we use the default one for
-                    //DrawerImageLoader.Tags.PROFILE_DRAWER_ITEM.name()
-                    else -> super.placeholder(ctx, tag)
-                }
-            }
-        })
 
 
+        setUpDrawerNav(activity, topLevelUser, communityProfile, 0)
 
-        setUpDrawerNav(activity, topLevelUser)
-
-        val menuIcon = toolbar_menu
-
+        val menuIcon = toolbar_board_menu
         menuIcon.setOnClickListener {
             result.openDrawer()
         }
@@ -295,9 +278,9 @@ class BoardFragment : Fragment(), BoardMethods {
 
 //        scrollView = board_questions_scroll_view
 
-        val boardSearchBox = toolbar_with_search_search_box
+        boardSearchBox = toolbar_board_search_box
         val tagSuggestionRecycler = board_search_recycler
-        boardFilterChipGroup = toolbar_with_search_filter_chipgroup
+        boardFilterChipGroup = toolbar_board_filter_chipgroup
 //        val fab: FloatingActionButton = board_fab
 
         tagSuggestionRecycler.layoutManager = LinearLayoutManager(this.context)
@@ -382,8 +365,11 @@ class BoardFragment : Fragment(), BoardMethods {
             onTagSelected(row.tag.tagString)
             searchedTagsList.add(row.tag.tagString)
             boardSearchBox.text.clear()
+            boardSearchBox.visibility = View.GONE
             recyclersVisibility(1)
             searchQuestions(0)
+            boardFilterChipGroup.visibility = View.VISIBLE
+            searchConstraint.setBackgroundColor(activity.resources.getColor(R.color.transparent))
         }
 
         questionsBlockLayoutAdapter.setOnItemClickListener { item, _ ->
@@ -421,8 +407,6 @@ class BoardFragment : Fragment(), BoardMethods {
     }
 
 
-
-
     private fun setLayout(case: Int) {
         val editor = sharedPref.edit()
 
@@ -447,7 +431,6 @@ class BoardFragment : Fragment(), BoardMethods {
     }
 
 
-
     private fun openQuestion(author: String, activity: MainActivity) {
 
         activity.subFm.beginTransaction()
@@ -465,9 +448,6 @@ class BoardFragment : Fragment(), BoardMethods {
             } else {
                 Toast.makeText(this.context, "user is null", Toast.LENGTH_SHORT).show()
             }
-        }.addOnFailureListener {
-            Toast.makeText(this.context, "faill $it", Toast.LENGTH_SHORT).show()
-
         }
     }
 
@@ -497,6 +477,10 @@ class BoardFragment : Fragment(), BoardMethods {
             boardFilterChipGroup.removeView(it)
             searchedTagsList.remove(selectedTag)
             searchQuestions(1)
+            boardFilterChipGroup.visibility = View.GONE
+            boardSearchBox.visibility = View.VISIBLE
+//            searchConstraint.setBackgroundResource(R.drawable.button_curve_8_gray)
+
         }
 
         boardFilterChipGroup.addView(chip)
@@ -642,7 +626,7 @@ class BoardFragment : Fragment(), BoardMethods {
     }
 
 
-    fun listenToQuestions(currentLanguage : String) {
+    fun listenToQuestions(currentLanguage: String) {
 
         questionsRowLayoutAdapter.clear()
         questionsBlockLayoutAdapter.clear()
@@ -653,8 +637,10 @@ class BoardFragment : Fragment(), BoardMethods {
 
                 if (it.size() == 0) {
                     freshMessage.visibility = View.VISIBLE
+                    freshMessage2.visibility = View.VISIBLE
                 } else {
                     freshMessage.visibility = View.GONE
+                    freshMessage2.visibility = View.GONE
 
                     var postsCount = 0
 
@@ -699,10 +685,13 @@ class BoardFragment : Fragment(), BoardMethods {
                         activity.subActive = activity.editInterestsFragment
                         activity.switchVisibility(1)
 
-                        freshMessage.text = "Head to your profile and add more interests to populate your board"
+                        freshMessage.text = "Untuned!"
+                        freshMessage2.text = "Head to your profile and add more interests to populate your forum"
                         freshMessage.visibility = View.VISIBLE
+                        freshMessage2.visibility = View.VISIBLE
                     } else {
                         freshMessage.visibility = View.GONE
+                        freshMessage2.visibility = View.GONE
                     }
 
                     questionsBlockLayoutAdapter.notifyDataSetChanged()

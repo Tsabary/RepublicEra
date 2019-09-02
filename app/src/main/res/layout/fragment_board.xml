@@ -27,14 +27,14 @@
 
 
             <include
-                    layout="@layout/toolbar_with_search"
+                    layout="@layout/toolbar_board"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     android:id="@+id/includeToolbar"
-                    android:visibility="gone"/>
+                    android:visibility="visible"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="0dp"
@@ -112,7 +112,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-                android:text="This is a fresh republic.\n\nBe a leader and make the first post in English with the tag 'welcome' to greet new members into the community."
+                android:text="Fresh!"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/board_fresh_message"
@@ -123,10 +123,31 @@
                 app:layout_constraintBottom_toTopOf="@+id/board_new_question_container"
                 android:elevation="2dp"
                 app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
-                android:fontFamily="@font/roboto_bold"
+                android:fontFamily="@font/montserrat_bold"
                 android:textColor="@color/gray800"
                 android:visibility="gone"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:textSize="30sp"
+                android:layout_marginBottom="24dp"/>
+        <TextView
+                android:text="Make the first post with the tag 'welcome' to greet new members into the community."
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/board_fresh_message2"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="32dp"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="32dp"
+                app:layout_constraintBottom_toTopOf="@+id/board_new_question_container"
+                android:elevation="2dp"
+                android:fontFamily="@font/montserrat"
+                android:textColor="@color/gray500"
+                android:visibility="gone"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/board_fresh_message"
+                app:layout_constraintVertical_bias="0.0"
+                android:textSize="18sp"/>
         <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -320,7 +341,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:id="@+id/board_new_question_container"
-                android:padding="16dp">
+                android:padding="24dp">
 
             <TextView
                     android:layout_width="0dp"

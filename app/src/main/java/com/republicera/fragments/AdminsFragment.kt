@@ -26,6 +26,7 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.mikepenz.materialdrawer.Drawer
 import com.republicera.MainActivity
 import com.republicera.R
 import com.republicera.groupieAdapters.*
@@ -34,8 +35,9 @@ import com.republicera.models.*
 import com.republicera.viewModels.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.toolbar_with_search.*
+import kotlinx.android.synthetic.main.toolbar_board.*
 import kotlinx.android.synthetic.main.fragment_board.*
+import kotlinx.android.synthetic.main.toolbar.*
 
 class AdminsFragment : Fragment(), BoardMethods {
 
@@ -77,6 +79,7 @@ class AdminsFragment : Fragment(), BoardMethods {
     var interestsList: List<String> = listOf()
 
     lateinit var freshMessage: TextView
+    lateinit var freshMessage2: TextView
 
     lateinit var boardLastVisible: DocumentSnapshot
     var boardIsScrolling = false
@@ -93,6 +96,9 @@ class AdminsFragment : Fragment(), BoardMethods {
     private lateinit var boardFilterChipGroup: ChipGroup
     var searchedTagsList = mutableListOf<String>()
 
+    lateinit var result: Drawer
+
+    lateinit var communityProfile : CommunityProfile
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_board, container, false)
@@ -139,25 +145,26 @@ class AdminsFragment : Fragment(), BoardMethods {
         layoutIcon = board_layout_icon
         val spinner = board_language_spinner
         freshMessage = board_fresh_message
+        freshMessage2 = board_fresh_message2
 
         sharedPref = activity.getSharedPreferences(activity.getString(R.string.package_name), Context.MODE_PRIVATE)
         currentLanguage = sharedPref.getString("last_language", "en")!!
         currentLayout = sharedPref.getInt("last_layout", 0)
 
-        if (currentLayout == 0) {
-            layoutIcon.tag = "row_layout"
-        } else {
-            layoutIcon.tag = "board_layout"
-        }
+//        if (currentLayout == 0) {
+//            layoutIcon.tag = "row_layout"
+//        } else {
+//            layoutIcon.tag = "board_layout"
+//        }
         setLayout(currentLayout)
-
-        layoutIcon.setOnClickListener {
-            if (layoutIcon.tag == "row_layout") {
-                setLayout(1)
-            } else {
-                setLayout(0)
-            }
-        }
+//
+//        layoutIcon.setOnClickListener {
+//            if (layoutIcon.tag == "row_layout") {
+//                setLayout(1)
+//            } else {
+//                setLayout(0)
+//            }
+//        }
 
         activity.let {
             ViewModelProviders.of(it).get(CurrentUserViewModel::class.java).currentUserObject.observe(
@@ -180,6 +187,8 @@ class AdminsFragment : Fragment(), BoardMethods {
             sharedViewModelInterests.interestList.observe(activity, Observer { currentInterestsList ->
                 interestsList = currentInterestsList
             })
+
+            communityProfile = ViewModelProviders.of(it).get(CurrentCommunityProfileViewModel::class.java).currentCommunityProfileObject
 
             sharedViewModelTags = ViewModelProviders.of(it).get(TagsViewModel::class.java)
             sharedViewModelForQuestion = ViewModelProviders.of(it).get(QuestionViewModel::class.java)
@@ -230,9 +239,9 @@ class AdminsFragment : Fragment(), BoardMethods {
 
 //        scrollView = board_questions_scroll_view
 
-        val boardSearchBox = toolbar_with_search_search_box
+        val boardSearchBox = toolbar_board_search_box
         val tagSuggestionRecycler = board_search_recycler
-        boardFilterChipGroup = toolbar_with_search_filter_chipgroup
+        boardFilterChipGroup = toolbar_board_filter_chipgroup
 
         tagSuggestionRecycler.layoutManager = LinearLayoutManager(this.context)
         tagSuggestionRecycler.adapter = tagsFilteredAdapter
@@ -256,7 +265,6 @@ class AdminsFragment : Fragment(), BoardMethods {
 
 
 //        val boardNotificationIcon = toolbar_with_search_notifications_icon
-        val boardSavedQuestionIcon = toolbar_menu
 
 //        notificationBadge.setOnClickListener {
 //            goToNotifications(activity)
@@ -266,8 +274,11 @@ class AdminsFragment : Fragment(), BoardMethods {
 //            goToNotifications(activity)
 //        }
 
-        boardSavedQuestionIcon.setOnClickListener {
-            goToSavedQuestions(activity)
+        setUpDrawerNav(activity, topLevelUser, communityProfile, 3)
+
+        val menuIcon = toolbar_board_menu
+        menuIcon.setOnClickListener {
+            result.openDrawer()
         }
 
         val constraintButton = board_new_question_container
@@ -597,8 +608,10 @@ class AdminsFragment : Fragment(), BoardMethods {
 
                 if (it.size() == 0) {
                     freshMessage.visibility = View.VISIBLE
+                    freshMessage2.visibility = View.VISIBLE
                 } else {
                     freshMessage.visibility = View.GONE
+                    freshMessage2.visibility = View.GONE
 
                     var postsCount = 0
 
@@ -643,10 +656,13 @@ class AdminsFragment : Fragment(), BoardMethods {
 //                        activity.subActive = activity.editInterestsFragment
 //                        activity.switchVisibility(1)
 
-                        freshMessage.text = "Head to your profile and add more interests to populate your board"
+                        freshMessage.text = "Untuned!"
+                        freshMessage2.text = "Head to your profile and add more interests to populate your forum"
                         freshMessage.visibility = View.VISIBLE
+                        freshMessage2.visibility = View.VISIBLE
                     } else {
                         freshMessage.visibility = View.GONE
+                        freshMessage2.visibility = View.GONE
                     }
 
                     questionsBlockLayoutAdapter.notifyDataSetChanged()

@@ -3,12 +3,15 @@ package com.republicera.interfaces
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentManager
+import com.bumptech.glide.Glide
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
@@ -19,6 +22,9 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import com.mikepenz.fastadapter.ISubItem
+import com.mikepenz.iconics.IconicsColor
+import com.mikepenz.iconics.IconicsDrawable
+import com.mikepenz.iconics.IconicsSize
 import com.mikepenz.materialdrawer.AccountHeaderBuilder
 import com.mikepenz.materialdrawer.Drawer
 import com.mikepenz.materialdrawer.DrawerBuilder
@@ -27,9 +33,13 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem
+import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader
+import com.mikepenz.materialdrawer.util.DrawerImageLoader
+import com.mikepenz.materialdrawer.util.DrawerUIUtils
 import com.republicera.MainActivity
 import com.republicera.R
 import com.republicera.RegisterLoginActivity
+import com.republicera.models.CommunityProfile
 import com.republicera.models.Notification
 import com.republicera.models.ReputationScore
 import com.republicera.models.User
@@ -681,21 +691,73 @@ interface GeneralMethods {
     }
 
 
-    fun setUpDrawerNav(activity: MainActivity, user: User) {
+    fun setUpDrawerNav(activity: MainActivity, user: User, profile: CommunityProfile, source: Int) {
+
+
+
+
+
+        DrawerImageLoader.init(object : AbstractDrawerImageLoader() {
+            override fun set(imageView: ImageView, uri: Uri, placeholder: Drawable, tag: String?) {
+                Glide.with(imageView.context).load(uri).placeholder(placeholder).into(imageView)
+            }
+
+            override fun cancel(imageView: ImageView) {
+                Glide.with(imageView.context).clear(imageView)
+            }
+
+            override fun placeholder(ctx: Context, tag: String?): Drawable {
+                //define different placeholders for different imageView targets
+                //default tags are accessible via the DrawerImageLoader.Tags
+                //custom ones can be checked via string. see the CustomUrlBasePrimaryDrawerItem LINE 111
+                return when (tag) {
+                    DrawerImageLoader.Tags.PROFILE.name -> DrawerUIUtils.getPlaceHolder(ctx)
+                    DrawerImageLoader.Tags.ACCOUNT_HEADER.name -> IconicsDrawable(ctx).iconText(" ").backgroundColor(
+                        IconicsColor.colorRes(com.mikepenz.materialdrawer.R.color.primary)
+                    ).size(IconicsSize.dp(56))
+                    "customUrlItem" -> IconicsDrawable(ctx).iconText(" ").backgroundColor(IconicsColor.colorRes(R.color.md_red_500)).size(
+                        IconicsSize.dp(56)
+                    )
+                    //we use the default one for
+                    //DrawerImageLoader.Tags.PROFILE_DRAWER_ITEM.name()
+                    else -> super.placeholder(ctx, tag)
+                }
+            }
+        })
+
+
+
+
+
+
+
 
         val firebaseAnalytics = FirebaseAnalytics.getInstance(activity)
 
 
-        val headerResult = AccountHeaderBuilder()
-            .withActivity(activity)
-            .withHeaderBackground(R.color.white)
-            .addProfiles(
-                ProfileDrawerItem().withName(user.first_name + " " + user.last_name)
-                    .withIcon(user.image)
-            )
-            .withSelectionListEnabled(false)
-            .withCurrentProfileHiddenInList(true)
-            .build()
+        val headerResult = if(profile.image.isNotEmpty()){
+            AccountHeaderBuilder()
+                .withActivity(activity)
+                .withHeaderBackground(R.color.white)
+                .addProfiles(
+                    ProfileDrawerItem().withName(profile.name)
+                        .withIcon(profile.image)
+                )
+                .withSelectionListEnabled(false)
+                .withCurrentProfileHiddenInList(true)
+                .build()
+        } else {
+            AccountHeaderBuilder()
+                .withActivity(activity)
+                .withHeaderBackground(R.color.white)
+                .addProfiles(
+                    ProfileDrawerItem().withName(profile.name)
+                        .withIcon(R.drawable.user_profile)
+                )
+                .withSelectionListEnabled(false)
+                .withCurrentProfileHiddenInList(true)
+                .build()
+        }
 
         val languageItems = mutableListOf<ISubItem<*>>()
         var lanIdentifier: Long = 100
@@ -723,6 +785,10 @@ interface GeneralMethods {
             )
             lanIdentifier++
         }
+
+        val communityTitle =
+            PrimaryDrawerItem().withName(activity.currentCommunity!!.title).withSelectable(false).withEnabled(false)
+                .withSelected(false).withDisabledTextColor(R.color.mainColor600)
 
         val chooseCurrentLanguage = PrimaryDrawerItem().withIdentifier(1).withName("Current language").withSubItems(
             languageItems
@@ -862,11 +928,21 @@ interface GeneralMethods {
                 }
             }).withSelectable(false)
 
-        val interests =
-            PrimaryDrawerItem().withIdentifier(5).withName("Interests")
+        val editInterests =
+            PrimaryDrawerItem().withIdentifier(5).withName("Edit interests")
                 .withOnDrawerItemClickListener(object : Drawer.OnDrawerItemClickListener {
                     override fun onItemClick(view: View?, position: Int, drawerItem: IDrawerItem<*>): Boolean {
                         goToInterests(activity)
+                        return false
+                    }
+                })
+                .withSelectable(false)
+
+        val editProfile =
+            PrimaryDrawerItem().withIdentifier(5).withName("Edit profile")
+                .withOnDrawerItemClickListener(object : Drawer.OnDrawerItemClickListener {
+                    override fun onItemClick(view: View?, position: Int, drawerItem: IDrawerItem<*>): Boolean {
+                        goToEditProfile(activity)
                         return false
                     }
                 })
@@ -936,16 +1012,31 @@ interface GeneralMethods {
             })
             .withSelectable(false)
 
-        activity.boardFragment.result = DrawerBuilder()
+
+//var result = when(source){
+//    0-> activity.boardFragment.result
+//    1-> activity.shoutsFragment.result
+//    2-> activity.notificationsFragment.result
+//    3-> activity.adminsFragment.result
+//    4-> activity.profileCurrentUserFragment.result
+//    else -> return
+
+//}
+        val result = DrawerBuilder()
             .withActivity(activity)
             .withAccountHeader(headerResult)
             .addDrawerItems(
+                communityTitle,
+                DividerDrawerItem(),
                 chooseCurrentLanguage,
 //                expandedQuestion,
                 boardLayout,
                 DividerDrawerItem(),
                 savedQuestions,
                 saveShouts,
+                DividerDrawerItem(),
+                editInterests,
+                editProfile,
                 DividerDrawerItem(),
                 languagePreferences,
                 contactInfo,
@@ -959,12 +1050,32 @@ interface GeneralMethods {
             .withSelectedItem(20202)
             .build()
 
+
+
+        when (source) {
+            0 -> {
+                activity.boardFragment.result = result
+            }
+            1 -> {
+                activity.shoutsFragment.result = result
+            }
+            2 -> {
+                activity.notificationsFragment.result = result
+            }
+            3 -> {
+                activity.adminsFragment.result = result
+            }
+            4 -> {
+                activity.profileCurrentUserFragment.result = result
+            }
+            else -> return
+        }
     }
 
 
     private fun goToSavedQuestions(activity: MainActivity) {
 
-        activity.bottomNavigation.setActiveNavigationIndex(0)
+        activity.bottomNavigation.setActiveItem(0)
 
         activity.subFm.beginTransaction()
             .add(
@@ -981,7 +1092,7 @@ interface GeneralMethods {
 
     private fun goToSavedShouts(activity: MainActivity) {
 
-        activity.bottomNavigation.setActiveNavigationIndex(1)
+        activity.bottomNavigation.setActiveItem(1)
 
         activity.subFm.beginTransaction()
             .add(
@@ -1008,6 +1119,26 @@ interface GeneralMethods {
 
 
         activity.subActive = activity.editInterestsFragment
+        activity.switchVisibility(1)
+
+    }
+
+
+    private fun goToEditProfile(activity: MainActivity) {
+
+        activity.bottomNavigation.setActiveItem(3)
+
+
+        activity.subFm.beginTransaction()
+            .add(
+                R.id.feed_subcontents_frame_container,
+                activity.editProfileFragment,
+                "editProfileFragment"
+            )
+            .addToBackStack("editProfileFragment").commit()
+
+
+        activity.subActive = activity.editProfileFragment
         activity.switchVisibility(1)
 
     }
@@ -1066,7 +1197,7 @@ interface GeneralMethods {
             .build();
 
         val uid = FirebaseAuth.getInstance().uid
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(uid).addOnSuccessListener {
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(uid!!).addOnSuccessListener {
             FirebaseAuth.getInstance().signOut()
             GoogleSignIn.getClient(activity, gso).signOut().addOnSuccessListener {
 

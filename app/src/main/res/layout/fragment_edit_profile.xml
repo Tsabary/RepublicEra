@@ -9,204 +9,222 @@
         android:background="@color/white"
         android:padding="24dp">
 
-
-    <TextView
-            android:text="This profile is only visible to members of this community, and it does not link to your other profiles"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/edit_profile_message"
-            android:fontFamily="@font/roboto_medium"
-            android:textColor="@color/gray500"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="24dp"
-            app:layout_constraintHorizontal_bias="0.333"
-            app:layout_constraintTop_toBottomOf="@id/edit_profile_headline"
-            android:layout_marginTop="16dp"/>
-    <TextView
-            android:text="Edit your\nprofile"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/edit_profile_headline"
-            android:fontFamily="@font/montserrat_bold"
-            android:textColor="@color/gray800"
-            android:textSize="24sp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="16dp"/>
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/edit_profile_loading"
-            android:background="#80FFFFFF"
-            android:elevation="2dp"
-            android:visibility="gone">
-
-        <ProgressBar
-                style="?android:attr/progressBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/progressBar2"
+    <androidx.core.widget.NestedScrollView android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    <ScrollView
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+    >
 
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@+id/edit_profile_message"
-            tools:layout_editor_absoluteX="24dp"
-            android:layout_marginTop="24dp"
-            app:layout_constraintBottom_toBottomOf="parent">
-        <LinearLayout android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="vertical">
+        <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
+                                                           android:layout_height="match_parent"
+                                                           android:clipChildren="true">
 
+
+            <TextView
+                    android:text="This profile is only visible to members of this community, and it does not link to your other profiles"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/edit_profile_message"
+                    android:fontFamily="@font/roboto_medium"
+                    android:textColor="@color/gray500"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="24dp"
+                    app:layout_constraintHorizontal_bias="0.333"
+                    app:layout_constraintTop_toBottomOf="@id/edit_profile_headline"
+                    android:layout_marginTop="16dp"/>
+            <TextView
+                    android:text="Edit your\nprofile"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/edit_profile_headline"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:textColor="@color/gray800"
+                    android:textSize="24sp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="16dp"/>
             <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    tools:context=".fragments.EditProfileFragment">
+                    android:id="@+id/edit_profile_loading"
+                    android:background="#80FFFFFF"
+                    android:elevation="2dp"
+                    android:visibility="gone">
 
-
-                <TextView
-                        android:text="@string/name"
-                        android:layout_width="0dp"
+                <ProgressBar
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/textView"
-                        android:fontFamily="@font/roboto_medium"
-                        android:layout_marginTop="40dp"
-                        app:layout_constraintTop_toBottomOf="@+id/edit_profile_image"
+                        android:id="@+id/progressBar2"
                         app:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginStart="18dp"
-                        android:textColor="@color/gray800"
-                        android:textSize="14sp"
+                        app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginEnd="18dp"/>
-                <EditText
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPersonName"
-                        android:ems="10"
-                        android:id="@+id/edit_profile_name"
-                        android:layout_marginTop="8dp"
-                        app:layout_constraintTop_toBottomOf="@+id/textView"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginEnd="8dp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/button_curve_8_gray"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        android:textSize="14sp"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:hint="Profile name"
-                        android:fontFamily="@font/roboto"/>
-                <TextView
-                        android:text="@string/tagline"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/textView5"
-                        android:fontFamily="@font/roboto_medium"
-                        android:layout_marginTop="32dp"
-                        app:layout_constraintTop_toBottomOf="@+id/edit_profile_name"
-                        app:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginStart="18dp"
-                        android:textColor="@color/gray800"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginEnd="18dp"
-                        android:layout_width="0dp"/>
-                <EditText
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:inputType="textCapSentences"
-                        android:ems="10"
-                        android:id="@+id/edit_profile_description"
-                        android:layout_marginTop="8dp"
-                        app:layout_constraintTop_toBottomOf="@+id/textView5"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginEnd="8dp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/button_curve_8_gray"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        android:textSize="14sp"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:hint="Profile tagline"
-                        android:fontFamily="@font/roboto"/>
-                <TextView
-                        android:text="Choose public contact details"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/textView2"
-                        android:fontFamily="@font/roboto_medium"
-                        app:layout_constraintTop_toBottomOf="@+id/edit_profile_description"
-                        app:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginStart="18dp"
-                        android:textColor="@color/gray800"
-                        android:textSize="14sp"
-                        android:layout_marginTop="32dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginEnd="18dp"/>
-                <androidx.recyclerview.widget.RecyclerView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/edit_profile_contacts_recycler"
-                        app:layout_constraintTop_toBottomOf="@+id/textView2"
-                        android:layout_marginEnd="8dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@color/white"/>
-
-
-                <TextView
-                        android:text="@string/save"
-                        android:layout_width="0dp"
-                        android:layout_height="60dp"
-                        android:fontFamily="@font/roboto_medium"
-                        android:background="@drawable/button_curve_16_500"
-                        android:textColor="@color/white"
-                        android:gravity="center"
-                        android:textSize="15sp"
-                        android:id="@+id/edit_profile_save"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginEnd="16dp"
-                        app:layout_constraintTop_toBottomOf="@+id/edit_profile_contacts_recycler"
-                        android:layout_marginTop="24dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginStart="16dp"
-                        android:elevation="4dp"
-                        android:layout_marginBottom="16dp"/>
-                <de.hdodenhof.circleimageview.CircleImageView
-                        android:layout_width="112dp"
-                        android:layout_height="112dp"
-                        app:civ_border_color="@color/white"
-                        app:civ_border_width="2dp"
-                        android:elevation="4dp"
                         app:layout_constraintTop_toTopOf="parent"
-                        android:layout_marginTop="24dp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:id="@+id/edit_profile_image"/>
-
-
+                        app:layout_constraintBottom_toBottomOf="parent"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
-        </LinearLayout>
-    </ScrollView>
+            <androidx.core.widget.NestedScrollView
 
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/edit_profile_message"
+                    android:layout_marginTop="24dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                <LinearLayout android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:orientation="vertical">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            tools:context=".fragments.EditProfileFragment">
+
+
+                        <TextView
+                                android:text="@string/name"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/textView"
+                                android:fontFamily="@font/roboto_medium"
+                                android:layout_marginTop="40dp"
+                                app:layout_constraintTop_toBottomOf="@+id/edit_profile_image"
+                                app:layout_constraintStart_toStartOf="parent"
+                                android:layout_marginStart="18dp"
+                                android:textColor="@color/gray800"
+                                android:textSize="14sp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:layout_marginEnd="18dp"/>
+                        <EditText
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:inputType="textPersonName"
+                                android:ems="10"
+                                android:id="@+id/edit_profile_name"
+                                android:layout_marginTop="8dp"
+                                app:layout_constraintTop_toBottomOf="@+id/textView"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:layout_marginEnd="8dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                android:layout_marginStart="8dp"
+                                android:background="@drawable/button_curve_8_gray"
+                                app:layout_constraintHorizontal_bias="0.0"
+                                android:textSize="14sp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:paddingTop="8dp"
+                                android:paddingBottom="8dp"
+                                android:hint="Profile name"
+                                android:fontFamily="@font/roboto"/>
+                        <TextView
+                                android:text="@string/tagline"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/textView5"
+                                android:fontFamily="@font/roboto_medium"
+                                android:layout_marginTop="32dp"
+                                app:layout_constraintTop_toBottomOf="@+id/edit_profile_name"
+                                app:layout_constraintStart_toStartOf="parent"
+                                android:layout_marginStart="18dp"
+                                android:textColor="@color/gray800"
+                                android:textSize="14sp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:layout_marginEnd="18dp"
+                                android:layout_width="0dp"/>
+                        <EditText
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:inputType="textCapSentences"
+                                android:ems="10"
+                                android:id="@+id/edit_profile_description"
+                                android:layout_marginTop="8dp"
+                                app:layout_constraintTop_toBottomOf="@+id/textView5"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:layout_marginEnd="8dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                android:layout_marginStart="8dp"
+                                android:background="@drawable/button_curve_8_gray"
+                                app:layout_constraintHorizontal_bias="0.0"
+                                android:textSize="14sp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:paddingTop="8dp"
+                                android:paddingBottom="8dp"
+                                android:hint="Profile tagline"
+                                android:fontFamily="@font/roboto"/>
+                        <TextView
+                                android:text="Choose public contact details"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/textView2"
+                                android:fontFamily="@font/roboto_medium"
+                                app:layout_constraintTop_toBottomOf="@+id/edit_profile_description"
+                                app:layout_constraintStart_toStartOf="parent"
+                                android:layout_marginStart="18dp"
+                                android:textColor="@color/gray800"
+                                android:textSize="14sp"
+                                android:layout_marginTop="32dp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:layout_marginEnd="18dp"/>
+                        <androidx.recyclerview.widget.RecyclerView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/edit_profile_contacts_recycler"
+                                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                                android:layout_marginEnd="8dp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="@color/white"/>
+
+
+                        <TextView
+                                android:text="@string/save"
+                                android:layout_width="0dp"
+                                android:layout_height="60dp"
+                                android:fontFamily="@font/roboto_medium"
+                                android:background="@drawable/button_curve_16_500"
+                                android:textColor="@color/white"
+                                android:gravity="center"
+                                android:textSize="15sp"
+                                android:id="@+id/edit_profile_save"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:layout_marginEnd="16dp"
+                                app:layout_constraintTop_toBottomOf="@+id/edit_profile_contacts_recycler"
+                                android:layout_marginTop="24dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                android:layout_marginStart="16dp"
+                                android:elevation="4dp"
+                                android:layout_marginBottom="16dp"/>
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                                android:layout_width="112dp"
+                                android:layout_height="112dp"
+                                app:civ_border_color="@color/white"
+                                app:civ_border_width="2dp"
+                                android:elevation="4dp"
+                                app:layout_constraintTop_toTopOf="parent"
+                                android:layout_marginTop="24dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:id="@+id/edit_profile_image"/>
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

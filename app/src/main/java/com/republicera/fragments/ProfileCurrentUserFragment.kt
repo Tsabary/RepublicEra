@@ -27,6 +27,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import com.google.firebase.messaging.FirebaseMessaging
+import com.mikepenz.materialdrawer.Drawer
 import com.republicera.MainActivity
 import com.republicera.R
 import com.republicera.RegisterLoginActivity
@@ -43,6 +44,8 @@ import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_profile_current_user.*
+import kotlinx.android.synthetic.main.toolbar_board.*
+import kotlinx.android.synthetic.main.toolbar_profile.*
 
 
 class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
@@ -78,11 +81,12 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
 
     lateinit var scrollView: NestedScrollView
 
-    private lateinit var buo: BranchUniversalObject
-    private lateinit var lp: LinkProperties
+//    private lateinit var buo: BranchUniversalObject
+//    private lateinit var lp: LinkProperties
 
-    lateinit var menuResign: MenuItem
+//    lateinit var menuResign: MenuItem
 
+    lateinit var result: Drawer
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_profile_current_user, container, false)
@@ -106,13 +110,23 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
         profileAnswers = profile_li_answers_count
         val tagline = profile_li_tagline
 
-        val menuButton = profile_li_menu_button
-        val popup = PopupMenu(this.context, menuButton)
-        popup.inflate(R.menu.profile_navigation)
-        menuResign = popup.menu.getItem(1)
-        menuButton.setOnClickListener {
-            popup.show()
+        val searchMembers = toolbar_profile_search
+
+        searchMembers.setOnClickListener {
+            activity.subFm.beginTransaction()
+                .add(R.id.feed_subcontents_frame_container, activity.searchProfilesFragment, "searchProfilesFragment")
+                .addToBackStack("searchProfilesFragment").commit()
+            activity.switchVisibility(1)
         }
+
+
+//        val menuButton = profile_li_menu_button
+//        val popup = PopupMenu(this.context, menuButton)
+//        popup.inflate(R.menu.profile_navigation)
+//        menuResign = popup.menu.getItem(1)
+//        menuButton.setOnClickListener {
+//            popup.show()
+//        }
 
         galleryShoutsRecycler.adapter = galleryShoutsAdapter
         galleryShoutsRecycler.layoutManager = LinearLayoutManager(this.context)
@@ -133,17 +147,29 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
             currentCommunityViewModel = ViewModelProviders.of(it).get(CurrentCommunityViewModel::class.java)
             currentCommunityProfileViewModel =
                 ViewModelProviders.of(it).get(CurrentCommunityProfileViewModel::class.java)
+            userProfile = currentCommunityProfileViewModel.currentCommunityProfileObject
+
             sharedViewModelRandomUser = ViewModelProviders.of(it).get(RandomUserViewModel::class.java)
             sharedViewModelForQuestion = ViewModelProviders.of(it).get(QuestionViewModel::class.java)
             contactDetailsViewModel = ViewModelProviders.of(it).get(ContactDetailsViewModel::class.java)
+
+            ViewModelProviders.of(it).get(CurrentUserViewModel::class.java).currentUserObject.observe(
+                activity,
+                Observer { user ->
+                    setUpDrawerNav(activity, user, userProfile, 4)
+
+                    val menuIcon = toolbar_profile_menu
+                    menuIcon.setOnClickListener {
+                        result.openDrawer()
+                    }
+                })
 
             ViewModelProviders.of(it).get(CurrentCommunityViewModel::class.java).currentCommunity.observe(
                 activity,
                 Observer { community ->
                     currentCommunity = community
                     db = FirebaseFirestore.getInstance().collection("communities_data").document(currentCommunity.id)
-                    userProfile = currentCommunityProfileViewModel.currentCommunityProfileObject
-                    menuResign.isVisible = currentCommunity.admins.contains(userProfile.uid)
+//                    menuResign.isVisible = currentCommunity.admins.contains(userProfile.uid)
                     listenToShouts()
                     listenToQuestions()
                     listenToAnswers()
@@ -203,86 +229,86 @@ class ProfileCurrentUserFragment : Fragment(), GeneralMethods {
 
 
 
-
-        popup.setOnMenuItemClickListener {
-
-            when (it.itemId) {
-
-                R.id.profile_edit_profile -> {
-                    activity.subFm.beginTransaction()
-                        .add(R.id.feed_subcontents_frame_container, activity.editProfileFragment, "editProfileFragment")
-                        .addToBackStack("editProfileFragment")
-                        .commit()
-                    activity.subActive = activity.editProfileFragment
-
-                    activity.switchVisibility(1)
-
-                    return@setOnMenuItemClickListener true
-                }
-
-
-//                R.id.profile_edit_interests -> {
-//                    activity.subFm.beginTransaction().add(
-//                        R.id.feed_subcontents_frame_container,
-//                        activity.editInterestsFragment,
-//                        "editInterestsFragment"
-//                    ).addToBackStack("editInterestsFragment")
+//
+//        popup.setOnMenuItemClickListener {
+//
+//            when (it.itemId) {
+//
+//                R.id.profile_edit_profile -> {
+//                    activity.subFm.beginTransaction()
+//                        .add(R.id.feed_subcontents_frame_container, activity.editProfileFragment, "editProfileFragment")
+//                        .addToBackStack("editProfileFragment")
 //                        .commit()
-//                    activity.subActive = activity.editInterestsFragment
+//                    activity.subActive = activity.editProfileFragment
+//
 //                    activity.switchVisibility(1)
+//
 //                    return@setOnMenuItemClickListener true
 //                }
-
-                R.id.profile_resign_admin -> {
-
-                    FirebaseFirestore.getInstance().collection("communities").document(currentCommunity.id)
-                        .update("admins", FieldValue.arrayRemove(userProfile.uid))
-
-                    currentCommunity.admins.remove(userProfile.uid)
-                    currentCommunityViewModel.currentCommunity.postValue(currentCommunity)
-                    return@setOnMenuItemClickListener true
-                }
-
-
-/*
-                R.id.profile_invite_a_friend -> {
-
-                    val ss =
-                        ShareSheetStyle(this.context!!, "Check out my profile", "Follow me around the world")
-                            .setCopyUrlStyle(
-                                resources.getDrawable(android.R.drawable.ic_menu_send),
-                                "Copy",
-                                "Added to clipboard"
-                            )
-                            .setMoreOptionStyle(resources.getDrawable(android.R.drawable.ic_menu_search), "Show more")
-                            .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK)
-                            .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK_MESSENGER)
-                            .addPreferredSharingOption(SharingHelper.SHARE_WITH.WHATS_APP)
-                            .addPreferredSharingOption(SharingHelper.SHARE_WITH.TWITTER)
-                            .setAsFullWidthStyle(true)
-                            .setSharingTitle("Share With")
-
-                    buo.showShareSheet(activity, lp, ss, object : Branch.BranchLinkShareListener {
-                        override fun onShareLinkDialogLaunched() {}
-                        override fun onShareLinkDialogDismissed() {}
-                        override fun onLinkShareResponse(
-                            sharedLink: String,
-                            sharedChannel: String,
-                            error: BranchError
-                        ) {
-                        }
-
-                        override fun onChannelSelected(channelName: String) {
-                            firebaseAnalytics.logEvent("profile_shared_$channelName", null)
-                        }
-                    })
-                    return@setOnMenuItemClickListener true
-                }
-*/
-
-                else -> return@setOnMenuItemClickListener false
-            }
-        }
+//
+//
+////                R.id.profile_edit_interests -> {
+////                    activity.subFm.beginTransaction().add(
+////                        R.id.feed_subcontents_frame_container,
+////                        activity.editInterestsFragment,
+////                        "editInterestsFragment"
+////                    ).addToBackStack("editInterestsFragment")
+////                        .commit()
+////                    activity.subActive = activity.editInterestsFragment
+////                    activity.switchVisibility(1)
+////                    return@setOnMenuItemClickListener true
+////                }
+//
+//                R.id.profile_resign_admin -> {
+//
+//                    FirebaseFirestore.getInstance().collection("communities").document(currentCommunity.id)
+//                        .update("admins", FieldValue.arrayRemove(userProfile.uid))
+//
+//                    currentCommunity.admins.remove(userProfile.uid)
+//                    currentCommunityViewModel.currentCommunity.postValue(currentCommunity)
+//                    return@setOnMenuItemClickListener true
+//                }
+//
+//
+///*
+//                R.id.profile_invite_a_friend -> {
+//
+//                    val ss =
+//                        ShareSheetStyle(this.context!!, "Check out my profile", "Follow me around the world")
+//                            .setCopyUrlStyle(
+//                                resources.getDrawable(android.R.drawable.ic_menu_send),
+//                                "Copy",
+//                                "Added to clipboard"
+//                            )
+//                            .setMoreOptionStyle(resources.getDrawable(android.R.drawable.ic_menu_search), "Show more")
+//                            .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK)
+//                            .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK_MESSENGER)
+//                            .addPreferredSharingOption(SharingHelper.SHARE_WITH.WHATS_APP)
+//                            .addPreferredSharingOption(SharingHelper.SHARE_WITH.TWITTER)
+//                            .setAsFullWidthStyle(true)
+//                            .setSharingTitle("Share With")
+//
+//                    buo.showShareSheet(activity, lp, ss, object : Branch.BranchLinkShareListener {
+//                        override fun onShareLinkDialogLaunched() {}
+//                        override fun onShareLinkDialogDismissed() {}
+//                        override fun onLinkShareResponse(
+//                            sharedLink: String,
+//                            sharedChannel: String,
+//                            error: BranchError
+//                        ) {
+//                        }
+//
+//                        override fun onChannelSelected(channelName: String) {
+//                            firebaseAnalytics.logEvent("profile_shared_$channelName", null)
+//                        }
+//                    })
+//                    return@setOnMenuItemClickListener true
+//                }
+//*/
+//
+//                else -> return@setOnMenuItemClickListener false
+//            }
+//        }
 
         shoutsBtn.setOnClickListener {
             changeGalleryFeed("shouts")

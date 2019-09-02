@@ -1,8 +1,10 @@
 package com.republicera.fragments
 
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -14,6 +16,8 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -57,6 +61,10 @@ class EditProfileFragment : Fragment() {
     lateinit var currentCommunityViewModel: CurrentCommunityViewModel
     lateinit var currentCommunity: Community
 
+    private val permissions = arrayOf(
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -99,9 +107,13 @@ class EditProfileFragment : Fragment() {
         getContactDetails()
 
         userImage.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
-            startActivityForResult(intent, 0)
+            if (hasNoPermissions()) {
+                requestPermission()
+            } else {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                intent.type = "image/*"
+                startActivityForResult(intent, 10)
+            }
         }
 
 
@@ -151,11 +163,13 @@ class EditProfileFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == 0 && resultCode == Activity.RESULT_OK && data != null) {
+        if (requestCode == 10 && resultCode == Activity.RESULT_OK && data != null) {
             selectedPhotoUri = data.data
-            val bitmap =
-                MediaStore.Images.Media.getBitmap((activity as MainActivity).contentResolver, selectedPhotoUri)
-            userImage.setImageBitmap(bitmap)
+
+
+            if (selectedPhotoUri != null) {
+                Glide.with(this.context!!).load(selectedPhotoUri.toString()).into(userImage)
+            }
         }
     }
 
@@ -224,9 +238,7 @@ class EditProfileFragment : Fragment() {
     private fun uploadImageToFirebase(currentImageUri: String) {
 
         if (selectedPhotoUri != null) {
-
-            val filename = UUID.randomUUID().toString()
-            val ref = FirebaseStorage.getInstance().getReference("/images/profile_pics/${currentProfile.uid}/$currentCommunity")
+            val ref = FirebaseStorage.getInstance().getReference("/images/$currentCommunity/profile_pics/${currentProfile.uid}")
 
             ref.putFile(selectedPhotoUri!!)
                 .addOnSuccessListener {
@@ -251,6 +263,20 @@ class EditProfileFragment : Fragment() {
         ).into(userImage)
         tagLineInput.setText(currentProfile.tag_line)
         userNameInput.setText(currentProfile.name)
+    }
+
+    private fun hasNoPermissions(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this.context!!,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+            this.context!!,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) != PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestPermission() {
+        ActivityCompat.requestPermissions(activity as MainActivity, permissions, 0)
     }
 
     companion object {

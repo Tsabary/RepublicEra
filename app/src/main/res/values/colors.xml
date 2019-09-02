@@ -4,6 +4,9 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#9D9D9D</color>
 
+    <color name="transparent">#00FFFFFF</color>
+
+
     <color name="gray100">#F5F5F5</color>
     <color name="gray300">#E0E0E0</color>
     <color name="gray500">#9E9E9E</color>
@@ -22,6 +25,7 @@
     <!--<color name="mainColor800">#04B46F</color>-->
     <!--<color name="mainColor900">#038452</color>-->
 
+    <color name="newGreen">#42fe9d</color>
 
     <color name="mainColor50">#f3e5f5</color>
     <color name="mainColor100">#e1bee7</color>

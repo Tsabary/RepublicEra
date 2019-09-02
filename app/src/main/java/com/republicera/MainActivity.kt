@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
@@ -31,6 +32,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.user_home_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.subcontents_main.*
+import me.ibrahimsn.lib.NiceBottomBar
 import java.util.*
 
 class MainActivity : AppCompatActivity(), GeneralMethods {
@@ -48,9 +50,9 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
     lateinit var lastCommunity: String
 
-    private lateinit var bottomNavigationAdmin: BottomifyNavigationView
-    lateinit var bottomNavigationStandard: BottomifyNavigationView
-    lateinit var bottomNavigation : BottomifyNavigationView
+    private lateinit var bottomNavigationAdmin: NiceBottomBar
+    lateinit var bottomNavigationStandard: NiceBottomBar
+    lateinit var bottomNavigation: NiceBottomBar
 
     lateinit var mainFrame: FrameLayout
     lateinit var subFrame: FrameLayout
@@ -79,7 +81,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
     lateinit var boardFragment: BoardFragment
     lateinit var shoutsFragment: ShoutsFragment
     lateinit var adminsFragment: AdminsFragment
-    lateinit var notificationsFragment : NotificationsFragment
+    lateinit var notificationsFragment: NotificationsFragment
     lateinit var profileCurrentUserFragment: ProfileCurrentUserFragment
 
 
@@ -91,12 +93,12 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
     lateinit var answerFragment: AnswerFragment
     lateinit var newQuestionFragment: NewQuestionFragment
     lateinit var editProfileFragment: EditProfileFragment
-    //    lateinit var websiteViewFragment: WebsiteViewFragment
     lateinit var editQuestionFragment: EditQuestionFragment
     lateinit var editAnswerFragment: EditAnswerFragment
     lateinit var editInterestsFragment: EditInterestsFragment
     lateinit var shoutExpendedFragment: ShoutExpendedFragment
     lateinit var searchFragment: SearchFragment
+    lateinit var searchProfilesFragment: SearchProfilesFragment
     lateinit var savedShoutsFragment: SavedShoutsFragment
     lateinit var shoutsNotificationsFragment: ShoutsNotificationsFragment
     lateinit var adminsNewQuestionFragment: AdminsNewQuestionFragment
@@ -112,6 +114,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
     lateinit var communitiesHomeFragment: CommunitiesHome
     lateinit var exploreCommunitiesFragment: ExploreCommunitiesFragment
     lateinit var newCommunityFragment: NewCommunityFragment
+    lateinit var editCommunityFragment: EditCommunityFragment
     lateinit var editLanguagePreferencesFragment: EditLanguagePreferencesFragment
     lateinit var editContactDetailsFragment: EditContactDetailsFragment
     lateinit var editBasicInfoFragment: EditBasicInfoFragment
@@ -152,6 +155,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         communitiesHomeFragment = CommunitiesHome()
         exploreCommunitiesFragment = ExploreCommunitiesFragment()
         newCommunityFragment = NewCommunityFragment()
+        editCommunityFragment = EditCommunityFragment()
         editLanguagePreferencesFragment = EditLanguagePreferencesFragment()
         editContactDetailsFragment = EditContactDetailsFragment()
         editBasicInfoFragment = EditBasicInfoFragment()
@@ -180,7 +184,7 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
     override fun onPause() {
         super.onPause()
-        userFm.popBackStack("communitiesHomeFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+//        userFm.popBackStack("communitiesHomeFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
     override fun onResume() {
@@ -196,9 +200,11 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                     .commit()
                 userActive = communitiesHomeFragment
                 userHomeFrame.visibility = View.VISIBLE
+
             } else {
 
                 if (lastCommunity != "default") {
+//                    Toast.makeText(this, "Main activity resume", Toast.LENGTH_SHORT).show()
 
                     topLevelDB.collection("communities").document(lastCommunity).get().addOnSuccessListener {
                         val community = it.toObject(Community::class.java)
@@ -353,9 +359,10 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
             bottomNavigationStandard.visibility = View.VISIBLE
         }
 
-        bottomNavigationAdmin.setOnNavigationItemChangedListener(object : OnNavigationItemChangeListener {
-            override fun onNavigationItemChanged(navigationItem: BottomifyNavigationView.NavigationItem) {
-                when (navigationItem.position) {
+        bottomNavigationAdmin.setBottomBarCallback(object : NiceBottomBar.BottomBarCallback {
+
+            override fun onItemSelect(pos: Int) {
+                when (pos) {
                     0 -> navigateToBoard()
                     1 -> navigateToShouts()
                     2 -> navigateToAdmins()
@@ -363,18 +370,51 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                     4 -> navigateToProfile()
                 }
             }
+
+            override fun onItemReselect(pos: Int) {
+
+            }
         })
 
-        bottomNavigationStandard.setOnNavigationItemChangedListener(object : OnNavigationItemChangeListener {
-            override fun onNavigationItemChanged(navigationItem: BottomifyNavigationView.NavigationItem) {
-                when (navigationItem.position) {
+
+        bottomNavigation.setBottomBarCallback(object : NiceBottomBar.BottomBarCallback {
+
+            override fun onItemSelect(pos: Int) {
+                when (pos) {
                     0 -> navigateToBoard()
                     1 -> navigateToShouts()
                     2 -> navigateToNotifications()
                     3 -> navigateToProfile()
                 }
             }
+
+            override fun onItemReselect(pos: Int) {
+
+            }
         })
+
+//        bottomNavigationAdmin.setOnNavigationItemChangedListener(object : OnNavigationItemChangeListener {
+//            override fun onNavigationItemChanged(navigationItem: BottomifyNavigationView.NavigationItem) {
+//                when (navigationItem.position) {
+//                    0 -> navigateToBoard()
+//                    1 -> navigateToShouts()
+//                    2 -> navigateToAdmins()
+//                    3 -> navigateToNotifications()
+//                    4 -> navigateToProfile()
+//                }
+//            }
+//        })
+//
+//        bottomNavigationStandard.setOnNavigationItemChangedListener(object : OnNavigationItemChangeListener {
+//            override fun onNavigationItemChanged(navigationItem: BottomifyNavigationView.NavigationItem) {
+//                when (navigationItem.position) {
+//                    0 -> navigateToBoard()
+//                    1 -> navigateToShouts()
+//                    2 -> navigateToNotifications()
+//                    3 -> navigateToProfile()
+//                }
+//            }
+//        })
 
         addTagsToViewModel()
     }
@@ -481,9 +521,9 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         editInterestsFragment = EditInterestsFragment()
         shoutExpendedFragment = ShoutExpendedFragment()
         searchFragment = SearchFragment()
+        searchProfilesFragment = SearchProfilesFragment()
         savedShoutsFragment = SavedShoutsFragment()
         shoutsNotificationsFragment = ShoutsNotificationsFragment()
-
 
 
 //        subFm.beginTransaction()
@@ -512,9 +552,9 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         sharedPref = getSharedPreferences(getString(R.string.package_name), Context.MODE_PRIVATE)
         val lastFeed = sharedPref.getString("last_feed", "board")!!
         if (lastFeed == "board") {
-            bottomNavigation.setActiveNavigationIndex(0)
+            navigateToBoard()
         } else {
-            bottomNavigation.setActiveNavigationIndex(1)
+            navigateToShouts()
         }
     }
 
@@ -589,6 +629,11 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
                     newCommunityFragment -> {
                         userFm.popBackStack("newCommunityFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        userActive = communitiesHomeFragment
+                    }
+
+                    editCommunityFragment -> {
+                        userFm.popBackStack("editCommunityFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                         userActive = communitiesHomeFragment
                     }
 
@@ -674,7 +719,11 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                     newQuestionFragment -> {
                         subFm.popBackStack("newQuestionFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                         subActive = searchFragment
-                        Log.d("whatfragment", "newQ")
+                    }
+
+                    searchProfilesFragment -> {
+                        subFm.popBackStack("searchProfilesFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        switchVisibility(0)
                     }
 
                     editProfileFragment -> {
@@ -815,12 +864,10 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
 
     private fun branchInitSession() {
-        Log.d("branch my testtttt", "init")
 
         // Branch init
         Branch.getInstance().initSession({ referringParams, error ->
             if (error == null) {
-                Log.d("branch my testtttt", referringParams.toString())
 
                 if (referringParams != null) {
                     if (referringParams.has("type")) {
@@ -830,10 +877,6 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
                     }
 
                 }
-            } else {
-                Log.d("branch my testtttt", "error")
-
-                Log.e("BRANCH SDK", error.message)
             }
         }, this.intent.data, this)
     }
@@ -850,8 +893,11 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
         this.intent = intent
     }
 
+
     fun navigateToBoard() {
         if (active != null) {
+
+            bottomNavigation.setActiveItem(0)
             fm.beginTransaction().hide(active!!).show(boardFragment).commit()
             active = boardFragment
             resetFragments()
@@ -864,6 +910,8 @@ class MainActivity : AppCompatActivity(), GeneralMethods {
 
     fun navigateToShouts() {
         if (active != null) {
+            bottomNavigation.setActiveItem(1)
+
             fm.beginTransaction().hide(active!!).show(shoutsFragment).commit()
             active = shoutsFragment
             resetFragments()
